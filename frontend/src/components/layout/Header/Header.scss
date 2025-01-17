@@ -1,100 +1,69 @@
 @use "../../../assets/styles/abstracts/index" as *;
 
 .header {
-  @include flex(row, space-between, center);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   position: fixed;
   top: 0;
   width: 100%;
-  height: var(--header-height);
-  padding: var(--spacing-sm) var(--spacing-md);
-  background-color: var(--color-background);
-  @include shadow('sm');
-  z-index: var(--z-index-header);
+  padding: 10px 20px;
+  background-color: white;
+  box-shadow: 0px 1px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
 
   &__left {
-    @include flex(row, flex-start, center);
-  }
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    
+    .header__logo-link {
+      display: block;
+    }
 
-  &__logo-link {
-    display: block;
-    text-decoration: none;
-  }
-
-  &__logo {
-    max-width: var(--logo-width-lg);
-    height: auto;
-    margin-right: -150px;
+    .header__logo {
+      max-width: 275px;
+      height: auto;
+      margin-right: -150px;
+    }
   }
 
   &__nav {
-    @include flex(row, center, center);
-    gap: var(--spacing-md);
+    flex: 2;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
   }
 
   &__nav-link {
-    @include button-base;
-    background: none;
-    border: none;
-    color: var(--color-text);
-    font-size: var(--font-size-lg);
+    font-size: 20px;
     text-decoration: none;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    transition: var(--transition-base);
+    color: #5F5E5F;
+    padding: 5px 10px;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
 
     &:hover {
-      color: var(--color-text-dark);
+      color: #000;
     }
 
     &--active {
-      color: var(--color-text-dark);
-      @include font-style('medium');
+      color: #000;
     }
   }
 
   &__right {
-    @include flex(row, flex-end, center);
-  }
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
 
-  &__partner-link {
-    display: block;
-    text-decoration: none;
-  }
-
-  &__partner-logo {
-    max-width: var(--logo-width-sm);
-    height: auto;
-  }
-
-  // Responsive styles
-  @include respond-to('--breakpoint-lg') {
-    padding: var(--spacing-xs) var(--spacing-sm);
-
-    &__logo {
-      max-width: 200px;
-      margin-right: -100px;
+    .header__partner-link {
+      display: block;
     }
 
-    &__nav {
-      gap: var(--spacing-sm);
-    }
-
-    &__nav-link {
-      font-size: var(--font-size-base);
-    }
-
-    &__partner-logo {
-      max-width: 80px;
-    }
-  }
-
-  @include respond-to('--breakpoint-md') {
-    &__logo {
-      max-width: 150px;
-      margin-right: -50px;
-    }
-
-    &__nav {
-      display: none; // TODO Mobile Menu
+    .header__partner-logo {
+      max-width: 100px;
+      height: auto;
     }
   }
 }

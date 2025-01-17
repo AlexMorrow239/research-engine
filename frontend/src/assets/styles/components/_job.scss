@@ -1,3 +1,5 @@
+@use "../abstracts/index" as *;
+
 .job-item {
   @include card-base;
   margin: 10px 80px;

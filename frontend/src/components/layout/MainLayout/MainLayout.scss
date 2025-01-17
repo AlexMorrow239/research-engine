@@ -1,23 +1,23 @@
-@import "../abstracts/variables";
-@import "../abstracts/mixins";
+@use "../../../assets/styles/abstracts" as *;
 
 .main-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  font-family: $font-family-base;
-  color: var(--color-text);
   background-color: var(--color-background);
 
-  .main-content {
+  &__content {
     flex: 1;
     margin-top: var(--header-height);
-    padding: 0 20px;
+    padding: var(--spacing-md);
+    width: 100%;
+    max-width: var(--content-width-xl);
+    margin-left: auto;
+    margin-right: auto;
 
-    @media (min-width: $breakpoint-desktop) {
-      max-width: $content-width;
-      margin-left: auto;
-      margin-right: auto;
+    @include respond-to(var(--breakpoint-md)) {
+      padding: var(--spacing-sm);
+      margin-top: calc(var(--header-height) - 10px);
     }
   }
 }

@@ -1,0 +1,62 @@
+@use "../../assets/styles/abstracts" as *;
+
+// Main content layout for home page
+.main-content {
+  display: flex;
+  height: calc(100vh - var(--header-height) - 80px); // Account for header and filters
+  margin-top: var(--header-height);
+  position: relative;
+  background-color: white;
+}
+
+// Job listing pane
+.job-listing-pane {
+  width: 40%;
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+  height: 100%;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+// Job detail pane
+.job-detail-pane {
+  width: 60%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px 40px; // Reduced side padding from 80px to 40px
+  background-color: white;
+
+  // Content container to ensure proper width
+  .detail-content {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: var(--color-text);
+  }
+
+  // Ensure content sections don't get squished
+  .job-detail__section {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
+
+// Banner styles specific to home page
+.banner {
+  width: 100%;
+  margin-top: var(--header-height);
+  
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}

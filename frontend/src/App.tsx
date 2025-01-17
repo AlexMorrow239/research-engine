@@ -5,12 +5,13 @@ import JobApplication from "./components/JobApplication/JobApplication";
 import JobDetailPane from "./components/JobDetailPane/JobDetailPane";
 import JobListPane from "./components/JobListPane/JobListPane";
 import Banner from "./components/layout/Banner/Banner";
-import Header from "./components/layout/Header/Header";
 import About from "./pages/About/About";
 import ListPosition from "./pages/ListPosition/ListPosition";
 import YourListings from "./pages/YourListings/YourListings";
 import { Job } from "./types/index.js";
-
+import './assets/styles/main.scss'
+import MainLayout from "./components/layout/MainLayout/MainLayout";
+import Home from "./pages/Home/Home";
 
 
 
@@ -95,7 +96,6 @@ function App(): JSX.Element {
   const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
   const [isLoggedIn] = useState(false);
 
-
   const handleJobClick = (id: number): void => {
     setSelectedJobId(id);
   };
@@ -106,40 +106,35 @@ function App(): JSX.Element {
   };
 
   return (
-    <div>
-      <Header />
-      <Routes>
+    <Routes>
+      <Route element={<MainLayout />}>
         <Route
           path="/"
           element={
-            <>
-              <Banner />
-              <FiltersBar />
-              <div className="main-content">
-                <JobListPane
-                  jobData={jobData}
-                  selectedJobId={selectedJobId}
-                  onJobClick={handleJobClick}
-                />
-                <JobDetailPane job={selectedJobId ? jobData[selectedJobId] : null} />
-              </div>
-            </>
+            <Home 
+              jobData={jobData}
+              selectedJobId={selectedJobId}
+              onJobClick={handleJobClick}
+            />
           }
         />
         <Route path="/about" element={<About onNavigate={() => {}} />} />
-        <Route path="/listposition" element={
-  <ListPosition 
-    isLoggedIn={isLoggedIn} 
-    onLogin={handleLoginModal} 
-  />
-} />
+        <Route 
+          path="/listposition" 
+          element={
+            <ListPosition 
+              isLoggedIn={isLoggedIn} 
+              onLogin={handleLoginModal} 
+            />
+          } 
+        />
         <Route path="/your-listings" element={<YourListings />} />
         <Route
           path="/job/:id/apply"
           element={<JobApplication jobData={jobData} />}
         />
-      </Routes>
-    </div>
+      </Route>
+    </Routes>
   );
 }
 
