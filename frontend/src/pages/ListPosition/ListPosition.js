@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Header from "./Header";
-import LoginPage from "./LoginPage";
+import Header from "../../components/layout/Header/Header";
+import LoginPage from "../../pages/Login/Login";
 
 export default function ListPosition({ isLoggedIn, onLogin }) {
   const [showLoginModal, setShowLoginModal] = useState(!isLoggedIn);

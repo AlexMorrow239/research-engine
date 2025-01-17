@@ -6,7 +6,9 @@ function JobListPane({ jobData, onJobClick, selectedJobId }) {
       {Object.entries(jobData).map(([id, job]) => (
         <div
           key={id}
-          className={`job-item ${selectedJobId === parseInt(id) ? "selected-job" : ""}`} // Add "selected-job" class if it's selected
+          className={`job-item ${
+            selectedJobId === parseInt(id) ? "selected-job" : ""
+          }`} // Add "selected-job" class if it's selected
           onClick={() => onJobClick(parseInt(id))} // Convert string ID to number
         >
           <div className="job-item-img-container">

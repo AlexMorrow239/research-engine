@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import Header from "./components/Header";
-import Banner from "./components/Banner";
-import FiltersBar from "./components/FiltersBar";
-import JobListPane from "./components/JobListPane";
-import JobDetailPane from "./components/JobDetailPane";
-import JobApplication from "./components/JobApplication";
-import About from "./components/About";
+import Header from "./components/layout/Header/Header.js";
+import Banner from "./components/layout/Banner/Banner.js";
+import FiltersBar from "./components/FiltersBar/FiltersBar.js";
+import JobListPane from "./components/JobListPane/JobListPane.js";
+import JobDetailPane from "./components/JobDetailPane/JobDetailPane.js";
+import JobApplication from "./components/JobApplication/JobApplication.js";
+import About from "./pages/About/About.js";
 // import LoginModal from "./components/LoginModal";
-import ListPosition from "./components/ListPosition";
-import ScrollToTop from "./components/ScrollToTop";
-import YourListings from "./components/YourListings.js"; // Changed 'Yourlistings.js' to 'YourListings.js'
+import ListPosition from "./pages/ListPosition/ListPosition.js";
+import ScrollToTop from "./components/ScrollToTop/ScrollToTop.js";
+import YourListings from "./pages/YourListings/YourListings.js"; // Changed 'Yourlistings.js' to 'YourListings.js'
 
 import "./styles.css";
 
@@ -30,7 +30,10 @@ const jobData = {
     projectLength: "6 months",
     requiredCourses: "Statistics, Python Programming",
     publications: [
-      { title: "Predictive Analytics in Medicine", link: "https://example.com" },
+      {
+        title: "Predictive Analytics in Medicine",
+        link: "https://example.com",
+      },
     ],
     imgUrl: "/images/A7E9DC04-0F12-4C04-BCF5-5EA9A5EA2E80IMG_8403.webp",
     location: "Remote",

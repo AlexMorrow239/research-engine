@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "./Header";
+import Header from "../../components/layout/Header/Header";
 
 function About({ onNavigate }) {
   return (
@@ -59,50 +59,56 @@ function About({ onNavigate }) {
           This database was created by{" "}
           <a href="https://bonsaiACG.com">Bonsai Applied Computations Group</a>{" "}
           and is maintained by the{" "}
-          <a href="https://ugr.miami.edu/">
-            Office of Undergraduate Research
-          </a>{" "}
+          <a href="https://ugr.miami.edu/">Office of Undergraduate Research</a>{" "}
           with faculty and student support, as well as a generous alumni gift.
         </p>
         <hr className="divider" />
         <h3>Undergraduate Research & Fellowships Staff</h3>
         {/* Staff Cards */}
         <div className="staff-container">
-                  <div className="staff-card">
-                    <h4>Alex Kim</h4>
-                    <p><strong>President of Research Ambassadors</strong></p>
-                    <p>
-                      Stephen is the President of The Research Ambassadors, and is a senior
-                      majoring in neuroscience from Long Island, New York.
-                    </p>
-                  </div>
-                  <div className="staff-card">
-                    <h4>Ethan Tieu </h4>
-                    <p><strong>President of Research Ambassadors</strong></p>
-                    <p>
-                      Emily is the Secretary of the Research Ambassadors and is a senior
-                      majoring in Neuroscience from Huntington Woods, Michigan.
-                    </p>
-                  </div>
-                  <div className="staff-card">
-                    <h4>Alex Marrow</h4>
-                    <p><strong>Developer</strong></p>
-                    <p>
-                      Brooke is the treasurer of the Research Ambassadors, and is a junior
-                      majoring in Cell and Molecular Biology from Southbury, CT.
-                    </p>
-                  </div>
-                  <div className="staff-card">
-                    <h4>Andrew Luthringer</h4>
-                    <p><strong>Developer</strong></p>
-                    <p>
-                      Paresh is the Director of Outreach and a native of Lafayette, LA. He
-                      is a third-year student majoring in Neuroscience.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="staff-card">
+            <h4>Alex Kim</h4>
+            <p>
+              <strong>President of Research Ambassadors</strong>
+            </p>
+            <p>
+              Stephen is the President of The Research Ambassadors, and is a
+              senior majoring in neuroscience from Long Island, New York.
+            </p>
+          </div>
+          <div className="staff-card">
+            <h4>Ethan Tieu </h4>
+            <p>
+              <strong>President of Research Ambassadors</strong>
+            </p>
+            <p>
+              Emily is the Secretary of the Research Ambassadors and is a senior
+              majoring in Neuroscience from Huntington Woods, Michigan.
+            </p>
+          </div>
+          <div className="staff-card">
+            <h4>Alex Marrow</h4>
+            <p>
+              <strong>Developer</strong>
+            </p>
+            <p>
+              Brooke is the treasurer of the Research Ambassadors, and is a
+              junior majoring in Cell and Molecular Biology from Southbury, CT.
+            </p>
+          </div>
+          <div className="staff-card">
+            <h4>Andrew Luthringer</h4>
+            <p>
+              <strong>Developer</strong>
+            </p>
+            <p>
+              Paresh is the Director of Outreach and a native of Lafayette, LA.
+              He is a third-year student majoring in Neuroscience.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

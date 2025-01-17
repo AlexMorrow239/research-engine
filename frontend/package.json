@@ -1,15 +1,20 @@
 {
-  "name": "research-engine",
+  "name": "research-engine-frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-router-dom": "^6.28.1",
     "react-scripts": "^5.0.1",
+    "typescript": "^4.9.5",
     "web-vitals": "^2.1.0"
   },
   "scripts": {
