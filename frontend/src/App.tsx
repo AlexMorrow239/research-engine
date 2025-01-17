@@ -1,21 +1,26 @@
 import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
-import Header from "./components/layout/Header/Header.js";
-import Banner from "./components/layout/Banner/Banner.js";
-import FiltersBar from "./components/FiltersBar/FiltersBar.js";
-import JobListPane from "./components/JobListPane/JobListPane.js";
-import JobDetailPane from "./components/JobDetailPane/JobDetailPane.js";
-import JobApplication from "./components/JobApplication/JobApplication.js";
-import About from "./pages/About/About.js";
-// import LoginModal from "./components/LoginModal";
-import ListPosition from "./pages/ListPosition/ListPosition.js";
-import ScrollToTop from "./components/ScrollToTop/ScrollToTop.js";
-import YourListings from "./pages/YourListings/YourListings.js"; // Changed 'Yourlistings.js' to 'YourListings.js'
+import FiltersBar from "./components/FiltersBar/FiltersBar";
+import JobApplication from "./components/JobApplication/JobApplication";
+import JobDetailPane from "./components/JobDetailPane/JobDetailPane";
+import JobListPane from "./components/JobListPane/JobListPane";
+import Banner from "./components/layout/Banner/Banner";
+import Header from "./components/layout/Header/Header";
+import About from "./pages/About/About";
+import ListPosition from "./pages/ListPosition/ListPosition";
+import YourListings from "./pages/YourListings/YourListings";
+import { Job } from "./types/index.js";
 
-import "./styles.css";
 
-const jobData = {
-  1: {
+
+
+
+interface JobData {
+  [key: string]: Job;
+}
+
+const jobData: JobData = {
+  "1": {
     id: 1,
     title: "Data Analyst Intern",
     snippet: "Data analysis in medical research.",
@@ -40,7 +45,7 @@ const jobData = {
     salary: "$50,000/year",
     type: "Fellowship",
   },
-  2: {
+  "2": {
     id: 2,
     title: "Predictive Modeling Intern",
     snippet: "Data analysis in medical research.",
@@ -62,7 +67,7 @@ const jobData = {
     salary: "$50,000/year",
     type: "Fellowship",
   },
-  3: {
+  "3": {
     id: 3,
     title: "Cow Farmer Intern",
     snippet: "Cow Farming in farming research.",
@@ -86,17 +91,23 @@ const jobData = {
   },
 };
 
-function App() {
-  const [selectedJobId, setSelectedJobId] = useState(null);
+function App(): JSX.Element {
+  const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
+  const [isLoggedIn] = useState(false);
 
-  const handleJobClick = (id) => {
+
+  const handleJobClick = (id: number): void => {
     setSelectedJobId(id);
+  };
+
+  const handleLoginModal = (): void => {
+    // TODO: Implement login modal functionality
+    console.log('Login modal clicked');
   };
 
   return (
     <div>
       <Header />
-      <ScrollToTop /> {/* Add ScrollToTop here */}
       <Routes>
         <Route
           path="/"
@@ -110,13 +121,18 @@ function App() {
                   selectedJobId={selectedJobId}
                   onJobClick={handleJobClick}
                 />
-                <JobDetailPane job={jobData[selectedJobId]} />
+                <JobDetailPane job={selectedJobId ? jobData[selectedJobId] : null} />
               </div>
             </>
           }
         />
-        <Route path="/about" element={<About />} />
-        <Route path="/listposition" element={<ListPosition />} />
+        <Route path="/about" element={<About onNavigate={() => {}} />} />
+        <Route path="/listposition" element={
+  <ListPosition 
+    isLoggedIn={isLoggedIn} 
+    onLogin={handleLoginModal} 
+  />
+} />
         <Route path="/your-listings" element={<YourListings />} />
         <Route
           path="/job/:id/apply"
