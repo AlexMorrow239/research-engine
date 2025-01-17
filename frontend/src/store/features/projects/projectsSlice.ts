@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { ProjectStatus } from "@/common/enums";
 import { RootState } from "../../index";
+import { api } from "@/utils/api";
 
 interface Project {
   id: string;
@@ -39,7 +40,7 @@ interface ProjectsState {
     status?: ProjectStatus;
     search?: string;
     researchCategories?: string[];
-    sortBy?: "createdAt" | "applicationDeadline"; // Added sorting options
+    sortBy?: "createdAt" | "applicationDeadline";
     sortOrder?: "asc" | "desc";
   };
 }
@@ -77,11 +78,10 @@ export const fetchProjects = createAsyncThunk(
         ...(filters.sortOrder && { sortOrder: filters.sortOrder }),
       });
 
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/projects?${queryParams}`
+      // Updated to match backend route
+      return await api.fetch<{ projects: Project[]; total: number }>(
+        `/api/projects?${queryParams}`
       );
-      if (!response.ok) throw new Error("Failed to fetch projects");
-      return await response.json();
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -93,20 +93,14 @@ export const fetchProjects = createAsyncThunk(
 
 export const createProject = createAsyncThunk(
   "projects/create",
-  async (projectData: Partial<Project>, { getState, rejectWithValue }) => {
+  async (projectData: Partial<Project>, { rejectWithValue }) => {
     try {
-      const { token } = (getState() as RootState).auth;
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/projects`, {
+      // Updated to match backend route
+      return await api.fetch<Project>("/api/projects", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
         body: JSON.stringify(projectData),
+        requiresAuth: true,
       });
-
-      if (!response.ok) throw new Error("Failed to create project");
-      return await response.json();
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);

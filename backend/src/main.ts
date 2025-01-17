@@ -8,11 +8,11 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-import { CreateApplicationDto } from '@/common/dto/applications';
-
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ErrorHandlingInterceptor } from './common/interceptors/error-handling.interceptor';
+
+import { CreateApplicationDto } from '@common/dto/applications/create-application.dto';
 
 const logger = new Logger('Bootstrap');
 
@@ -60,6 +60,7 @@ async function bootstrap() {
  * @param app NestJS application instance
  */
 function configureGlobalMiddleware(app: any) {
+  app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,

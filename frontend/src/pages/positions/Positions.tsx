@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Banner } from "@/common/banner/Banner";
-import { BannerType } from "@/common/enums";
 
 import {
   fetchProjects,
@@ -53,11 +52,7 @@ export default function Positions() {
   if (isLoading && !projects.length) {
     return (
       <div className="positions-page">
-        <Banner
-          type={BannerType.RESEARCH}
-          title="Research Positions"
-          subtitle="Discover and apply for research opportunities across campus"
-        />
+        <Banner />
         <div className="positions-layout">
           <div className="loading-spinner">Loading projects...</div>
         </div>
@@ -69,11 +64,7 @@ export default function Positions() {
   if (error) {
     return (
       <div className="positions-page">
-        <Banner
-          type={BannerType.RESEARCH}
-          title="Research Positions"
-          subtitle="Discover and apply for research opportunities across campus"
-        />
+        <Banner />
         <div className="positions-layout">
           <div className="error-message">Error loading projects: {error}</div>
         </div>
@@ -83,11 +74,7 @@ export default function Positions() {
 
   return (
     <div className="positions-page">
-      <Banner
-        type={BannerType.RESEARCH}
-        title="Research Positions"
-        subtitle="Discover and apply for research opportunities across campus"
-      />
+      <Banner />
 
       <div className="positions-content">
         <ProjectFilters />

@@ -19,7 +19,9 @@ export const api = {
   ): Promise<T> => {
     const { requiresAuth = false, ...fetchOptions } = options;
     const baseUrl = import.meta.env.VITE_API_URL;
-    const url = `${baseUrl}${endpoint}`;
+    const url = baseUrl.endsWith("/")
+      ? `${baseUrl}${endpoint.startsWith("/") ? endpoint.slice(1) : endpoint}`
+      : `${baseUrl}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
     // Get auth token from store if required
     if (requiresAuth) {
@@ -62,6 +64,8 @@ export const api = {
       if (error instanceof ApiError) {
         throw error;
       }
+      // Log the error for debugging
+      console.error(`API Error (${url}):`, error);
       throw new ApiError(
         error instanceof Error ? error.message : "Network error"
       );
