@@ -1,19 +1,124 @@
-// Colors
+// Color System
+// Brand Colors
 $color-primary: #7ec265;
+$color-primary-light: #a9d698;
+$color-primary-dark: #45a049;
+
+// Neutral Colors
 $color-text: #5f5e5f;
+$color-text-dark: #282c34;
+$color-text-light: #818181;
 $color-background: #fff;
+$color-background-alt: #fafafa;
+$color-background-input: #fbfbfb;
+$color-background-search: #ebebeb;
+
+// Border Colors
 $color-border: #eee;
+$color-border-input: #ccc;
+$color-border-dark: #ddd;
+
+// Shadow Colors
 $color-shadow: rgba(0, 0, 0, 0.5);
+$color-shadow-light: rgba(0, 0, 0, 0.1);
+$color-shadow-medium: rgba(0, 0, 0, 0.2);
 
 // Typography
-$font-family-base: "Almarai", sans-serif;
+// Font Families
+$font-family-base: "Roboto", sans-serif;
+$font-family-secondary: "Sora", sans-serif;
+
+// Font Weights
+$font-weight-thin: 100;
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+$font-weight-black: 900;
+
+// Font Sizes
+$font-size-xs: 12px;
+$font-size-sm: 14px;
 $font-size-base: 16px;
-$font-size-large: 20px;
+$font-size-lg: 20px;
+$font-size-xl: 24px;
+$font-size-2xl: 30px;
+$font-size-3xl: 32px;
+
+// Line Heights
+$line-height-tight: 1.2;
+$line-height-base: 1.5;
+$line-height-loose: 1.6;
 
 // Layout
+// Dimensions
 $header-height: 80px;
 $content-width: 1200px;
+$modal-width-sm: 400px;
+$modal-width-md: 500px;
+$modal-width-lg: 800px;
+$modal-width-xl: 900px;
+
+// Spacing
+$spacing-xs: 5px;
+$spacing-sm: 10px;
+$spacing-md: 20px;
+$spacing-lg: 30px;
+$spacing-xl: 40px;
+$spacing-2xl: 80px;
+
+// Grid
+$job-listing-width: 40%;
+$job-detail-width: 60%;
+$filter-group-max-width: 170px;
+$search-max-width: 300px;
+
+// Border Radius
+$border-radius-sm: 4px;
+$border-radius-md: 6px;
+$border-radius-lg: 8px;
+$border-radius-xl: 16px;
 
 // Breakpoints
-$breakpoint-tablet: 768px;
-$breakpoint-desktop: 1024px;
+$breakpoint-xs: 480px;
+$breakpoint-sm: 576px;
+$breakpoint-md: 768px;
+$breakpoint-lg: 992px;
+$breakpoint-xl: 1200px;
+$breakpoint-xxl: 1400px;
+
+// Z-index
+$z-index-header: 10;
+$z-index-modal: 1000;
+$z-index-filters: -1;
+
+// Transitions
+$transition-base: 0.3s ease;
+$transition-fast: 0.2s ease;
+$transition-slow: 0.4s ease;
+
+// Shadows
+$shadow-sm: 0 1px 2px $color-shadow-light;
+$shadow-md: 0 2px 4px $color-shadow-light;
+$shadow-lg: 0 4px 6px $color-shadow-light;
+$shadow-xl: 0 4px 12px $color-shadow-medium;
+$shadow-header: 0px 1px 12px $color-shadow;
+
+// Component Specific
+// Buttons
+$button-padding-base: 10px 16px;
+$button-font-size: $font-size-sm;
+
+// Inputs
+$input-padding: 0.8rem;
+$input-height: 30px;
+$textarea-height: 120px;
+
+// Images
+$logo-width-sm: 100px;
+$logo-width-lg: 275px;
+$job-image-max-height: 200px;
+
+// Modal
+$modal-padding: 2rem;
+$modal-height: 80%;

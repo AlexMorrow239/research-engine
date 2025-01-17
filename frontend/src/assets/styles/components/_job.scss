@@ -1,0 +1,36 @@
+.job-item {
+  @include card-base;
+  margin: 10px 80px;
+
+  &:hover {
+    background-color: #fafafa;
+  }
+
+  &.selected-job {
+    border-color: $color-primary;
+  }
+
+  h2 {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: black;
+  }
+
+  p {
+    font-size: 14px;
+  }
+}
+
+.apply-button {
+  @include button-base;
+  background-color: $color-background;
+  color: $color-primary;
+  border: 1px solid $color-primary;
+  margin: 0 auto;
+  display: block;
+
+  &:hover {
+    background-color: $color-primary;
+    color: $color-background;
+  }
+}

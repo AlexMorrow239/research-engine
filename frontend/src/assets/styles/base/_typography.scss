@@ -1,0 +1,46 @@
+// Roboto font variations
+@mixin roboto-variant($weight, $style: normal) {
+  font-family: "Roboto", serif;
+  font-weight: $weight;
+  font-style: $style;
+}
+
+.roboto {
+  &-thin {
+    @include roboto-variant(100);
+  }
+  &-light {
+    @include roboto-variant(300);
+  }
+  &-regular {
+    @include roboto-variant(400);
+  }
+  &-medium {
+    @include roboto-variant(500);
+  }
+  &-bold {
+    @include roboto-variant(700);
+  }
+  &-black {
+    @include roboto-variant(900);
+  }
+
+  &-thin-italic {
+    @include roboto-variant(100, italic);
+  }
+  &-light-italic {
+    @include roboto-variant(300, italic);
+  }
+  &-regular-italic {
+    @include roboto-variant(400, italic);
+  }
+  &-medium-italic {
+    @include roboto-variant(500, italic);
+  }
+  &-bold-italic {
+    @include roboto-variant(700, italic);
+  }
+  &-black-italic {
+    @include roboto-variant(900, italic);
+  }
+}
