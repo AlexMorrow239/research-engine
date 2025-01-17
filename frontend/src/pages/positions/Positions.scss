@@ -1,0 +1,38 @@
+@use "@/styles/abstracts" as *;
+
+.positions-page {
+  .positions-layout {
+    @include container;
+    display: grid;
+    grid-template-columns: var(--job-listing-width) var(--job-detail-width);
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+    min-height: calc(100vh - var(--header-height) - 300px);
+
+    @include respond-to("md") {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .positions-list {
+    border-right: 1px solid var(--color-border);
+    padding-right: var(--spacing-lg);
+
+    @include respond-to("md") {
+      border-right: none;
+      padding-right: 0;
+    }
+  }
+
+  .positions-detail {
+    position: sticky;
+    top: var(--spacing-xl);
+    height: calc(100vh - var(--header-height) - var(--spacing-xl) * 2);
+    overflow-y: auto;
+
+    @include respond-to("md") {
+      position: static;
+      height: auto;
+    }
+  }
+}

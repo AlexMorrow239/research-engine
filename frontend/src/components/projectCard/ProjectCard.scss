@@ -1,0 +1,58 @@
+@use "@/styles/abstracts" as *;
+
+.project-card {
+  @include card-base;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  margin-bottom: var(--spacing-md);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &--selected {
+    border-left: 4px solid var(--color-primary);
+    background-color: var(--color-background-alt);
+  }
+
+  &__title {
+    @include truncate(2);
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-text-dark);
+  }
+
+  &__professor {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text);
+    margin-bottom: var(--spacing-xs);
+  }
+
+  &__department {
+    color: var(--color-text-light);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  &__meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-sm);
+  }
+
+  &__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+  }
+
+  &__category {
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: var(--color-background-alt);
+    border-radius: var(--border-radius-full);
+    color: var(--color-text-light);
+  }
+}

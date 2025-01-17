@@ -39,6 +39,8 @@ interface ProjectsState {
     status?: ProjectStatus;
     search?: string;
     researchCategories?: string[];
+    sortBy?: "createdAt" | "applicationDeadline"; // Added sorting options
+    sortOrder?: "asc" | "desc";
   };
 }
 
@@ -52,6 +54,8 @@ const initialState: ProjectsState = {
     page: 1,
     limit: 10,
     status: ProjectStatus.PUBLISHED,
+    sortBy: "createdAt",
+    sortOrder: "desc",
   },
 };
 
@@ -69,6 +73,8 @@ export const fetchProjects = createAsyncThunk(
         ...(filters.researchCategories && {
           researchCategories: filters.researchCategories.join(","),
         }),
+        ...(filters.sortBy && { sortBy: filters.sortBy }),
+        ...(filters.sortOrder && { sortOrder: filters.sortOrder }),
       });
 
       const response = await fetch(
@@ -119,12 +125,19 @@ const projectsSlice = createSlice({
       action: PayloadAction<Partial<ProjectsState["filters"]>>
     ) => {
       state.filters = { ...state.filters, ...action.payload };
+      // Reset page to 1 when filters change
+      if (Object.keys(action.payload).some((key) => key !== "page")) {
+        state.filters.page = 1;
+      }
     },
     setCurrentProject: (state, action: PayloadAction<Project>) => {
       state.currentProject = action.payload;
     },
     clearCurrentProject: (state) => {
       state.currentProject = null;
+    },
+    resetFilters: (state) => {
+      state.filters = { ...initialState.filters };
     },
   },
   extraReducers: (builder) => {
@@ -149,6 +162,10 @@ const projectsSlice = createSlice({
   },
 });
 
-export const { setFilters, setCurrentProject, clearCurrentProject } =
-  projectsSlice.actions;
+export const {
+  setFilters,
+  setCurrentProject,
+  clearCurrentProject,
+  resetFilters,
+} = projectsSlice.actions;
 export default projectsSlice.reducer;
