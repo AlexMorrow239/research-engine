@@ -1,22 +1,22 @@
 export interface Job {
   id: number;
   title: string;
-  snippet: string;
   faculty: string;
-  email: string;
+  snippet: string;
+  imgUrl: string;
   labFocus: string;
   researchProjects: string;
-  openPositions: number;
+  openPositions: string;
   researchCategory: string[];
   officeLocation: string;
-  hoursPerWeek: number;
+  hoursPerWeek: string;
   projectLength: string;
   requiredCourses: string;
-  publications: Publication[];
-  imgUrl: string;
-  location: string;
-  salary: string;
-  type: string;
+  publications: {
+    title: string;
+    link: string;
+  }[];
+  applicationDeadline: string;
 }
 
 export interface Publication {

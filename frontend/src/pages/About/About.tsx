@@ -1,5 +1,4 @@
 import React from "react";
-import Header from "../../components/layout/Header/Header";
 import "./About.scss";
 
 interface StaffMember {
@@ -42,8 +41,6 @@ const staffMembers: StaffMember[] = [
 const About: React.FC<AboutProps> = ({ onNavigate }) => {
   return (
     <div className="about">
-      <Header/>
-
       <div className="about__banner">
         <img
           src="/images/architecture_2990_pbc-hpr-1280x852.jpg"

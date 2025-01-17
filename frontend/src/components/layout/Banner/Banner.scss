@@ -3,6 +3,8 @@
 .banner {
   width: 100%;
   margin-top: var(--header-height);
+  position: relative;
+  overflow: hidden;
   
   &__image {
     width: 100%;
@@ -11,7 +13,21 @@
     object-fit: cover;
   }
 
+  &__overlay {
+    @include position-absolute(0, 0, 0, 0);
+    background: linear-gradient(
+      to bottom,
+      rgba(var(--color-background-rgb), 0),
+      rgba(var(--color-background-rgb), 0.1)
+    );
+  }
+
   @include respond-to(var(--breakpoint-md)) {
     margin-top: calc(var(--header-height) - 10px);
+    
+    &__image {
+      height: 200px;
+      object-position: center;
+    }
   }
 }
