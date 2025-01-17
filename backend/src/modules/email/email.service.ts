@@ -54,8 +54,10 @@ export class EmailService {
     projectTitle: string,
   ): Promise<void> {
     try {
-      const projectId = application.project._id || application.project;
-      const professorId = application.project.professor._id || application.project.professor;
+      const projectId = String(application.project._id || application.project);
+      const professorId = String(
+        application.project.professor._id || application.project.professor,
+      );
 
       const resumeDownloadUrl = this.getResumeDownloadUrl(projectId, application.id, professorId);
 
