@@ -1,81 +1,186 @@
 @use "@/styles/abstracts" as *;
 
 .about-page {
+  background-color: var(--color-background);
+
+  .hero-section {
+    background-color: var(--color-background-alt);
+    padding: var(--spacing-16) 0;
+    margin-bottom: var(--spacing-12);
+    border-bottom: 1px solid var(--color-border);
+
+    .content-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 var(--spacing-4);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: var(--font-size-4xl);
+      color: var(--color-text-dark);
+      margin-bottom: var(--spacing-6);
+      font-weight: var(--font-weight-bold);
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      font-size: var(--font-size-xl);
+      color: var(--color-text-light);
+      line-height: var(--line-height-relaxed);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+  }
+
   .content-section {
     max-width: 800px;
     margin: 0 auto;
+    padding: 0 var(--spacing-4);
 
-    h1 {
-      margin-bottom: var(--spacing-xl);
-      color: var(--color-text-dark);
+    .mission-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-6);
+      margin: var(--spacing-12) 0;
+
+      @include respond-to("md", "down") {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @include respond-to("sm", "down") {
+        grid-template-columns: 1fr;
+      }
     }
 
-    p {
-      margin-bottom: var(--spacing-lg);
-      color: var(--color-text);
-      line-height: var(--line-height-loose);
+    .mission-card {
+      background-color: var(--color-background);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-6);
+      text-align: center;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--color-primary);
+      }
+
+      .icon {
+        color: var(--color-primary);
+        margin-bottom: var(--spacing-4);
+      }
+
+      h3 {
+        color: var(--color-text-dark);
+        margin-bottom: var(--spacing-3);
+        font-size: var(--font-size-lg);
+      }
+
+      p {
+        color: var(--color-text-light);
+        font-size: var(--font-size-sm);
+        line-height: var(--line-height-relaxed);
+      }
+    }
+
+    .content-block {
+      margin-bottom: var(--spacing-12);
+
+      h2 {
+        font-size: var(--font-size-2xl);
+        color: var(--color-text-dark);
+        margin-bottom: var(--spacing-6);
+        font-weight: var(--font-weight-bold);
+      }
+
+      p {
+        color: var(--color-text);
+        line-height: var(--line-height-relaxed);
+        margin-bottom: var(--spacing-4);
+        font-size: var(--font-size-base);
+      }
     }
   }
 
   .attribution {
-    margin: var(--spacing-2xl) 0;
-    padding: var(--spacing-lg);
-    background-color: var(--color-background);
-    border-radius: var(--border-radius-lg);
+    background-color: var(--color-background-alt);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-8);
+    margin: var(--spacing-12) 0;
+    text-align: center;
+
+    p {
+      color: var(--color-text);
+      line-height: var(--line-height-relaxed);
+      margin: 0;
+    }
 
     a {
       color: var(--color-primary);
+      font-weight: var(--font-weight-medium);
       text-decoration: none;
+      transition: all 0.2s ease;
 
       &:hover {
+        color: var(--color-primary-dark);
         text-decoration: underline;
       }
     }
   }
 
   .team-section {
-    margin-top: var(--spacing-2xl);
+    margin: var(--spacing-16) 0;
 
     h2 {
-      margin-bottom: var(--spacing-xl);
       text-align: center;
+      margin-bottom: var(--spacing-8);
+      font-size: var(--font-size-2xl);
+      color: var(--color-text-dark);
     }
 
     .team-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: var(--spacing-xl);
+      gap: var(--spacing-6);
 
-      @include respond-to("sm") {
+      @include respond-to("sm", "down") {
         grid-template-columns: 1fr;
       }
     }
 
     .team-member {
-      padding: var(--spacing-lg);
       background-color: var(--color-background);
-      border-radius: var(--border-radius-lg);
-      transition: transform var(--transition-base);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--spacing-6);
+      transition: all 0.3s ease;
 
       &:hover {
         transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--color-primary);
       }
 
       h3 {
+        font-size: var(--font-size-lg);
         color: var(--color-text-dark);
-        margin-bottom: var(--spacing-xs);
+        margin-bottom: var(--spacing-2);
       }
 
       h4 {
         color: var(--color-primary);
-        font-size: var(--font-size-sm);
-        margin-bottom: var(--spacing-md);
+        font-size: var(--font-size-base);
+        margin-bottom: var(--spacing-4);
+        font-weight: var(--font-weight-medium);
       }
 
       p {
         font-size: var(--font-size-sm);
         color: var(--color-text-light);
-        margin-bottom: 0;
+        line-height: var(--line-height-relaxed);
+        margin: 0;
       }
     }
   }

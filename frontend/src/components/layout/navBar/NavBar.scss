@@ -8,73 +8,160 @@
   height: var(--header-height);
   background-color: var(--color-background);
   border-bottom: 1px solid var(--color-border);
-  z-index: var(--z-index-fixed);
+  z-index: var(--z-fixed);
+  box-shadow: var(--shadow-sm);
 
   &__container {
     @include flex(row, space-between, center);
     height: 100%;
-    padding: var(--spacing-md) var(--spacing-lg);
+    padding: var(--spacing-4) var(--spacing-4);
+    max-width: var(--container-width);
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* Brand Section */
+  &__brand {
+    @include flex(row, flex-start, center);
   }
 
   &__logo {
     @include flex(row, flex-start, center);
+    text-decoration: none;
+  }
 
-    &-link {
-      @include font-style("bold");
-      font-size: var(--font-size-xl);
-      color: var(--color-text-dark);
-      text-decoration: none;
-      transition: color var(--transition-fast);
+  &__university-logo {
+    height: 2.5rem;
+    width: auto;
+  }
 
-      &:hover {
-        color: var(--color-primary);
+  /* Mobile Menu Toggle */
+  &__menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: var(--z-fixed);
+
+    span {
+      display: block;
+      width: 100%;
+      height: 2px;
+      background-color: var(--color-text);
+      transition: var(--transition-all);
+    }
+
+    &--open {
+      span:first-child {
+        transform: translateY(9px) rotate(45deg);
+      }
+      span:nth-child(2) {
+        opacity: 0;
+      }
+      span:last-child {
+        transform: translateY(-9px) rotate(-45deg);
       }
     }
   }
 
-  &__links {
-    @include flex(row, flex-end, center);
-    gap: var(--spacing-md);
+  /* Main Navigation */
+  &__menu {
+    @include flex(row, center, center);
+    gap: var(--spacing-6);
   }
 
   &__link {
-    @include font-style("medium");
+    font-weight: var(--font-weight-medium);
     color: var(--color-text);
     text-decoration: none;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    border-radius: var(--border-radius-md);
-    transition: all var(--transition-fast);
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--radius-base);
+    transition: var(--transition-colors);
 
     &:hover {
       color: var(--color-primary);
-      background-color: var(--color-background-alt);
     }
 
     &--active {
       color: var(--color-primary);
-      background-color: var(--color-background-alt);
+      font-weight: var(--font-weight-semibold);
     }
   }
 
-  &__button {
-    margin-left: var(--spacing-sm);
+  /* Powered By Section */
+  &__powered-by {
+    @include flex(row, flex-end, center);
   }
-}
 
-// Responsive adjustments
-@include respond-to("md") {
-  .nav {
+  &__bonsai-logo {
+    height: 2rem;
+    width: auto;
+  }
+
+  /* Mobile Responsive Styles */
+  @media (max-width: 767px) {
+    &__menu-toggle {
+      display: flex;
+    }
+
+    &__menu {
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      right: 0;
+      flex-direction: column;
+      align-items: center;
+      background-color: var(--color-background);
+      padding: var(--spacing-4);
+      gap: var(--spacing-4);
+      border-bottom: 1px solid var(--color-border);
+      transform: translateY(-100%);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease-in-out;
+      box-shadow: var(--shadow-sm);
+
+      &--open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    &__powered-by {
+      display: none; // Hide powered by section on mobile
+    }
+
+    &__university-logo {
+      height: 2rem; // Slightly smaller logo on mobile
+    }
+
     &__container {
-      padding: var(--spacing-md) var(--spacing-xl);
+      padding: var(--spacing-4) var(--spacing-4);
+    }
+  }
+
+  /* Tablet and Desktop Responsive Styles */
+  @include respond-to("md") {
+    &__container {
+      padding: var(--spacing-4) var(--spacing-8);
     }
 
-    &__links {
-      gap: var(--spacing-lg);
+    &__menu {
+      gap: var(--spacing-8);
+    }
+
+    &__menu-toggle {
+      display: none; // Hide hamburger menu on desktop
     }
   }
 }
 
-// Add padding to body to account for fixed navbar
 body {
   padding-top: var(--header-height);
 }

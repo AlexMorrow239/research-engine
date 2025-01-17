@@ -1,43 +1,49 @@
 // Margin utilities
 .m {
   &-0 {
-    margin: 0;
+    margin: var(--spacing-0);
   }
-  &-xs {
-    margin: var(--spacing-xs);
+  &-1 {
+    margin: var(--spacing-1);
   }
-  &-sm {
-    margin: var(--spacing-sm);
+  &-2 {
+    margin: var(--spacing-2);
   }
-  &-md {
-    margin: var(--spacing-md);
+  &-3 {
+    margin: var(--spacing-3);
   }
-  &-lg {
-    margin: var(--spacing-lg);
+  &-4 {
+    margin: var(--spacing-4);
   }
-  &-xl {
-    margin: var(--spacing-xl);
+  &-5 {
+    margin: var(--spacing-5);
+  }
+  &-6 {
+    margin: var(--spacing-6);
   }
 }
 
 // Padding utilities
 .p {
   &-0 {
-    padding: 0;
+    padding: var(--spacing-0);
   }
-  &-xs {
-    padding: var(--spacing-xs);
+  &-1 {
+    padding: var(--spacing-1);
   }
-  &-sm {
-    padding: var(--spacing-sm);
+  &-2 {
+    padding: var(--spacing-2);
   }
-  &-md {
-    padding: var(--spacing-md);
+  &-3 {
+    padding: var(--spacing-3);
   }
-  &-lg {
-    padding: var(--spacing-lg);
+  &-4 {
+    padding: var(--spacing-4);
   }
-  &-xl {
-    padding: var(--spacing-xl);
+  &-5 {
+    padding: var(--spacing-5);
+  }
+  &-6 {
+    padding: var(--spacing-6);
   }
 }

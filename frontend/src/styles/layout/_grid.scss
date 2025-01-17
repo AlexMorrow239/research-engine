@@ -2,16 +2,17 @@
 
 .container {
   @include container;
+  max-width: var(--container-width);
 }
 
 .grid {
   @include grid(12, "md");
 
   &--gap-sm {
-    gap: var(--spacing-sm);
+    gap: var(--spacing-2);
   }
   &--gap-lg {
-    gap: var(--spacing-lg);
+    gap: var(--spacing-6);
   }
 
   @include respond-to("sm") {

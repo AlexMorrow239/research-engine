@@ -8,9 +8,9 @@ html {
 }
 
 body {
-  font-family: var(--font-primary), var(--primary-fallback);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-height-base);
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
   color: var(--color-text);
   background-color: var(--color-background);
 }
@@ -23,47 +23,52 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--heading-font), var(--heading-fallback);
-  font-weight: var(--font-weight-bold);
+  margin: 0;
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-semibold);
   line-height: var(--line-height-tight);
   color: var(--color-text-dark);
-  margin-bottom: var(--spacing-md);
 }
 
 h1 {
-  font-size: var(--font-size-3xl);
-  letter-spacing: -0.02em;
+  font-size: var(--font-size-4xl);
+  letter-spacing: -0.025em;
+  margin-bottom: var(--spacing-6);
 }
 
 h2 {
-  font-size: var(--font-size-2xl);
-  letter-spacing: -0.01em;
+  font-size: var(--font-size-3xl);
+  letter-spacing: -0.025em;
+  margin-bottom: var(--spacing-5);
 }
 
 h3 {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-2xl);
+  letter-spacing: -0.025em;
+  margin-bottom: var(--spacing-4);
 }
 
 h4 {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--spacing-3);
 }
 
 h5 {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-2);
 }
 
 h6 {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-base);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  margin-bottom: var(--spacing-2);
 }
 
-/* Text Elements
+/* Paragraph & Text Elements
 ----------------------------- */
 p {
-  margin-bottom: var(--spacing-md);
+  margin: 0 0 var(--spacing-4) 0;
 
   &:last-child {
     margin-bottom: 0;
@@ -73,18 +78,16 @@ p {
 a {
   color: var(--color-primary);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: var(--transition-colors);
 
   &:hover {
     color: var(--color-primary-dark);
   }
 }
 
-/* Text Formatting
------------------------------ */
 strong,
 b {
-  font-weight: var(--font-weight-bold);
+  font-weight: var(--font-weight-semibold);
 }
 
 em,
@@ -96,60 +99,81 @@ small {
   font-size: var(--font-size-sm);
 }
 
-/* Code & Monospace
------------------------------ */
-code,
-pre,
-.mono {
-  font-family: var(--font-mono), var(--mono-fallback);
-  font-size: var(--font-size-sm);
-}
-
-pre {
-  background-color: var(--color-background-alt);
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius-md);
-  overflow-x: auto;
-  margin-bottom: var(--spacing-md);
-}
-
-code {
-  background-color: var(--color-background-alt);
-  padding: 0.2em 0.4em;
-  border-radius: var(--border-radius-sm);
-}
-
 /* Lists
 ----------------------------- */
 ul,
 ol {
-  margin-bottom: var(--spacing-md);
-  padding-left: var(--spacing-xl);
+  margin: 0 0 var(--spacing-4) 0;
+  padding-left: var(--spacing-8);
 }
 
 li {
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: var(--spacing-2);
 
   &:last-child {
     margin-bottom: 0;
   }
 }
 
+/* Code & Monospace
+----------------------------- */
+code,
+pre,
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+pre {
+  margin: 0 0 var(--spacing-4) 0;
+  padding: var(--spacing-4);
+  background-color: var(--color-background-alt);
+  border-radius: var(--radius-lg);
+  overflow-x: auto;
+
+  code {
+    padding: 0;
+    background: none;
+    border-radius: 0;
+  }
+}
+
+code {
+  padding: var(--spacing-1) var(--spacing-2);
+  background-color: var(--color-background-alt);
+  border-radius: var(--radius-base);
+}
+
 /* Form Elements
 ----------------------------- */
+label {
+  display: block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-dark);
+  margin-bottom: var(--spacing-2);
+}
+
 input,
 textarea,
 select,
 button {
-  font-family: var(--font-primary), var(--primary-fallback);
+  font-family: var(--font-primary);
   font-size: var(--font-size-base);
-  line-height: var(--line-height-base);
+  line-height: var(--line-height-normal);
 }
 
 /* Helper Classes
 ----------------------------- */
+// Font Sizes
+.text-xs {
+  font-size: var(--font-size-xs);
+}
 .text-sm {
   font-size: var(--font-size-sm);
+}
+.text-base {
+  font-size: var(--font-size-base);
 }
 .text-lg {
   font-size: var(--font-size-lg);
@@ -157,30 +181,108 @@ button {
 .text-xl {
   font-size: var(--font-size-xl);
 }
-
-.text-light {
-  font-weight: var(--font-weight-light);
+.text-2xl {
+  font-size: var(--font-size-2xl);
 }
-.text-medium {
+.text-3xl {
+  font-size: var(--font-size-3xl);
+}
+.text-4xl {
+  font-size: var(--font-size-4xl);
+}
+
+// Font Weights
+.font-normal {
+  font-weight: var(--font-weight-normal);
+}
+.font-medium {
   font-weight: var(--font-weight-medium);
 }
-.text-bold {
+.font-semibold {
+  font-weight: var(--font-weight-semibold);
+}
+.font-bold {
   font-weight: var(--font-weight-bold);
 }
 
-.text-center {
-  text-align: center;
+// Line Heights
+.leading-none {
+  line-height: var(--line-height-none);
 }
+.leading-tight {
+  line-height: var(--line-height-tight);
+}
+.leading-normal {
+  line-height: var(--line-height-normal);
+}
+.leading-relaxed {
+  line-height: var(--line-height-relaxed);
+}
+
+// Text Colors
+.text-default {
+  color: var(--color-text);
+}
+.text-light {
+  color: var(--color-text-light);
+}
+.text-dark {
+  color: var(--color-text-dark);
+}
+.text-primary {
+  color: var(--color-primary);
+}
+.text-accent {
+  color: var(--color-accent);
+}
+
+// Text Alignment
 .text-left {
   text-align: left;
+}
+.text-center {
+  text-align: center;
 }
 .text-right {
   text-align: right;
 }
 
-.text-muted {
-  color: var(--color-text-light);
+// Text Decoration
+.underline {
+  text-decoration: underline;
 }
-.text-primary {
-  color: var(--color-primary);
+.no-underline {
+  text-decoration: none;
+}
+
+// Text Transform
+.uppercase {
+  text-transform: uppercase;
+}
+.lowercase {
+  text-transform: lowercase;
+}
+.capitalize {
+  text-transform: capitalize;
+}
+.normal-case {
+  text-transform: none;
+}
+
+// Text Overflow
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.break-normal {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+.break-words {
+  overflow-wrap: break-word;
+}
+.break-all {
+  word-break: break-all;
 }

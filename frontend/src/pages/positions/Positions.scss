@@ -1,38 +1,237 @@
 @use "@/styles/abstracts" as *;
 
 .positions-page {
-  .positions-layout {
-    @include container;
-    display: grid;
-    grid-template-columns: var(--job-listing-width) var(--job-detail-width);
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-xl);
-    min-height: calc(100vh - var(--header-height) - 300px);
+  min-height: 100vh;
+  background-color: var(--color-background-alt);
+
+  .positions-content {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: var(--spacing-4);
 
     @include respond-to("md") {
+      padding: var(--spacing-6);
+    }
+  }
+
+  .positions-layout {
+    display: grid;
+    grid-template-columns: minmax(300px, 400px) 1fr;
+    gap: var(--spacing-6);
+    margin-top: var(--spacing-4);
+    min-height: calc(100vh - 200px); // Adjust based on your header/footer
+    position: relative;
+
+    @include respond-to("md", "down") {
       grid-template-columns: 1fr;
+      gap: 0;
     }
   }
 
   .positions-list {
-    border-right: 1px solid var(--color-border);
-    padding-right: var(--spacing-lg);
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    height: calc(100vh - 250px); // Adjust based on your layout
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: var(--spacing-4);
 
-    @include respond-to("md") {
-      border-right: none;
-      padding-right: 0;
+    &__header {
+      padding: var(--spacing-4);
+      border-bottom: 1px solid var(--color-border);
+      background-color: var(--color-background);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+
+      h2 {
+        font-size: var(--font-size-lg);
+        font-weight: var(--font-weight-semibold);
+        color: var(--color-text-dark);
+        margin: 0;
+      }
+    }
+
+    &__content {
+      padding: var(--spacing-4);
+      overflow-y: auto;
+      flex: 1;
+
+      // Styling scrollbar
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: var(--color-background-alt);
+        border-radius: var(--radius-full);
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: var(--color-border-dark);
+        border-radius: var(--radius-full);
+
+        &:hover {
+          background: var(--color-text-light);
+        }
+      }
+    }
+
+    @include respond-to("md", "down") {
+      height: calc(100vh - 180px);
+      position: static;
+
+      &--hidden {
+        display: none;
+      }
+    }
+
+    .no-results {
+      text-align: center;
+      padding: var(--spacing-8);
+      color: var(--color-text-light);
+      background-color: var(--color-background-alt);
+      border-radius: var(--radius-lg);
+      margin: var(--spacing-4);
+    }
+
+    .pagination {
+      padding: var(--spacing-4);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--spacing-4);
+      background-color: var(--color-background);
+
+      button {
+        @include button-base;
+        padding: var(--spacing-2) var(--spacing-4);
+        background-color: var(--color-background);
+        border: 1px solid var(--color-border);
+        color: var(--color-text);
+        transition: all 0.2s ease;
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        &:not(:disabled):hover {
+          border-color: var(--color-primary);
+          color: var(--color-primary);
+        }
+      }
+
+      span {
+        color: var(--color-text-light);
+        font-size: var(--font-size-sm);
+      }
     }
   }
 
   .positions-detail {
-    position: sticky;
-    top: var(--spacing-xl);
-    height: calc(100vh - var(--header-height) - var(--spacing-xl) * 2);
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+    height: calc(100vh - 250px); // Match list height
     overflow-y: auto;
+    position: sticky;
+    top: var(--spacing-4);
 
-    @include respond-to("md") {
+    // Styling scrollbar
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--color-background-alt);
+      border-radius: var(--radius-full);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--color-border-dark);
+      border-radius: var(--radius-full);
+
+      &:hover {
+        background: var(--color-text-light);
+      }
+    }
+
+    @include respond-to("md", "down") {
       position: static;
       height: auto;
+      display: none;
+      margin-top: var(--spacing-4);
+
+      &--active {
+        display: block;
+      }
     }
+
+    &--empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: var(--color-text-light);
+      font-size: var(--font-size-lg);
+      text-align: center;
+      padding: var(--spacing-8);
+    }
+  }
+
+  .back-to-list {
+    display: none;
+    align-items: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-4);
+    width: 100%;
+    color: var(--color-text);
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    cursor: pointer;
+    font-weight: var(--font-weight-medium);
+    transition: all 0.2s ease;
+
+    @include respond-to("md", "down") {
+      display: flex;
+    }
+
+    &:hover {
+      color: var(--color-primary);
+      background-color: var(--color-background-alt);
+    }
+
+    svg {
+      transition: transform 0.2s ease;
+    }
+
+    &:hover svg {
+      transform: translateX(-4px);
+    }
+  }
+
+  .loading-spinner,
+  .error-message {
+    text-align: center;
+    padding: var(--spacing-8);
+    margin: var(--spacing-8) auto;
+    max-width: 600px;
+    background-color: var(--color-background);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .loading-spinner {
+    color: var(--color-text-light);
+  }
+
+  .error-message {
+    color: var(--color-error);
+    border: 1px solid var(--color-error-light);
   }
 }

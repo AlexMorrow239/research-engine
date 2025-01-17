@@ -2,7 +2,8 @@
 
 .btn {
   @include button-base;
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-2) var(--spacing-4);
+  height: var(--button-height-base);
 
   // Button variants
   &--primary {
@@ -16,11 +17,13 @@
 
   &--small {
     font-size: var(--font-size-sm);
-    padding: var(--spacing-xs) var(--spacing-sm);
+    height: var(--button-height-sm);
+    padding: var(--spacing-1) var(--spacing-3);
   }
 
   &--large {
     font-size: var(--font-size-lg);
-    padding: var(--spacing-md) var(--spacing-lg);
+    height: var(--button-height-lg);
+    padding: var(--spacing-3) var(--spacing-6);
   }
 }
