@@ -1,0 +1,11 @@
+@use "sass:math";
+
+// Convert px to rem
+@function rem($pixels) {
+  @return math.div($pixels, 16) * 1rem;
+}
+
+// Get color with opacity
+@function color-alpha($color, $opacity) {
+  @return rgba($color, $opacity);
+}

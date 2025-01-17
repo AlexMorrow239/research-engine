@@ -1,0 +1,17 @@
+@use "@/styles/abstracts" as *;
+
+.layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  &__main {
+    flex: 1;
+    padding: var(--spacing-xl) 0;
+    background-color: var(--color-background-alt);
+  }
+
+  .container {
+    @include container;
+  }
+}

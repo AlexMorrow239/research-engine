@@ -1,0 +1,27 @@
+@use "../abstracts" as *;
+
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-dark);
+}
+
+.form-input {
+  @include input-base;
+  width: 100%;
+
+  &--error {
+    border-color: var(--color-error);
+  }
+}
+
+.form-error {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+}

@@ -1,0 +1,193 @@
+@use "sass:color";
+
+// Base color palette
+$color-green-400: #7ec265;
+$color-green-500: #45a049;
+$color-green-600: #a9d698;
+$color-gray-50: #fafafa;
+$color-gray-100: #fbfbfb;
+$color-gray-200: #eee;
+$color-gray-300: #ddd;
+$color-gray-400: #ccc;
+$color-gray-500: #818181;
+$color-gray-700: #5f5e5f;
+$color-gray-800: #282c34;
+$color-gray-900: #000000;
+
+// Text color variables
+$text-color: $color-gray-700;
+$text-color-dark: $color-gray-900;
+$text-color-darker: color.adjust($text-color, $lightness: -20%);
+$text-color-light: $color-gray-500;
+
+:root {
+  /* Color Tokens
+  ----------------------------- */
+  // Brand Colors
+  --color-primary: #{$color-green-400};
+  --color-primary-dark: #{$color-green-500};
+  --color-primary-light: #{$color-green-600};
+  --color-primary-transparent: #{color.change($color-green-400, $alpha: 0.2)};
+
+  // Text Colors
+  --color-text: #{$text-color};
+  --color-text-dark: #{$text-color-dark};
+  --color-text-darker: #{$text-color-darker};
+  --color-text-light: #{$text-color-light};
+
+  // Background Colors
+  --color-background: #ffffff;
+  --color-background-alt: #{$color-gray-50};
+  --color-background-input: #{$color-gray-100};
+  --color-background-search: #{color.adjust($color-gray-200, $lightness: -1%)};
+
+  // Border Colors
+  --color-border: #{$color-gray-200};
+  --color-border-input: #{$color-gray-400};
+  --color-border-dark: #{$color-gray-300};
+
+  // Status Colors
+  --color-success: #2e7d32;
+  --color-success-light: #{color.adjust(#2e7d32, $lightness: 40%)};
+  --color-error: #d32f2f;
+  --color-error-light: #{color.adjust(#d32f2f, $lightness: 40%)};
+  --color-warning: #ed6c02;
+  --color-warning-light: #{color.adjust(#ed6c02, $lightness: 40%)};
+  --color-info: #0288d1;
+  --color-info-light: #{color.adjust(#0288d1, $lightness: 40%)};
+
+  // RGB Values for Animations/Overlays
+  --color-background-rgb: 255, 255, 255;
+  --color-primary-rgb: 126, 194, 101;
+  --shadow-rgb: 0, 0, 0;
+
+  /* Shadows
+  ----------------------------- */
+  --shadow-sm: #{color.change(#000000, $alpha: 0.1)};
+  --shadow-md: #{color.change(#000000, $alpha: 0.2)};
+  --shadow-lg: #{color.change(#000000, $alpha: 0.5)};
+  --shadow-card: 0 2px 4px var(--shadow-sm);
+  --shadow-dropdown: 0 4px 6px var(--shadow-md);
+  --shadow-modal: 0 10px 20px var(--shadow-lg);
+
+  /* Typography
+  ----------------------------- */
+  // Font Families
+  --font-primary: "Inter", system-ui, -apple-system, sans-serif;
+  --primary-fallback: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "Roboto Mono", monospace;
+  --mono-fallback: "Courier New", Courier, monospace;
+  --font-secondary: var(--font-primary);
+  --heading-font: var(--font-primary);
+  --heading-fallback: var(--primary-fallback);
+
+  // Font Weights
+  --font-weight-thin: 100;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  // Font Sizes
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem; /* 20px */
+  --font-size-2xl: 1.5rem; /* 24px */
+  --font-size-3xl: 2rem; /* 32px */
+
+  // Line Heights
+  --line-height-tight: 1.2;
+  --line-height-base: 1.5;
+  --line-height-loose: 1.75;
+
+  /* Layout & Spacing
+  ----------------------------- */
+  // Container Dimensions
+  --header-height: 80px;
+  --content-width: 1200px;
+  --modal-width-sm: 400px;
+  --modal-width-md: 500px;
+  --modal-width-lg: 800px;
+  --modal-width-xl: 900px;
+
+  // Spacing Scale
+  --spacing-xs: 0.5rem; /* 8px */
+  --spacing-sm: 0.75rem; /* 12px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+
+  // Grid Layout
+  --job-listing-width: 40%;
+  --job-detail-width: 60%;
+  --filter-group-max-width: 170px;
+  --search-max-width: 300px;
+
+  /* Borders & Radius
+  ----------------------------- */
+  --border-radius-sm: 4px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 8px;
+  --border-radius-xl: 12px;
+  --border-radius-full: 9999px;
+  --border-width: 1px;
+  --border-width-thick: 2px;
+
+  /* Component Specific
+  ----------------------------- */
+  // Buttons
+  --button-height: 40px;
+  --button-padding-base: var(--spacing-sm) var(--spacing-md);
+  --button-font-size: var(--font-size-base);
+  --button-radius: var(--border-radius-md);
+
+  // Inputs
+  --input-height: 40px;
+  --input-padding: var(--spacing-sm);
+  --input-radius: var(--border-radius-md);
+  --input-border: var(--border-width) solid var(--color-border-input);
+
+  /* Z-index Scale
+  ----------------------------- */
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+
+  /* Breakpoints
+  ----------------------------- */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Transitions
+  ----------------------------- */
+  --transition-base: 0.3s ease;
+  --transition-fast: 0.2s ease;
+  --transition-slow: 0.4s ease;
+  --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+// Dark mode overrides
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #{$color-gray-800};
+    --color-background-alt: #{$color-gray-700};
+    --color-text: #{$color-gray-100};
+    --color-text-light: #{$color-gray-300};
+    --color-border: #{$color-gray-700};
+    --shadow-sm: #{color.change(#000000, $alpha: 0.2)};
+    --shadow-md: #{color.change(#000000, $alpha: 0.4)};
+    --shadow-lg: #{color.change(#000000, $alpha: 0.6)};
+  }
+}

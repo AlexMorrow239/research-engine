@@ -1,0 +1,43 @@
+// Margin utilities
+.m {
+  &-0 {
+    margin: 0;
+  }
+  &-xs {
+    margin: var(--spacing-xs);
+  }
+  &-sm {
+    margin: var(--spacing-sm);
+  }
+  &-md {
+    margin: var(--spacing-md);
+  }
+  &-lg {
+    margin: var(--spacing-lg);
+  }
+  &-xl {
+    margin: var(--spacing-xl);
+  }
+}
+
+// Padding utilities
+.p {
+  &-0 {
+    padding: 0;
+  }
+  &-xs {
+    padding: var(--spacing-xs);
+  }
+  &-sm {
+    padding: var(--spacing-sm);
+  }
+  &-md {
+    padding: var(--spacing-md);
+  }
+  &-lg {
+    padding: var(--spacing-lg);
+  }
+  &-xl {
+    padding: var(--spacing-xl);
+  }
+}

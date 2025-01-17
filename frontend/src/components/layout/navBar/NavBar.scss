@@ -1,0 +1,80 @@
+@use "@/styles/abstracts" as *;
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background-color: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+  z-index: var(--z-index-fixed);
+
+  &__container {
+    @include flex(row, space-between, center);
+    height: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  &__logo {
+    @include flex(row, flex-start, center);
+
+    &-link {
+      @include font-style("bold");
+      font-size: var(--font-size-xl);
+      color: var(--color-text-dark);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+
+      &:hover {
+        color: var(--color-primary);
+      }
+    }
+  }
+
+  &__links {
+    @include flex(row, flex-end, center);
+    gap: var(--spacing-md);
+  }
+
+  &__link {
+    @include font-style("medium");
+    color: var(--color-text);
+    text-decoration: none;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-md);
+    transition: all var(--transition-fast);
+
+    &:hover {
+      color: var(--color-primary);
+      background-color: var(--color-background-alt);
+    }
+
+    &--active {
+      color: var(--color-primary);
+      background-color: var(--color-background-alt);
+    }
+  }
+
+  &__button {
+    margin-left: var(--spacing-sm);
+  }
+}
+
+// Responsive adjustments
+@include respond-to("md") {
+  .nav {
+    &__container {
+      padding: var(--spacing-md) var(--spacing-xl);
+    }
+
+    &__links {
+      gap: var(--spacing-lg);
+    }
+  }
+}
+
+// Add padding to body to account for fixed navbar
+body {
+  padding-top: var(--header-height);
+}

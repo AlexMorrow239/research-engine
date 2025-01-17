@@ -1,0 +1,40 @@
+@use "../abstracts/" as *;
+
+.container {
+  @include container;
+}
+
+.grid {
+  @include grid(12, "md");
+
+  &--gap-sm {
+    gap: var(--spacing-sm);
+  }
+  &--gap-lg {
+    gap: var(--spacing-lg);
+  }
+
+  @include respond-to("sm") {
+    &--sm-6 > * {
+      grid-column: span 6;
+    }
+    &--sm-4 > * {
+      grid-column: span 4;
+    }
+    &--sm-3 > * {
+      grid-column: span 3;
+    }
+  }
+
+  @include respond-to("md") {
+    &--md-6 > * {
+      grid-column: span 6;
+    }
+    &--md-4 > * {
+      grid-column: span 4;
+    }
+    &--md-3 > * {
+      grid-column: span 3;
+    }
+  }
+}
