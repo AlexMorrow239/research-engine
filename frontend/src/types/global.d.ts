@@ -7,7 +7,7 @@ export interface BaseState {
 
 export interface AuthState extends BaseState {
   user: User | null;
-  token: string | null;
+  accessToken: string | null;
   isAuthenticated: boolean;
 }
 

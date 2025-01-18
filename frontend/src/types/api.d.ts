@@ -32,9 +32,20 @@ export interface FacultyRegistrationForm {
   department: string;
 }
 
+export interface Professor {
+  id: string;
+  email: string;
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  department: string;
+  title: string;
+}
+
 export interface AuthResponse {
-  user: User;
-  token: string;
+  accessToken: string;
+  professor: Professor;
 }
 
 // User types

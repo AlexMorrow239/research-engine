@@ -4,17 +4,26 @@ import {
   AuthResponse,
   User,
   FacultyRegistrationForm,
+  Professor,
 } from "@/types/api";
 import { AuthState } from "@/types/global";
 import { api, ApiError } from "@/utils/api";
 
 const initialState: AuthState = {
   user: null,
-  token: null,
+  accessToken: null,
   isAuthenticated: false,
   isLoading: false,
   error: null,
 };
+
+// Helper function to convert Professor to User
+const professorToUser = (professor: Professor): User => ({
+  id: professor.id,
+  email: professor.email,
+  firstName: professor.name.firstName,
+  lastName: professor.name.lastName,
+});
 
 export const registerFaculty = createAsyncThunk<
   AuthResponse,
@@ -28,8 +37,8 @@ export const registerFaculty = createAsyncThunk<
       requiresAuth: false,
     });
 
-    // Store token in localStorage for API utility
-    localStorage.setItem("token", response.token);
+    // Store accessToken in localStorage for API utility
+    localStorage.setItem("accessToken", response.accessToken);
 
     return response;
   } catch (error) {
@@ -50,13 +59,23 @@ export const loginUser = createAsyncThunk<
       method: "POST",
       body: JSON.stringify(credentials),
       requiresAuth: false,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
 
-    // Store token in localStorage for API utility
-    localStorage.setItem("token", response.token);
+    if (response.accessToken) {
+      localStorage.setItem("accessToken", response.accessToken);
+    }
 
     return response;
   } catch (error) {
+    console.error("Login error in thunk:", {
+      error,
+      name: error instanceof Error ? error.name : "Unknown",
+      message: error instanceof Error ? error.message : String(error),
+      isApiError: error instanceof ApiError,
+    });
     if (error instanceof ApiError) {
       return rejectWithValue(error.message);
     }
@@ -70,16 +89,16 @@ const authSlice = createSlice({
   reducers: {
     logout: (state) => {
       state.user = null;
-      state.token = null;
+      state.accessToken = null;
       state.isAuthenticated = false;
-      localStorage.removeItem("token");
+      localStorage.removeItem("accessToken");
     },
     setCredentials: (
       state,
-      action: PayloadAction<{ user: User; token: string }>
+      action: PayloadAction<{ user: User; accessToken: string }>
     ) => {
       state.user = action.payload.user;
-      state.token = action.payload.token;
+      state.accessToken = action.payload.accessToken;
       state.isAuthenticated = true;
     },
   },
@@ -92,10 +111,10 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.user = professorToUser(action.payload.professor);
+        state.accessToken = action.payload.accessToken;
         state.isAuthenticated = true;
-        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("accessToken", action.payload.accessToken);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -108,10 +127,10 @@ const authSlice = createSlice({
       })
       .addCase(registerFaculty.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.token = action.payload.token;
+        state.user = professorToUser(action.payload.professor);
+        state.accessToken = action.payload.accessToken;
         state.isAuthenticated = true;
-        localStorage.setItem("token", action.payload.token);
+        localStorage.setItem("accessToken", action.payload.accessToken);
       })
       .addCase(registerFaculty.rejected, (state, action) => {
         state.isLoading = false;

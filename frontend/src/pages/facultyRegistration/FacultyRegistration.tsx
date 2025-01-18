@@ -132,7 +132,7 @@ export default function FacultyRegistration() {
         })
       );
 
-      navigate("/dashboard");
+      navigate("faculty/dashboard");
     } catch (err) {
       const errorMessage =
         err instanceof Error

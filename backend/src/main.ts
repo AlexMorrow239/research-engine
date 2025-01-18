@@ -35,8 +35,12 @@ async function bootstrap() {
     configureGlobalMiddleware(app);
 
     // Enable CORS for cross-origin requests
-    app.enableCors();
-
+    app.enableCors({
+      origin: 'http://localhost:5173', // frontend URL
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+    });
     logger.log('Middleware configured, setting up Swagger...');
 
     // Configure and setup Swagger documentation

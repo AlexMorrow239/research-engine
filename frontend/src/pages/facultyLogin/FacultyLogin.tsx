@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -25,7 +25,7 @@ type FacultyLoginForm = z.infer<typeof facultyLoginSchema>;
 export default function FacultyLogin() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { isLoading, error } = useAppSelector((state) => state.auth);
+  const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
 
   const {
     register,
@@ -38,28 +38,40 @@ export default function FacultyLogin() {
 
   const onSubmit = async (data: FacultyLoginForm) => {
     try {
-      await dispatch(loginUser(data)).unwrap();
-      dispatch(
-        addToast({
-          type: "success",
-          message: "Login successful! Welcome back.",
-        })
-      );
-      navigate("/dashboard");
+      const result = await dispatch(loginUser(data)).unwrap();
+
+      if (result.accessToken) {
+        dispatch(
+          addToast({
+            type: "success",
+            message: "Login successful! Welcome back.",
+          })
+        );
+        navigate("/faculty/dashboard");
+      }
     } catch (err) {
-      console.error("Login error:", err);
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : error || "Login failed. Please try again.";
+      console.error("Login error details:", {
+        error: err,
+        type: typeof err,
+        message: err instanceof Error ? err.message : String(err),
+      });
+
       dispatch(
         addToast({
           type: "error",
-          message: errorMessage,
+          message:
+            typeof err === "string" ? err : "Login failed. Please try again.",
         })
       );
     }
   };
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/faculty/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="faculty-login">
