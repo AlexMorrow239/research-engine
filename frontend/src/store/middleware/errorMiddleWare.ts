@@ -4,16 +4,26 @@ import { logout } from "../features/auth/authSlice";
 import { ApiError } from "@/utils/api";
 
 export const errorMiddleware: Middleware = (store) => (next) => (action) => {
-  // Handle rejected actions from thunks
   if (isRejectedWithValue(action)) {
     let errorMessage = "An error occurred";
     const payload = action.payload;
 
-    // Handle API errors
+    // Add detailed logging
+    console.error("Redux Error:", {
+      type: action.type,
+      payload,
+      error: action.error,
+    });
+
     if ((payload as ApiError) instanceof ApiError) {
       errorMessage = (payload as ApiError).message;
 
-      // Handle authentication errors
+      // Log API errors
+      console.error("API Error:", {
+        message: (payload as ApiError).message,
+        status: (payload as ApiError).status,
+      });
+
       if ((payload as ApiError).status === 401) {
         store.dispatch(logout());
         store.dispatch(
@@ -28,7 +38,6 @@ export const errorMiddleware: Middleware = (store) => (next) => (action) => {
       errorMessage = payload;
     }
 
-    // Dispatch error toast
     store.dispatch(
       addToast({
         message: errorMessage,

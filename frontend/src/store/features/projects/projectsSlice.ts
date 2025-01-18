@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { ProjectStatus } from "@/common/enums";
 import { RootState } from "../../index";
 import { api } from "@/utils/api";
+import { ApiResponse } from "@/types/api";
 
 interface Project {
   id: string;
@@ -100,12 +101,15 @@ export const fetchProfessorProjects = createAsyncThunk(
         queryParams.append("status", status);
       }
 
-      return await api.fetch<{ projects: Project[]; total: number }>(
-        `/api/projects/my-projects/${
-          queryParams.toString() ? `?${queryParams}` : ""
-        }`
-      );
+      const url = `/api/projects/my-projects${
+        queryParams.toString() ? `?${queryParams.toString()}` : ""
+      }`;
+
+      const response = await api.fetch<Project[]>(url);
+
+      return response;
     } catch (error) {
+      console.error("Fetch Professor Projects Error:", error);
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
@@ -116,14 +120,20 @@ export const fetchProfessorProjects = createAsyncThunk(
 
 export const createProject = createAsyncThunk(
   "projects/create",
-  async (projectData: Partial<Project>, { rejectWithValue }) => {
+  async (
+    projectData: Omit<
+      Project,
+      "id" | "professor" | "files" | "isVisible" | "createdAt" | "updatedAt"
+    >,
+    { rejectWithValue }
+  ) => {
     try {
-      // Updated to match backend route
-      return await api.fetch<Project>("/api/projects", {
+      const response = await api.fetch<ApiResponse<Project>>("/api/projects", {
         method: "POST",
         body: JSON.stringify(projectData),
         requiresAuth: true,
       });
+      return response.data;
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -173,8 +183,11 @@ const projectsSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(createProject.fulfilled, (state, action) => {
+        if (!state.items) {
+          state.items = [];
+        }
         state.items.unshift(action.payload);
-        state.totalProjects += 1;
+        state.totalProjects = (state.totalProjects || 0) + 1;
       })
       .addCase(fetchProfessorProjects.pending, (state: ProjectsState) => {
         state.isLoading = true;
@@ -182,13 +195,10 @@ const projectsSlice = createSlice({
       })
       .addCase(
         fetchProfessorProjects.fulfilled,
-        (
-          state: ProjectsState,
-          action: PayloadAction<{ projects: Project[]; total: number }>
-        ) => {
+        (state: ProjectsState, action: PayloadAction<Project[]>) => {
           state.isLoading = false;
-          state.items = action.payload.projects;
-          state.totalProjects = action.payload.total;
+          state.items = action.payload;
+          state.totalProjects = action.payload.length;
         }
       )
       .addCase(

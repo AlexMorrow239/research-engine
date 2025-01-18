@@ -15,20 +15,21 @@ export default function ProjectDashboard() {
     (state) => state.projects
   );
 
-  const draftProjects = projects.filter(
-    (project) => project.status === ProjectStatus.DRAFT
-  );
-  const activeProjects = projects.filter(
-    (project) => project.status === ProjectStatus.PUBLISHED
-  );
-  const closedProjects = projects.filter(
-    (project) => project.status === ProjectStatus.CLOSED
-  );
+  const draftProjects =
+    projects?.filter((project) => project?.status === ProjectStatus.DRAFT) ||
+    [];
+  const activeProjects =
+    projects?.filter(
+      (project) => project?.status === ProjectStatus.PUBLISHED
+    ) || [];
+  const closedProjects =
+    projects?.filter((project) => project?.status === ProjectStatus.CLOSED) ||
+    [];
 
   useEffect(() => {
     // Redirect if not logged in
     if (!user) {
-      navigate("/login");
+      navigate("/faculty/login");
       return;
     }
 

@@ -20,7 +20,7 @@ import { AuthState, UIState } from "@/types/global";
 const authPersistConfig = {
   key: "auth",
   storage,
-  whitelist: ["token", "user"], // Only persist these fields
+  whitelist: ["accessToken", "user", "isAuthenticated"],
 };
 
 const uiPersistConfig = {
