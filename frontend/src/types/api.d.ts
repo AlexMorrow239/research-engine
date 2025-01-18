@@ -32,15 +32,28 @@ export interface FacultyRegistrationForm {
   department: string;
 }
 
+export interface Publication {
+  title: string;
+  link: string;
+}
+
 export interface Professor {
-  id: string;
+  _id: string;
   email: string;
   name: {
     firstName: string;
     lastName: string;
+    _id?: string; // Optional nested _id from MongoDB subdocument
   };
   department: string;
-  title: string;
+  title?: string;
+  researchAreas?: string[];
+  office: string;
+  publications?: Publication[];
+  bio?: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface AuthResponse {

@@ -19,7 +19,7 @@ const initialState: AuthState = {
 
 // Helper function to convert Professor to User
 const professorToUser = (professor: Professor): User => ({
-  id: professor.id,
+  id: professor._id || "",
   email: professor.email,
   firstName: professor.name.firstName,
   lastName: professor.name.lastName,
@@ -31,17 +31,23 @@ export const registerFaculty = createAsyncThunk<
   { rejectValue: string }
 >("auth/registerFaculty", async (registrationData, { rejectWithValue }) => {
   try {
-    const response = await api.fetch<AuthResponse>("/api/auth/register", {
+    const response = await api.fetch<{
+      accessToken: string;
+      professor: Professor;
+    }>("/api/auth/register", {
       method: "POST",
       body: JSON.stringify(registrationData),
       requiresAuth: false,
     });
 
     // Store accessToken in localStorage for API utility
-    localStorage.setItem("accessToken", response.accessToken);
+    if (response.accessToken) {
+      localStorage.setItem("accessToken", response.accessToken);
+    }
 
     return response;
   } catch (error) {
+    console.error("Registration API error:", error);
     if (error instanceof ApiError) {
       return rejectWithValue(error.message);
     }

@@ -1,11 +1,18 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 
 import { LoginResponseDto } from '@/common/dto/auth/login-response.dto';
 import { LoginDto } from '@/common/dto/auth/login.dto';
 
 import { AuthDescriptions } from '../descriptions/auth.description';
 import { loginExamples } from '../examples/auth.examples';
+import { CreateProfessorDto } from '@/common/dto/professors';
 
 export const ApiLogin = () =>
   applyDecorators(
@@ -34,5 +41,25 @@ export const ApiLogin = () =>
     ApiResponse({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       description: AuthDescriptions.responses.serverError,
+    }),
+  );
+
+export const ApiRegister = () =>
+  applyDecorators(
+    ApiOperation({
+      summary: 'Register new professor',
+      description: 'Create new professor account and return access token',
+    }),
+    ApiBody({ type: CreateProfessorDto }),
+    ApiResponse({
+      status: HttpStatus.CREATED,
+      description: 'Professor account created successfully',
+      type: LoginResponseDto,
+    }),
+    ApiBadRequestResponse({
+      description: 'Invalid input data (email domain, password format)',
+    }),
+    ApiUnauthorizedResponse({
+      description: 'Invalid admin password',
     }),
   );

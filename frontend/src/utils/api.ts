@@ -114,17 +114,6 @@ export const api = {
     data: unknown,
     options: FetchOptions = {}
   ) => {
-    console.log("API POST request:", {
-      endpoint,
-      baseUrl: import.meta.env.VITE_API_URL,
-      hasData: !!data,
-      options: {
-        ...options,
-        headers: options.headers,
-        requiresAuth: options.requiresAuth,
-      },
-    });
-
     return api.fetch<T>(endpoint, {
       ...options,
       method: "POST",

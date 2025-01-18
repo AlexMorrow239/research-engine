@@ -123,8 +123,8 @@ export default function FacultyRegistration() {
       if (formattedData.publications?.length === 0) {
         delete formattedData.publications;
       }
-
       await dispatch(registerFaculty(formattedData)).unwrap();
+
       dispatch(
         addToast({
           type: "success",
@@ -132,8 +132,9 @@ export default function FacultyRegistration() {
         })
       );
 
-      navigate("faculty/dashboard");
+      navigate("/faculty/dashboard");
     } catch (err) {
+      console.error("Registration error:", err);
       const errorMessage =
         err instanceof Error
           ? err.message
