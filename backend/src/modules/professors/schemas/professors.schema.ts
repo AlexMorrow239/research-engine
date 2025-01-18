@@ -39,8 +39,8 @@ export class Professor extends Document {
   @Prop()
   title?: string;
 
-  @Prop([String])
-  researchAreas?: string[];
+  @Prop({ type: [String], required: true })
+  researchAreas: string[];
 
   @Prop({ required: true })
   office: string;

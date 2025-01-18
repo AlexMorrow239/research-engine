@@ -23,6 +23,15 @@ export interface LoginCredentials {
   password: string;
 }
 
+export interface FacultyRegistrationForm {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
+  department: string;
+}
+
 export interface AuthResponse {
   user: User;
   token: string;

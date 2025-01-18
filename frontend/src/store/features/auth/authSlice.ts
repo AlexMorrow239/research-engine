@@ -1,6 +1,12 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import { LoginCredentials, AuthResponse, User } from "@/types/api";
+import {
+  LoginCredentials,
+  AuthResponse,
+  User,
+  FacultyRegistrationForm,
+} from "@/types/api";
 import { AuthState } from "@/types/global";
+import { api, ApiError } from "@/utils/api";
 
 const initialState: AuthState = {
   user: null,
@@ -10,36 +16,63 @@ const initialState: AuthState = {
   error: null,
 };
 
+export const registerFaculty = createAsyncThunk<
+  AuthResponse,
+  Omit<FacultyRegistrationForm, "confirmPassword" | "firstName" | "lastName">,
+  { rejectValue: string }
+>("auth/registerFaculty", async (registrationData, { rejectWithValue }) => {
+  try {
+    const response = await api.fetch<AuthResponse>("/api/auth/register", {
+      method: "POST",
+      body: JSON.stringify(registrationData),
+      requiresAuth: false,
+    });
+
+    // Store token in localStorage for API utility
+    localStorage.setItem("token", response.token);
+
+    return response;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return rejectWithValue(error.message);
+    }
+    return rejectWithValue("Registration failed. Please try again.");
+  }
+});
+
 export const loginUser = createAsyncThunk<
   AuthResponse,
   LoginCredentials,
   { rejectValue: string }
 >("auth/login", async (credentials, { rejectWithValue }) => {
   try {
-    // Replace with your actual API call
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+    const response = await api.fetch<AuthResponse>("/api/auth/login", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),
+      requiresAuth: false,
     });
 
-    if (!response.ok) throw new Error("Login failed");
-    return await response.json();
+    // Store token in localStorage for API utility
+    localStorage.setItem("token", response.token);
+
+    return response;
   } catch (error) {
-    return rejectWithValue(
-      error instanceof Error ? error.message : "An unknown error occurred"
-    );
+    if (error instanceof ApiError) {
+      return rejectWithValue(error.message);
+    }
+    return rejectWithValue("Login failed. Please try again.");
   }
 });
 
 const authSlice = createSlice({
   name: "auth",
-  initialState: initialState as AuthState,
+  initialState,
   reducers: {
     logout: (state) => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      localStorage.removeItem("token");
     },
     setCredentials: (
       state,
@@ -52,6 +85,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Login cases
       .addCase(loginUser.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -61,8 +95,25 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAuthenticated = true;
+        localStorage.setItem("token", action.payload.token);
       })
       .addCase(loginUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      // Registration cases
+      .addCase(registerFaculty.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(registerFaculty.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.isAuthenticated = true;
+        localStorage.setItem("token", action.payload.token);
+      })
+      .addCase(registerFaculty.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

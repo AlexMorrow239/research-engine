@@ -1,6 +1,3 @@
-import { RootState } from "@/store";
-import { Store } from "@reduxjs/toolkit";
-
 interface FetchOptions extends RequestInit {
   requiresAuth?: boolean;
 }
@@ -17,19 +14,15 @@ export const api = {
     endpoint: string,
     options: FetchOptions = {}
   ): Promise<T> => {
-    const { requiresAuth = false, ...fetchOptions } = options;
+    const { requiresAuth = true, ...fetchOptions } = options;
     const baseUrl = import.meta.env.VITE_API_URL;
     const url = baseUrl.endsWith("/")
       ? `${baseUrl}${endpoint.startsWith("/") ? endpoint.slice(1) : endpoint}`
       : `${baseUrl}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
-    // Get auth token from store if required
+    // Get auth token if required
     if (requiresAuth) {
-      const store = (
-        window as unknown as Window & { __REDUX_STORE__: Store<RootState> }
-      ).__REDUX_STORE__;
-      const state: RootState = store.getState();
-      const token = state.auth.token;
+      const token = localStorage.getItem("token");
 
       if (!token) {
         throw new ApiError("Authentication required", 401);
@@ -52,6 +45,12 @@ export const api = {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+
+        // Handle 401 Unauthorized specifically
+        if (response.status === 401) {
+          localStorage.removeItem("token"); // Clear invalid token
+        }
+
         throw new ApiError(
           errorData.message || "An error occurred",
           response.status,
@@ -64,8 +63,6 @@ export const api = {
       if (error instanceof ApiError) {
         throw error;
       }
-      // Log the error for debugging
-      console.error(`API Error (${url}):`, error);
       throw new ApiError(
         error instanceof Error ? error.message : "Network error"
       );

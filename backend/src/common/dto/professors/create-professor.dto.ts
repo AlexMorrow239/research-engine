@@ -64,18 +64,17 @@ export class CreateProfessorDto {
   @IsOptional()
   title?: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     type: [String],
     description: 'Research areas of expertise',
     example: ['Machine Learning', 'Artificial Intelligence'],
     minItems: 1,
+    required: true,
   })
   @IsArray()
   @IsString({ each: true })
-  @IsOptional()
-  @ArrayMinSize(1, {
-    message: 'At least one research area must be specified, or do not include this field.',
-  })
+  @ArrayMinSize(1, { message: 'At least one research area is required' })
+  @IsNotEmpty({ each: true, message: 'Research areas cannot be empty' })
   researchAreas: string[];
 
   @ApiPropertyOptional({ example: 'McArthur Engineering Building, Room 123' })

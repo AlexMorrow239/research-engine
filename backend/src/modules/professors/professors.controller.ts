@@ -13,7 +13,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import {
   ApiChangePassword,
-  ApiCreateProfessor,
   ApiDeactivateAccount,
   ApiGetProfile,
   ApiReactivateAccount,
@@ -21,7 +20,6 @@ import {
 } from '@/common/docs/decorators/professors.decorator';
 import {
   ChangePasswordDto,
-  CreateProfessorDto,
   ProfessorResponseDto,
   ReactivateAccountDto,
   UpdateProfessorDto,
@@ -36,13 +34,6 @@ import { Professor } from '@/modules/professors/schemas/professors.schema';
 @ApiBearerAuth()
 export class ProfessorsController {
   constructor(private readonly professorsService: ProfessorsService) {}
-
-  @Post()
-  @HttpCode(HttpStatus.CREATED)
-  @ApiCreateProfessor()
-  async create(@Body() createProfessorDto: CreateProfessorDto): Promise<ProfessorResponseDto> {
-    return await this.professorsService.create(createProfessorDto);
-  }
 
   @Get('profile')
   @UseGuards(JwtAuthGuard)
