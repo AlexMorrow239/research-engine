@@ -4,7 +4,6 @@ import { useState } from "react";
 
 export const NavBar = () => {
   const location = useLocation();
-  const isAuthenticated = false; // Replace with your auth logic
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isActive = (path: string) => {
@@ -59,14 +58,14 @@ export const NavBar = () => {
             About
           </Link>
           <Link
-            to="/positions"
+            to="/faculty/projects/new"
             className={`nav__link ${isActive("/positions")}`}
             onClick={() => setIsMenuOpen(false)}
           >
             List a Position
           </Link>
           <Link
-            to="/listings"
+            to="/faculty/dashboard"
             className={`nav__link ${isActive("/listings")}`}
             onClick={() => setIsMenuOpen(false)}
           >

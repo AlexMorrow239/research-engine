@@ -3,11 +3,10 @@ import { ProtectedLayout } from "./protected";
 import About from "../pages/about/About";
 import FacultyLogin from "../pages/facultyLogin/FacultyLogin";
 import FacultyRegistration from "../pages/facultyRegistration/FacultyRegistration";
-import ListPosition from "../pages/listPosition/ListPosition";
 import Positions from "../pages/positions/Positions";
 import { MainLayout } from "@/components/layout/mainLayout/MainLayout";
 import ProjectDashboard from "@/pages/projectDashboard/ProjectDashboard";
-import { NewProject } from "@/pages/projects/NewProject";
+import { ProjectForm } from "@/pages/projects/projectForm/projectForm";
 
 export const router = createBrowserRouter([
   {
@@ -35,16 +34,16 @@ export const router = createBrowserRouter([
         element: <ProtectedLayout />,
         children: [
           {
-            path: "list-position",
-            element: <ListPosition />,
-          },
-          {
             path: "dashboard",
             element: <ProjectDashboard />,
           },
           {
             path: "projects/new",
-            element: <NewProject />,
+            element: <ProjectForm mode="create" />,
+          },
+          {
+            path: "projects/:projectId/edit",
+            element: <ProjectForm mode="edit" />,
           },
         ],
       },

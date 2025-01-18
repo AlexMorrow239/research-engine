@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
 import { Professor } from '../../professors/schemas/professors.schema';
@@ -41,7 +42,7 @@ export class Project extends Document {
   @Prop({ required: true, type: [String] })
   researchCategories: string[];
 
-  @Prop({ type: [String], required: true })
+  @Prop([String])
   requirements: string[];
 
   @Prop({

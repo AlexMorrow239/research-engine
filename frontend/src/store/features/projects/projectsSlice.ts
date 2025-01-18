@@ -2,31 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { ProjectStatus } from "@/common/enums";
 import { RootState } from "../../index";
 import { api } from "@/utils/api";
-import { ApiResponse } from "@/types/api";
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  professor: {
-    id: string;
-    name: {
-      firstName: string;
-      lastName: string;
-    };
-    department: string;
-    email: string;
-  };
-  researchCategories: string[];
-  requirements: string[];
-  files: string[];
-  status: ProjectStatus;
-  positions: number;
-  applicationDeadline: Date;
-  isVisible: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { ApiResponse, Project } from "@/types/api";
 
 interface ProjectsState {
   items: Project[];
@@ -143,6 +119,61 @@ export const createProject = createAsyncThunk(
   }
 );
 
+export const fetchProject = createAsyncThunk(
+  "projects/fetchOne",
+  async (projectId: string, { rejectWithValue }) => {
+    try {
+      const response = await api.fetch<ApiResponse<Project>>(
+        `/api/projects/${projectId}`,
+        {
+          requiresAuth: true,
+        }
+      );
+      // If the response is wrapped in a data property, return that
+      return "data" in response ? response.data : response;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+export const updateProject = createAsyncThunk(
+  "projects/update",
+  async (
+    {
+      id,
+      project,
+    }: {
+      id: string;
+      project: Omit<
+        Project,
+        "id" | "professor" | "files" | "isVisible" | "createdAt" | "updatedAt"
+      >;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await api.fetch<ApiResponse<Project>>(
+        `/api/projects/${id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify(project),
+          requiresAuth: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 const projectsSlice = createSlice({
   name: "projects",
   initialState,
@@ -207,7 +238,48 @@ const projectsSlice = createSlice({
           state.isLoading = false;
           state.error = action.payload as unknown as string;
         }
-      );
+      )
+      .addCase(fetchProject.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchProject.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentProject = action.payload;
+      })
+      .addCase(fetchProject.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+
+      .addCase(updateProject.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateProject.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        // Find and update the project in items array
+        const updatedProject = action.payload;
+        if (!updatedProject) return;
+
+        const projectId = updatedProject.id;
+        const index = state.items.findIndex(
+          (project) => project.id === projectId
+        );
+        if (index !== -1) {
+          state.items[index] = updatedProject;
+        }
+
+        // Update currentProject if it matches
+        if (state.currentProject && state.currentProject.id === projectId) {
+          state.currentProject = updatedProject;
+        }
+      })
+      .addCase(updateProject.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
   },
 });
 

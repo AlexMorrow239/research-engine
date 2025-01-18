@@ -1,16 +1,22 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Banner } from "@/common/banner/Banner";
-import "./NewProject.scss";
-import { createProject } from "@/store/features/projects/projectsSlice";
+import "./ProjectForm.scss";
+import {
+  createProject,
+  updateProject,
+  fetchProject,
+} from "@/store/features/projects/projectsSlice";
 import { addToast } from "@/store/features/ui/uiSlice";
 import { useAppDispatch } from "@/store";
 import { ProjectStatus } from "@/common/enums";
+import { Project } from "@/types/api";
+import { ApiError } from "@/utils/api";
 
-// Zod schema for project creation
+// Zod schema for project creation/editing
 const projectSchema = z.object({
   // Mandatory Fields
   title: z.string().min(1, "Project title is required"),
@@ -32,10 +38,9 @@ const projectSchema = z.object({
     }),
   requirements: z
     .array(z.string())
-    .min(1, "At least one requirement is required")
-    .refine((reqs) => reqs.every((req) => req.trim() !== ""), {
-      message: "Requirements cannot be empty",
-    }),
+    .optional()
+    .default([])
+    .transform((reqs) => reqs.filter((req) => req.trim() !== "")),
   status: z.nativeEnum(ProjectStatus).default(ProjectStatus.DRAFT),
 });
 
@@ -51,11 +56,17 @@ const initialFormData: ProjectFormData = {
   status: ProjectStatus.DRAFT,
 };
 
-export const NewProject: React.FC = () => {
+interface ProjectFormProps {
+  mode: "create" | "edit";
+}
+
+export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { projectId } = useParams();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(mode === "edit");
   const [researchCategories, setResearchCategories] = useState([""]);
   const [requirements, setRequirements] = useState([""]);
 
@@ -63,12 +74,89 @@ export const NewProject: React.FC = () => {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
     defaultValues: initialFormData,
     mode: "onChange",
   });
+
+  const currentStatus = watch("status");
+
+  useEffect(() => {
+    const loadProject = async () => {
+      if (mode === "edit" && projectId) {
+        try {
+          const response = await dispatch(fetchProject(projectId)).unwrap();
+
+          // Check if we have a valid response
+          if (!response) {
+            throw new Error("No project data received");
+          }
+
+          const project = response as Project;
+
+          const date = new Date(project.applicationDeadline);
+          const formattedDate = date.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+
+          // Set form values
+          setValue("title", project.title);
+          setValue("description", project.description);
+          setValue("positions", project.positions);
+          setValue("applicationDeadline", date, {
+            shouldDirty: true,
+            shouldTouch: true,
+          });
+
+          // Set the formatted string value directly on the input element
+          const dateInput = document.getElementById(
+            "applicationDeadline"
+          ) as HTMLInputElement;
+          if (dateInput) {
+            dateInput.value = formattedDate;
+          }
+          setValue("status", project.status);
+          setValue("status", project.status);
+
+          // Set array values with fallbacks
+          const projectCategories =
+            Array.isArray(project.researchCategories) &&
+            project.researchCategories.length
+              ? project.researchCategories
+              : [""];
+          setResearchCategories(projectCategories);
+          setValue("researchCategories", projectCategories);
+
+          const projectRequirements =
+            Array.isArray(project.requirements) && project.requirements.length
+              ? project.requirements
+              : [""];
+          setRequirements(projectRequirements);
+          setValue("requirements", projectRequirements);
+        } catch (error) {
+          console.error("Error loading project:", error);
+          dispatch(
+            addToast({
+              type: "error",
+              message:
+                error instanceof Error
+                  ? error.message
+                  : "Failed to load project details",
+            })
+          );
+          // Only navigate if there's an authentication error
+          if (error instanceof ApiError && error.status === 401) {
+            navigate("/faculty/dashboard");
+          }
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    loadProject();
+  }, [mode, projectId, dispatch, setValue, navigate]);
 
   const onSubmit = async (
     data: ProjectFormData,
@@ -79,10 +167,6 @@ export const NewProject: React.FC = () => {
       const formattedData = {
         ...data,
         status: status as ProjectStatus,
-        researchCategories: researchCategories.filter(
-          (cat) => cat.trim() !== ""
-        ),
-        requirements: requirements.filter((req) => req.trim() !== ""),
         applicationDeadline: new Date(data.applicationDeadline),
       };
 
@@ -96,38 +180,40 @@ export const NewProject: React.FC = () => {
         return;
       }
 
-      if (formattedData.requirements.length === 0) {
-        dispatch(
-          addToast({
-            type: "error",
-            message: "At least one requirement is required",
-          })
-        );
-        return;
+      if (mode === "edit" && projectId) {
+        await dispatch(
+          updateProject({ id: projectId, project: formattedData })
+        ).unwrap();
+      } else {
+        await dispatch(createProject(formattedData)).unwrap();
       }
-
-      await dispatch(createProject(formattedData)).unwrap();
 
       dispatch(
         addToast({
           type: "success",
           message:
-            status === ProjectStatus.DRAFT
-              ? "Project saved as draft successfully!"
-              : "Project published successfully!",
+            mode === "edit"
+              ? `Project ${
+                  status === ProjectStatus.DRAFT ? "saved as draft" : "updated"
+                } successfully!`
+              : `Project ${
+                  status === ProjectStatus.DRAFT
+                    ? "saved as draft"
+                    : "published"
+                } successfully!`,
         })
       );
 
       navigate("/faculty/dashboard");
     } catch (error) {
-      console.error("Error creating project:", error);
+      console.error("Error handling project:", error);
       dispatch(
         addToast({
           type: "error",
           message:
             error instanceof Error
               ? error.message
-              : "Failed to create project. Please try again.",
+              : "Failed to handle project. Please try again.",
         })
       );
     } finally {
@@ -135,17 +221,39 @@ export const NewProject: React.FC = () => {
     }
   };
 
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="project-form">
+        <Banner />
+        <div className="project-form__container">
+          <div className="project-form__loading">
+            <h2>Loading project details...</h2>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="new-project">
+    <div className="project-form">
       <Banner />
 
-      <div className="new-project__container">
-        <div className="new-project__header">
-          <h1>Create New Research Project</h1>
-          <p>Fill out the form below to create a new research opportunity</p>
+      <div className="project-form__container">
+        <div className="project-form__header">
+          <h1>
+            {mode === "edit"
+              ? "Edit Research Project"
+              : "Create New Research Project"}
+          </h1>
+          <p>
+            {mode === "edit"
+              ? "Update your research opportunity details"
+              : "Fill out the form below to create a new research opportunity"}
+          </p>
         </div>
 
-        <form className="new-project__form">
+        <form className="project-form__form">
           <div className="form-section">
             <h2 className="form-section__title">Required Information</h2>
 
@@ -214,13 +322,9 @@ export const NewProject: React.FC = () => {
                 </span>
               )}
             </div>
-          </div>
-
-          <div className="form-section">
-            <h2 className="form-section__title">Additional Information</h2>
 
             <div className="form-group">
-              <label>Research Categories</label>
+              <label>Research Categories *</label>
               {researchCategories.map((category, index) => (
                 <div key={index} className="array-input">
                   <input
@@ -263,9 +367,13 @@ export const NewProject: React.FC = () => {
                 </span>
               )}
             </div>
+          </div>
+
+          <div className="form-section">
+            <h2 className="form-section__title">Additional Information</h2>
 
             <div className="form-group">
-              <label>Requirements</label>
+              <label>Requirements (Optional)</label>
               {requirements.map((requirement, index) => (
                 <div key={index} className="array-input">
                   <input
@@ -320,26 +428,59 @@ export const NewProject: React.FC = () => {
               Cancel
             </button>
             <div className="form-actions__right">
-              <button
-                type="button"
-                className="btn btn--outline"
-                onClick={handleSubmit((data) =>
-                  onSubmit(data, ProjectStatus.DRAFT)
-                )}
-                disabled={isSubmitting}
-              >
-                Save as Draft
-              </button>
-              <button
-                type="submit"
-                className="btn btn--primary"
-                onClick={handleSubmit((data) =>
-                  onSubmit(data, ProjectStatus.PUBLISHED)
-                )}
-                disabled={isSubmitting}
-              >
-                Publish Project
-              </button>
+              {/* Show Save as Draft only for new projects or existing drafts */}
+              {(mode === "create" ||
+                (mode === "edit" && currentStatus === ProjectStatus.DRAFT)) && (
+                <button
+                  type="button"
+                  className="btn btn--outline"
+                  onClick={handleSubmit((data) =>
+                    onSubmit(data, ProjectStatus.DRAFT)
+                  )}
+                  disabled={isSubmitting}
+                >
+                  Save as Draft
+                </button>
+              )}
+              {/* Show Publish button only for drafts */}
+              {mode === "edit" && currentStatus === ProjectStatus.DRAFT && (
+                <button
+                  type="submit"
+                  className="btn btn--primary"
+                  onClick={handleSubmit((data) =>
+                    onSubmit(data, ProjectStatus.PUBLISHED)
+                  )}
+                  disabled={isSubmitting}
+                >
+                  Publish Project
+                </button>
+              )}
+              {/* Show Update button for published projects */}
+              {mode === "edit" && currentStatus === ProjectStatus.PUBLISHED && (
+                <button
+                  type="submit"
+                  className="btn btn--primary"
+                  onClick={handleSubmit((data) =>
+                    onSubmit(data, currentStatus)
+                  )}
+                  disabled={isSubmitting}
+                >
+                  Update Project
+                </button>
+              )}
+              {/* Show Publish button for new projects */}
+              {mode === "create" && (
+                <button
+                  type="submit"
+                  className="btn btn--primary"
+                  onClick={handleSubmit((data) =>
+                    onSubmit(data, ProjectStatus.PUBLISHED)
+                  )}
+                  disabled={isSubmitting}
+                >
+                  Publish Project
+                </button>
+              )}
             </div>
           </div>
         </form>

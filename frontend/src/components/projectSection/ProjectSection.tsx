@@ -2,6 +2,7 @@ import React from "react";
 import { Edit2, Trash2 } from "lucide-react";
 import { ProjectStatus } from "@/common/enums";
 import "./ProjectSection.scss";
+import { useNavigate } from "react-router-dom";
 
 interface ProjectSectionProps {
   title: string;
@@ -18,6 +19,7 @@ export const ProjectSection: React.FC<ProjectSectionProps> = ({
   title,
   projects,
 }) => {
+  const navigate = useNavigate();
   if (!projects.length) {
     return null;
   }
@@ -35,7 +37,10 @@ export const ProjectSection: React.FC<ProjectSectionProps> = ({
               </span>
             </div>
             <div className="project-card__actions">
-              <button className="btn btn--icon" onClick={() => {}}>
+              <button
+                className="btn btn--icon"
+                onClick={() => navigate(`/faculty/projects/${project.id}/edit`)}
+              >
                 <Edit2 size={18} />
               </button>
               <button className="btn btn--icon btn--danger" onClick={() => {}}>

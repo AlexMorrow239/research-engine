@@ -1,6 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsString, IsNotEmpty, IsDate, IsNumber, IsArray, Min, IsEnum } from 'class-validator';
+
+import {
+  IsString,
+  IsNotEmpty,
+  IsDate,
+  IsNumber,
+  IsArray,
+  Min,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
 
 import { ProjectStatus } from '../../../modules/projects/schemas/projects.schema';
 import { IsFutureDate } from '../../validators/date.validator';
@@ -11,42 +20,63 @@ const getDefaultDeadlineExample = () => {
   return date.toISOString();
 };
 export class CreateProjectDto {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Project title',
+    example: 'Machine Learning Research Assistant',
+  })
   @IsString()
   @IsNotEmpty()
   title: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Project description',
+    example: 'Detailed project description...',
+  })
   @IsString()
   @IsNotEmpty()
   description: string;
 
-  @ApiProperty({ type: [String] })
+  @ApiProperty({
+    description: 'Research categories',
+    example: ['Machine Learning', 'Data Science'],
+  })
   @IsArray()
   @IsString({ each: true })
+  @IsNotEmpty()
   researchCategories: string[];
 
-  @ApiProperty({ type: [String] })
+  @ApiProperty({
+    description: 'Project requirements',
+    example: ['Python programming', 'Statistics background'],
+  })
   @IsArray()
   @IsString({ each: true })
+  @IsNotEmpty()
   requirements: string[];
 
-  @ApiProperty({ enum: ProjectStatus, default: ProjectStatus.DRAFT })
-  @IsEnum(ProjectStatus)
-  status: ProjectStatus;
-
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Number of available positions',
+    example: 2,
+    minimum: 1,
+  })
   @IsNumber()
   @Min(1)
   positions: number;
 
   @ApiProperty({
-    description: 'Application deadline (must be a future date)',
+    description: 'Project status',
+    enum: ProjectStatus,
+    example: ProjectStatus.DRAFT,
+  })
+  @IsEnum(ProjectStatus)
+  status: ProjectStatus;
+
+  @ApiProperty({
+    description: 'Application deadline',
     example: getDefaultDeadlineExample(),
   })
-  @Type(() => Date)
+  @IsOptional()
   @IsDate()
-  @IsNotEmpty()
-  @IsFutureDate({ message: 'Application deadline must be in the future' })
-  applicationDeadline: Date;
+  @IsFutureDate()
+  applicationDeadline?: Date;
 }

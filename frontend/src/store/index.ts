@@ -26,10 +26,9 @@ const authPersistConfig = {
 const uiPersistConfig = {
   key: "ui",
   storage,
-  whitelist: ["theme", "sidebar"], // Only persist these fields
+  whitelist: ["theme", "sidebar"],
 };
 
-// Create properly typed persisted reducers
 const persistedAuthReducer = persistReducer<AuthState>(
   authPersistConfig,
   authReducer
