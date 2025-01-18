@@ -7,6 +7,7 @@ import ListPosition from "../pages/listPosition/ListPosition";
 import Positions from "../pages/positions/Positions";
 import { MainLayout } from "@/components/layout/mainLayout/MainLayout";
 import ProjectDashboard from "@/pages/projectDashboard/ProjectDashboard";
+import { NewProject } from "@/pages/projects/NewProject";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ export const router = createBrowserRouter([
           {
             path: "dashboard",
             element: <ProjectDashboard />,
+          },
+          {
+            path: "projects/new",
+            element: <NewProject />,
           },
         ],
       },

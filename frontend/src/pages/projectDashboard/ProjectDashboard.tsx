@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { fetchProjects } from "@/store/features/projects/projectsSlice";
+import { fetchProfessorProjects } from "@/store/features/projects/projectsSlice";
 import { ProjectStatus } from "@/common/enums";
 import "./ProjectDashboard.scss";
 import { ProjectSection } from "@/components/projectSection/ProjectSection";
@@ -11,7 +11,7 @@ export default function ProjectDashboard() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
-  const { items: projects, isLoading } = useAppSelector(
+  const { items: projects = [], isLoading } = useAppSelector(
     (state) => state.projects
   );
 
@@ -33,7 +33,7 @@ export default function ProjectDashboard() {
     }
 
     // Fetch projects on component mount
-    dispatch(fetchProjects());
+    dispatch(fetchProfessorProjects({}));
   }, [dispatch, user, navigate]);
 
   if (isLoading) {
@@ -46,7 +46,7 @@ export default function ProjectDashboard() {
         <h1>My Projects</h1>
         <button
           className="btn btn--primary"
-          onClick={() => navigate("/projects/new")}
+          onClick={() => navigate("/faculty/projects/new")}
         >
           <Plus size={20} />
           Create Project

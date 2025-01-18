@@ -91,6 +91,29 @@ export const fetchProjects = createAsyncThunk(
   }
 );
 
+export const fetchProfessorProjects = createAsyncThunk(
+  "projects/fetchProfessorProjects",
+  async ({ status }: { status?: ProjectStatus }, { rejectWithValue }) => {
+    try {
+      const queryParams = new URLSearchParams();
+      if (status) {
+        queryParams.append("status", status);
+      }
+
+      return await api.fetch<{ projects: Project[]; total: number }>(
+        `/api/projects/my-projects/${
+          queryParams.toString() ? `?${queryParams}` : ""
+        }`
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 export const createProject = createAsyncThunk(
   "projects/create",
   async (projectData: Partial<Project>, { rejectWithValue }) => {
@@ -152,7 +175,29 @@ const projectsSlice = createSlice({
       .addCase(createProject.fulfilled, (state, action) => {
         state.items.unshift(action.payload);
         state.totalProjects += 1;
-      });
+      })
+      .addCase(fetchProfessorProjects.pending, (state: ProjectsState) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchProfessorProjects.fulfilled,
+        (
+          state: ProjectsState,
+          action: PayloadAction<{ projects: Project[]; total: number }>
+        ) => {
+          state.isLoading = false;
+          state.items = action.payload.projects;
+          state.totalProjects = action.payload.total;
+        }
+      )
+      .addCase(
+        fetchProfessorProjects.rejected,
+        (state: ProjectsState, action: PayloadAction<unknown>) => {
+          state.isLoading = false;
+          state.error = action.payload as unknown as string;
+        }
+      );
   },
 });
 
