@@ -109,7 +109,7 @@ export const api = {
   },
 
   // Helper methods for common HTTP methods
-  get: async <T>(endpoint: string, options: FetchOptions = {}) => {
+  get: async <T>(endpoint: string, options: FetchOptions = {}): Promise<T> => {
     return api.fetch<T>(endpoint, { ...options, method: "GET" });
   },
 
@@ -117,7 +117,7 @@ export const api = {
     endpoint: string,
     data: unknown,
     options: FetchOptions = {}
-  ) => {
+  ): Promise<T> => {
     return api.fetch<T>(endpoint, {
       ...options,
       method: "POST",
@@ -129,7 +129,7 @@ export const api = {
     endpoint: string,
     data: unknown,
     options: FetchOptions = {}
-  ) => {
+  ): Promise<T> => {
     return api.fetch<T>(endpoint, {
       ...options,
       method: "PUT",
@@ -141,7 +141,7 @@ export const api = {
     endpoint: string,
     data: unknown,
     options: FetchOptions = {}
-  ) => {
+  ): Promise<T> => {
     return api.fetch<T>(endpoint, {
       ...options,
       method: "PATCH",
@@ -149,7 +149,10 @@ export const api = {
     });
   },
 
-  delete: async <T>(endpoint: string, options: FetchOptions = {}) => {
+  delete: async <T>(
+    endpoint: string,
+    options: FetchOptions = {}
+  ): Promise<T> => {
     return api.fetch<T>(endpoint, { ...options, method: "DELETE" });
   },
 };

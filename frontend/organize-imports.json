@@ -1,0 +1,19 @@
+{
+  "importOrder": [
+    "^react$",
+    "^react-dom$",
+    "^react-router-dom$",
+    "^@reduxjs/toolkit$",
+    "^react-redux$",
+    "<THIRD_PARTY_MODULES>",
+    "^@/store/",
+    "^@/components/",
+    "^@/common/",
+    "^@/styles/",
+    "^@/",
+    "^@public/",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
+}

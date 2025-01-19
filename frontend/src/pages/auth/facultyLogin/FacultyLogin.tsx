@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { loginUser } from "@/store/features/auth/authSlice";
 import { addToast } from "@/store/features/ui/uiSlice";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 import "./FacultyLogin.scss";
 
 // Define the form validation schema
@@ -22,7 +22,7 @@ const facultyLoginSchema = z.object({
 
 type FacultyLoginForm = z.infer<typeof facultyLoginSchema>;
 
-export default function FacultyLogin() {
+export default function FacultyLogin(): JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
@@ -36,7 +36,7 @@ export default function FacultyLogin() {
     mode: "onChange",
   });
 
-  const onSubmit = async (data: FacultyLoginForm) => {
+  const onSubmit = async (data: FacultyLoginForm): Promise<void> => {
     try {
       const result = await dispatch(loginUser(data)).unwrap();
 

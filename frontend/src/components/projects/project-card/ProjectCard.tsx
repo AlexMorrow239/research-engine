@@ -1,5 +1,5 @@
-import React from "react";
 import { Calendar, Users } from "lucide-react";
+import React from "react";
 import "./ProjectCard.scss";
 
 interface ProjectCardProps {
@@ -27,7 +27,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   isSelected,
   onClick,
 }) => {
-  const isDeadlineSoon = (deadline: Date) => {
+  const isDeadlineSoon = (deadline: Date): boolean => {
     if (!deadline) return false;
     const daysUntilDeadline = Math.ceil(
       (new Date(deadline).getTime() - new Date().getTime()) / (1000 * 3600 * 24)
@@ -35,19 +35,19 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     return daysUntilDeadline <= 7 && daysUntilDeadline > 0;
   };
 
-  const isDeadlineExpired = (deadline: Date) => {
+  const isDeadlineExpired = (deadline: Date): boolean => {
     if (!deadline) return false;
     return new Date(deadline) < new Date();
   };
 
-  const getDeadlineClass = (deadline?: Date) => {
+  const getDeadlineClass = (deadline?: Date): string => {
     if (!deadline) return "";
     if (isDeadlineExpired(deadline)) return "project-card__deadline--expired";
     if (isDeadlineSoon(deadline)) return "project-card__deadline--soon";
     return "";
   };
 
-  const getDeadlineText = (deadline?: Date) => {
+  const getDeadlineText = (deadline?: Date): string => {
     if (!deadline) return "";
     if (isDeadlineExpired(deadline)) return "Deadline passed";
     if (isDeadlineSoon(deadline)) return "Deadline soon";

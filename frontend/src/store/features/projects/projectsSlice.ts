@@ -1,9 +1,9 @@
+import { ProjectStatus } from "@/common/enums";
+import type { ApiResponse, Project } from "@/types/api";
+import { api } from "@/utils/api";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { ProjectStatus } from "@/common/enums";
 import type { RootState } from "../../index";
-import { api } from "@/utils/api";
-import type { ApiResponse, Project } from "@/types/api";
 
 interface ProjectsState {
   items: Project[];

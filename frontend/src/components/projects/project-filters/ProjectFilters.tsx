@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { ChevronDown, RotateCcw, Search, X } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "@/store";
 import {
   resetFilters,
   setFilters,
 } from "@/store/features/projects/projectsSlice";
-import type { AppDispatch, RootState } from "@/store";
+import { ChevronDown, RotateCcw, Search, X } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "./ProjectFilters.scss";
 
 // Constants
@@ -47,15 +47,17 @@ export const ProjectFilters: React.FC = () => {
       }
     }, 300);
 
-    return () => clearTimeout(timer);
+    return (): void => clearTimeout(timer);
   }, [searchTerm, dispatch, filters.search]);
 
-  const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleDepartmentChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
     const department = e.target.value || undefined;
     dispatch(setFilters({ department }));
   };
 
-  const handleCategoryChange = (category: string) => {
+  const handleCategoryChange = (category: string): void => {
     const currentCategories = filters.researchCategories || [];
     const updatedCategories = currentCategories.includes(category)
       ? currentCategories.filter((c) => c !== category)
@@ -64,7 +66,7 @@ export const ProjectFilters: React.FC = () => {
     dispatch(setFilters({ researchCategories: updatedCategories }));
   };
 
-  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {
     const [sortBy, sortOrder] = e.target.value.split("-");
     dispatch(
       setFilters({
@@ -74,12 +76,12 @@ export const ProjectFilters: React.FC = () => {
     );
   };
 
-  const handleClearSearch = () => {
+  const handleClearSearch = (): void => {
     setSearchTerm("");
     dispatch(setFilters({ search: "" }));
   };
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     setSearchTerm("");
     dispatch(resetFilters());
   };

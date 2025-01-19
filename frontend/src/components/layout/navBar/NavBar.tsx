@@ -1,15 +1,15 @@
-import { Link, NavLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/features/auth/authSlice";
 import ugrLogo from "@public/images/navBar/miami-ugr.png";
 import poweredBy from "@public/images/navBar/powered-by-bonsai.png";
+import { Link, NavLink } from "react-router-dom";
 import "./NavBar.scss";
 
-export const NavBar = () => {
+export const NavBar = (): JSX.Element => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     dispatch(logout());
   };
 

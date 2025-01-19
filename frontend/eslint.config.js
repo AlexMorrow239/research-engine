@@ -43,15 +43,6 @@ export default tseslint.config(
       "prefer-const": "error",
       "no-unused-expressions": "error",
 
-      // Import organization
-      "sort-imports": [
-        "error",
-        {
-          ignoreCase: true,
-          ignoreDeclarationSort: true,
-        },
-      ],
-
       // TypeScript rules that don't need type information
       "@typescript-eslint/consistent-type-imports": [
         "error",
@@ -65,29 +56,6 @@ export default tseslint.config(
           caughtErrorsIgnorePattern: "^_",
         },
       ],
-      // Prettier-consistent rules
-      "max-len": ["error", { code: 80 }],
-      quotes: ["error", "double"],
-      semi: ["error", "always"],
-      "arrow-parens": ["error", "always"],
-      "comma-dangle": [
-        "error",
-        {
-          arrays: "always-multiline",
-          objects: "always-multiline",
-          imports: "always-multiline",
-          exports: "always-multiline",
-          functions: "always-multiline",
-        },
-      ],
-      indent: ["error", 2],
-      "object-curly-spacing": ["error", "always"],
-      "no-tabs": "error",
-    },
-    settings: {
-      react: {
-        version: "detect",
-      },
     },
   },
   // TypeScript-specific config (with type checking)
@@ -118,5 +86,5 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
       },
     },
-  },
+  }
 );

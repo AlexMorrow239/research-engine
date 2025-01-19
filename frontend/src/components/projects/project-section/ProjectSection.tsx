@@ -1,13 +1,13 @@
-import React from "react";
-import { Edit2, Trash2 } from "lucide-react";
 import { ProjectStatus } from "@/common/enums";
-import "./ProjectSection.scss";
-import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "@/store";
 import {
   deleteProject,
   delistProject,
 } from "@/store/features/projects/projectsSlice";
-import { useAppDispatch } from "@/store";
+import { Edit2, Trash2 } from "lucide-react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import "./ProjectSection.scss";
 
 interface ProjectSectionProps {
   title: string;
@@ -27,7 +27,10 @@ export const ProjectSection: React.FC<ProjectSectionProps> = ({
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const handleDelete = async (projectId: string, status: ProjectStatus) => {
+  const handleDelete = async (
+    projectId: string,
+    status: ProjectStatus
+  ): Promise<void> => {
     if (status === ProjectStatus.PUBLISHED) {
       if (!window.confirm("Are you sure you want to delist this project?")) {
         return;

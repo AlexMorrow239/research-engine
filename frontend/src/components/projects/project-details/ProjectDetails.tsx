@@ -1,6 +1,6 @@
-import React from "react";
-import { Building2, FileText, Mail, User } from "lucide-react";
 import type { ProjectStatus } from "@/common/enums";
+import { Building2, FileText, Mail, User } from "lucide-react";
+import React from "react";
 import "./ProjectDetails.scss";
 
 interface ProjectDetailsProps {
@@ -27,7 +27,9 @@ interface ProjectDetailsProps {
   } | null;
 }
 
-export const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
+export const ProjectDetails: React.FC<ProjectDetailsProps> = ({
+  project,
+}): JSX.Element => {
   if (!project) {
     return (
       <div className="project-details project-details--empty">
@@ -36,7 +38,7 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
     );
   }
 
-  const isDeadlineSoon = (deadline: Date) => {
+  const isDeadlineSoon = (deadline: Date): boolean => {
     if (!deadline) return false;
     const daysUntilDeadline = Math.ceil(
       (new Date(deadline).getTime() - new Date().getTime()) / (1000 * 3600 * 24)
@@ -44,19 +46,19 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
     return daysUntilDeadline <= 7 && daysUntilDeadline > 0;
   };
 
-  const isDeadlineExpired = (deadline: Date) => {
+  const isDeadlineExpired = (deadline: Date): boolean => {
     if (!deadline) return false;
     return new Date(deadline) < new Date();
   };
 
-  const getDeadlineStatus = (deadline?: Date) => {
+  const getDeadlineStatus = (deadline?: Date): string | null => {
     if (!deadline) return null;
     if (isDeadlineExpired(deadline)) return "urgent";
     if (isDeadlineSoon(deadline)) return "warning";
     return "normal";
   };
 
-  const formatDeadline = (deadline: Date) => {
+  const formatDeadline = (deadline: Date): string => {
     if (isDeadlineExpired(deadline)) return "Deadline passed";
     if (isDeadlineSoon(deadline)) return "Deadline soon";
     return new Date(deadline).toLocaleDateString(undefined, {

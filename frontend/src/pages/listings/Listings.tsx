@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { ChevronLeft } from "lucide-react";
+import { BannerType } from "@/common/enums";
 import { Banner } from "@/components/common/banner/Banner";
+import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
+import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
+import { ProjectFilters } from "@/components/projects/project-filters/ProjectFilters";
+import type { AppDispatch, RootState } from "@/store";
 import {
   fetchProjects,
   setCurrentProject,
   setFilters,
 } from "@/store/features/projects/projectsSlice";
-import type { AppDispatch, RootState } from "@/store";
-import "./Listings.scss";
-import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
-import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
-import { ProjectFilters } from "@/components/projects/project-filters/ProjectFilters";
 import type { Project } from "@/types/api";
-import { BannerType } from "@/common/enums";
+import { ChevronLeft } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import "./Listings.scss";
 
-export default function Listings() {
+export default function Listings(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const {
     items: projects,
@@ -32,18 +32,18 @@ export default function Listings() {
     dispatch(fetchProjects());
   }, [dispatch, filters]);
 
-  const handleProjectSelect = (project: Project) => {
+  const handleProjectSelect = (project: Project): void => {
     dispatch(setCurrentProject(project));
     if (window.innerWidth <= 768) {
       setIsMobileDetailView(true);
     }
   };
 
-  const handleBackToList = () => {
+  const handleBackToList = (): void => {
     setIsMobileDetailView(false);
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (page: number): void => {
     dispatch(setFilters({ page }));
   };
 

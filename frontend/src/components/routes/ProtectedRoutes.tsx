@@ -5,7 +5,9 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
-export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+export const ProtectedRoute = ({
+  children,
+}: ProtectedRouteProps): JSX.Element => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const location = useLocation();
 

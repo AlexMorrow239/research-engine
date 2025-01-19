@@ -1,9 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import "./ProjectForm.scss";
+import { ProjectStatus } from "@/common/enums";
+import { useAppDispatch } from "@/store";
 import {
   createProject,
   deleteProject,
@@ -11,10 +7,14 @@ import {
   updateProject,
 } from "@/store/features/projects/projectsSlice";
 import { addToast } from "@/store/features/ui/uiSlice";
-import { useAppDispatch } from "@/store";
-import { ProjectStatus } from "@/common/enums";
 import type { Project } from "@/types/api";
 import { ApiError } from "@/utils/api";
+import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
+import { z } from "zod";
+import "./ProjectForm.scss";
 
 // Zod schema for project creation/editing
 const projectSchema = z.object({
@@ -85,7 +85,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
   const currentStatus = watch("status");
 
   useEffect(() => {
-    const loadProject = async () => {
+    const loadProject = async (): Promise<void> => {
       if (mode === "edit" && projectId) {
         try {
           const response = await dispatch(fetchProject(projectId)).unwrap();
@@ -162,7 +162,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
     data: ProjectFormData,
     status: ProjectStatus,
     action?: "delete" | "delist"
-  ) => {
+  ): Promise<void> => {
     setIsSubmitting(true);
     try {
       const formattedData = {
@@ -231,7 +231,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
   const getSuccessMessage = (
     status: ProjectStatus,
     action?: "delete" | "delist"
-  ) => {
+  ): string => {
     if (action === "delist") return "Project delisted successfully!";
     switch (status) {
       case ProjectStatus.DRAFT:

@@ -1,3 +1,4 @@
+import type { AuthState, UIState } from "@/types/global";
 import { configureStore } from "@reduxjs/toolkit";
 import type { TypedUseSelectorHook } from "react-redux";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,11 +13,10 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import projectsReducer from "./features/projects/projectsSlice";
 import authReducer from "./features/auth/authSlice";
+import projectsReducer from "./features/projects/projectsSlice";
 import uiReducer from "./features/ui/uiSlice";
 import { errorMiddleware } from "./middleware/errorMiddleWare";
-import type { AuthState, UIState } from "@/types/global";
 
 const authPersistConfig = {
   key: "auth",
@@ -56,7 +56,7 @@ export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-export const useAppDispatch = () => useDispatch<AppDispatch>();
+export const useAppDispatch = (): AppDispatch => useDispatch<AppDispatch>();
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export default store;

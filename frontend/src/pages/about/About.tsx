@@ -1,8 +1,8 @@
-import React from "react";
-import { Atom, BookOpen, Code } from "lucide-react";
-import "./About.scss";
 import { BannerType } from "@/common/enums";
 import { Banner } from "@/components/common/banner/Banner";
+import { Atom, BookOpen, Code } from "lucide-react";
+import React from "react";
+import "./About.scss";
 
 interface TeamMember {
   name: string;

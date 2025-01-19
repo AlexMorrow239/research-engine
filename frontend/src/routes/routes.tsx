@@ -1,12 +1,12 @@
+import { MainLayout } from "@/components/layout/mainLayout/MainLayout";
+import ProjectDashboard from "@/pages/projects/projectDashboard/ProjectDashboard";
+import { ProjectForm } from "@/pages/projects/projectForm/projectForm";
 import { createBrowserRouter } from "react-router-dom";
-import { ProtectedLayout } from "./protected";
 import About from "../pages/about/About";
 import FacultyLogin from "../pages/auth/facultyLogin/FacultyLogin";
 import FacultyRegistration from "../pages/auth/facultyRegistration/FacultyRegistration";
 import Listings from "../pages/listings/Listings";
-import { MainLayout } from "@/components/layout/mainLayout/MainLayout";
-import ProjectDashboard from "@/pages/projects/projectDashboard/ProjectDashboard";
-import { ProjectForm } from "@/pages/projects/projectForm/projectForm";
+import { ProtectedLayout } from "./protected";
 
 export const router = createBrowserRouter([
   {

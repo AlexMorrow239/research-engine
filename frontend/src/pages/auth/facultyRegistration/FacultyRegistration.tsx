@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { registerFaculty } from "@/store/features/auth/authSlice";
 import { addToast } from "@/store/features/ui/uiSlice";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 import "./FacultyRegistration.scss";
 
 type FormattedData = Omit<
@@ -74,7 +74,7 @@ const facultyRegistrationSchema = z
 
 type FacultyRegistrationForm = z.infer<typeof facultyRegistrationSchema>;
 
-export default function FacultyRegistration() {
+export default function FacultyRegistration(): JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, error } = useAppSelector((state) => state.auth);
@@ -91,7 +91,7 @@ export default function FacultyRegistration() {
     mode: "onChange",
   });
 
-  const onSubmit = async (data: FacultyRegistrationForm) => {
+  const onSubmit = async (data: FacultyRegistrationForm): Promise<void> => {
     try {
       const { confirmPassword: _paswd, firstName, lastName, ...rest } = data;
 

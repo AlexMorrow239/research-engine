@@ -1,13 +1,13 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { ProjectStatus } from "@/common/enums";
+import { ProjectSection } from "@/components/projects/project-section/ProjectSection";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { fetchProfessorProjects } from "@/store/features/projects/projectsSlice";
-import { ProjectStatus } from "@/common/enums";
+import { Plus } from "lucide-react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "./ProjectDashboard.scss";
-import { ProjectSection } from "@/components/projects/project-section/ProjectSection";
 
-export default function ProjectDashboard() {
+export default function ProjectDashboard(): JSX.Element {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);

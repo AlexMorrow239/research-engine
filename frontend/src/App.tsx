@@ -1,9 +1,9 @@
 import { RouterProvider } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
-import { persistor } from "./store";
 import { router } from "./routes/routes";
+import { persistor } from "./store";
 
-function App() {
+function App(): JSX.Element {
   return (
     <PersistGate loading={null} persistor={persistor}>
       <RouterProvider router={router} />
