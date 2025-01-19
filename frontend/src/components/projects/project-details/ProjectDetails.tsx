@@ -1,7 +1,8 @@
 import { type ProjectStatus } from "@/common/enums";
+import { ApplicationModal } from "@/components/application-modal/ApplicationModal";
 import { isDeadlineExpired, isDeadlineSoon } from "@/utils/dateUtils";
 import { Building2, FileText, Mail, User } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import "./ProjectDetails.scss";
 
 interface ProjectDetailsProps {
@@ -31,6 +32,8 @@ interface ProjectDetailsProps {
 export const ProjectDetails: React.FC<ProjectDetailsProps> = ({
   project,
 }): JSX.Element => {
+  const [isApplicationModalOpen, setIsApplicationModalOpen] = useState(false);
+
   if (!project) {
     return (
       <div className="project-details project-details--empty">
@@ -165,8 +168,19 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({
         )}
 
         <footer className="card__footer project-details__apply">
-          <button className="btn btn--primary">Apply Now</button>
+          <button
+            onClick={() => setIsApplicationModalOpen(true)}
+            className="button button--primary"
+          >
+            Apply Now
+          </button>{" "}
         </footer>
+
+        <ApplicationModal
+          isOpen={isApplicationModalOpen}
+          onClose={() => setIsApplicationModalOpen(false)}
+          projectTitle={project.title}
+        />
       </div>
     </article>
   );

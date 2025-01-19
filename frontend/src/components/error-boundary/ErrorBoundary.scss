@@ -1,0 +1,120 @@
+.error-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-4);
+  background-color: var(--color-background);
+}
+
+.error-content {
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+  padding: var(--spacing-8);
+  background-color: var(--color-white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: var(--spacing-4);
+  animation: bounce 1s ease infinite;
+}
+
+.error-message {
+  color: var(--color-text-light);
+  margin: var(--spacing-4) 0;
+  font-size: var(--font-size-lg);
+}
+
+.error-actions {
+  display: flex;
+  gap: var(--spacing-4);
+  justify-content: center;
+  margin-top: var(--spacing-6);
+
+  .button {
+    padding: var(--spacing-2) var(--spacing-4);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-weight-medium);
+    transition: all 0.2s ease;
+
+    &--primary {
+      background-color: var(--color-primary);
+      color: var(--color-white);
+
+      &:hover {
+        background-color: var(--color-primary-dark);
+      }
+    }
+
+    &--secondary {
+      background-color: var(--color-gray-100);
+      color: var(--color-text);
+
+      &:hover {
+        background-color: var(--color-gray-200);
+      }
+    }
+  }
+}
+
+.error-details {
+  margin-top: var(--spacing-6);
+  padding: var(--spacing-4);
+  background-color: var(--color-gray-50);
+  border-radius: var(--radius-md);
+  text-align: left;
+
+  .error-metadata {
+    margin-bottom: var(--spacing-4);
+    padding-bottom: var(--spacing-4);
+    border-bottom: 1px solid var(--color-gray-200);
+
+    p {
+      margin: var(--spacing-1) 0;
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  .error-section {
+    margin-top: var(--spacing-4);
+
+    h3 {
+      font-size: var(--font-size-md);
+      margin-bottom: var(--spacing-2);
+    }
+
+    .error-stack {
+      font-family: monospace;
+      font-size: var(--font-size-sm);
+      white-space: pre-wrap;
+      background-color: var(--color-gray-100);
+      padding: var(--spacing-2);
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+    }
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@media (max-width: 640px) {
+  .error-actions {
+    flex-direction: column;
+  }
+
+  .error-content {
+    padding: var(--spacing-4);
+  }
+}

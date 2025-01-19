@@ -13,10 +13,17 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import applicationsReducer from "./features/applications/applicationsSlice";
 import authReducer from "./features/auth/authSlice";
 import projectsReducer from "./features/projects/projectsSlice";
 import uiReducer from "./features/ui/uiSlice";
 import { errorMiddleware } from "./middleware/errorMiddleWare";
+
+const applicationsPersistConfig = {
+  key: "applications",
+  storage,
+  whitelist: ["filters", "currentApplication"], // Only persist these fields
+};
 
 const authPersistConfig = {
   key: "auth",
@@ -30,6 +37,11 @@ const uiPersistConfig = {
   whitelist: ["theme", "sidebar"],
 };
 
+const persistedApplicationsReducer = persistReducer(
+  applicationsPersistConfig,
+  applicationsReducer
+);
+
 const persistedAuthReducer = persistReducer<AuthState>(
   authPersistConfig,
   authReducer
@@ -42,6 +54,7 @@ const store = configureStore({
     projects: projectsReducer,
     auth: persistedAuthReducer,
     ui: persistedUiReducer,
+    applications: persistedApplicationsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

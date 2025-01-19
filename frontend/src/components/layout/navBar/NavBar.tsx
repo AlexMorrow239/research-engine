@@ -1,8 +1,8 @@
+import ugrLogo from "@/assets/images/navbar/miami-ugr.png";
+import poweredBy from "@/assets/images/navbar/powered-by-bonsai.png";
 import { navigationItems } from "@/config/navigation";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/features/auth/authSlice";
-import ugrLogo from "@public/images/navBar/miami-ugr.png";
-import poweredBy from "@public/images/navBar/powered-by-bonsai.png";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import "./NavBar.scss";

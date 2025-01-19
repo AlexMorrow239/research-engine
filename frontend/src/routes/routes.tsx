@@ -1,6 +1,9 @@
+import ErrorBoundary, {
+  ErrorDisplay,
+} from "@/components/error-boundary/ErrorBoundary";
 import { MainLayout } from "@/components/layout/mainLayout/MainLayout";
 import ProjectDashboard from "@/pages/projects/projectDashboard/ProjectDashboard";
-import { ProjectForm } from "@/pages/projects/projectForm/projectForm";
+import { ProjectForm } from "@/pages/projects/projectForm/ProjectForm";
 import { createBrowserRouter } from "react-router-dom";
 import About from "../pages/about/About";
 import FacultyLogin from "../pages/auth/facultyLogin/FacultyLogin";
@@ -12,38 +15,68 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
+    errorElement: <ErrorDisplay />,
     children: [
       {
         index: true,
-        element: <Listings />,
+        element: (
+          <ErrorBoundary>
+            <Listings />
+          </ErrorBoundary>
+        ),
       },
       {
         path: "about",
-        element: <About />,
+        element: (
+          <ErrorBoundary>
+            <About />
+          </ErrorBoundary>
+        ),
       },
       {
         path: "faculty/login",
-        element: <FacultyLogin />,
+        element: (
+          <ErrorBoundary>
+            <FacultyLogin />
+          </ErrorBoundary>
+        ),
       },
       {
         path: "faculty/register",
-        element: <FacultyRegistration />,
+        element: (
+          <ErrorBoundary>
+            <FacultyRegistration />
+          </ErrorBoundary>
+        ),
       },
       {
         path: "faculty",
         element: <ProtectedLayout />,
+        errorElement: <ErrorDisplay />,
         children: [
           {
             path: "dashboard",
-            element: <ProjectDashboard />,
+            element: (
+              <ErrorBoundary>
+                <ProjectDashboard />
+              </ErrorBoundary>
+            ),
           },
           {
             path: "projects/new",
-            element: <ProjectForm mode="create" />,
+            element: (
+              <ErrorBoundary>
+                <ProjectForm mode="create" />
+              </ErrorBoundary>
+            ),
           },
           {
             path: "projects/:projectId/edit",
-            element: <ProjectForm mode="edit" />,
+            element: (
+              <ErrorBoundary>
+                <ProjectForm mode="edit" />
+              </ErrorBoundary>
+            ),
           },
         ],
       },
