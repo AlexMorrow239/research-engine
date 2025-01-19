@@ -1,4 +1,5 @@
-import type { ProjectStatus } from "@/common/enums";
+import { type ProjectStatus } from "@/common/enums";
+import { isDeadlineExpired, isDeadlineSoon } from "@/utils/dateUtils";
 import { Building2, FileText, Mail, User } from "lucide-react";
 import React from "react";
 import "./ProjectDetails.scss";
@@ -38,19 +39,6 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     );
   }
 
-  const isDeadlineSoon = (deadline: Date): boolean => {
-    if (!deadline) return false;
-    const daysUntilDeadline = Math.ceil(
-      (new Date(deadline).getTime() - new Date().getTime()) / (1000 * 3600 * 24)
-    );
-    return daysUntilDeadline <= 7 && daysUntilDeadline > 0;
-  };
-
-  const isDeadlineExpired = (deadline: Date): boolean => {
-    if (!deadline) return false;
-    return new Date(deadline) < new Date();
-  };
-
   const getDeadlineStatus = (deadline?: Date): string | null => {
     if (!deadline) return null;
     if (isDeadlineExpired(deadline)) return "urgent";
@@ -58,7 +46,7 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({
     return "normal";
   };
 
-  const formatDeadline = (deadline: Date): string => {
+  const getDeadlineText = (deadline: Date): string => {
     if (isDeadlineExpired(deadline)) return "Deadline passed";
     if (isDeadlineSoon(deadline)) return "Deadline soon";
     return new Date(deadline).toLocaleDateString(undefined, {
@@ -69,9 +57,9 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({
   };
 
   return (
-    <article className="project-details">
-      <div className="project-details__content">
-        <header className="project-details__header">
+    <article className="card project-details">
+      <div className="card__content">
+        <header className="card__header project-details__header">
           <h2 className="project-details__title">{project.title}</h2>
 
           <div className="project-details__meta-grid">
@@ -90,42 +78,44 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({
                     project.applicationDeadline
                   )}`}
                 >
-                  {formatDeadline(project.applicationDeadline)}
+                  {getDeadlineText(project.applicationDeadline)}
                 </span>
               </div>
             )}
           </div>
         </header>
 
-        <section className="project-details__professor">
-          <h3>Faculty Mentor</h3>
-          <div className="info">
-            <User size={18} className="icon" aria-hidden="true" />
-            <span className="text">
-              {project.professor.name.firstName}{" "}
-              {project.professor.name.lastName}
-            </span>
+        <section className="card card--secondary project-details__professor">
+          <div className="card__content">
+            <h3>Faculty Mentor</h3>
+            <div className="info">
+              <User size={18} className="icon" aria-hidden="true" />
+              <span className="text">
+                {project.professor.name.firstName}{" "}
+                {project.professor.name.lastName}
+              </span>
 
-            <Building2 size={18} className="icon" aria-hidden="true" />
-            <span className="text">{project.professor.department}</span>
+              <Building2 size={18} className="icon" aria-hidden="true" />
+              <span className="text">{project.professor.department}</span>
 
-            <Mail size={18} className="icon" aria-hidden="true" />
-            <a
-              href={`mailto:${project.professor.email}`}
-              className="email"
-              aria-label={`Email ${project.professor.name.firstName} ${project.professor.name.lastName}`}
-            >
-              {project.professor.email}
-            </a>
+              <Mail size={18} className="icon" aria-hidden="true" />
+              <a
+                href={`mailto:${project.professor.email}`}
+                className="email"
+                aria-label={`Email ${project.professor.name.firstName} ${project.professor.name.lastName}`}
+              >
+                {project.professor.email}
+              </a>
+            </div>
           </div>
         </section>
 
-        <section className="project-details__section">
+        <section className="card__section">
           <h3>Project Description</h3>
           <p>{project.description}</p>
         </section>
 
-        <section className="project-details__section">
+        <section className="card__section">
           <h3>Requirements</h3>
           <ul
             className="project-details__requirements"
@@ -137,7 +127,7 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({
           </ul>
         </section>
 
-        <section className="project-details__section">
+        <section className="card__section">
           <h3>Research Categories</h3>
           <div
             className="project-details__categories"
@@ -153,7 +143,7 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({
         </section>
 
         {project.files.length > 0 && (
-          <section className="project-details__section">
+          <section className="card__section">
             <h3>Additional Documents</h3>
             <ul className="project-details__files">
               {project.files.map((file) => (
@@ -174,7 +164,7 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({
           </section>
         )}
 
-        <footer className="project-details__apply">
+        <footer className="card__footer project-details__apply">
           <button className="btn btn--primary">Apply Now</button>
         </footer>
       </div>

@@ -361,7 +361,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                   />
                   <button
                     type="button"
-                    className="btn btn--secondary"
+                    className="btn btn--secondary btn--sm"
                     onClick={() => {
                       const newCategories = [...researchCategories];
                       newCategories.splice(index, 1);
@@ -378,7 +378,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                 onClick={() => {
                   setResearchCategories([...researchCategories, ""]);
                 }}
-                className="btn btn--secondary"
+                className="btn btn--secondary btn--sm"
               >
                 Add Category
               </button>
@@ -442,7 +442,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
           <div className="form-actions">
             <button
               type="button"
-              className="btn btn--secondary"
+              className="btn btn--outline btn--md"
               onClick={() => navigate(-1)}
               disabled={isSubmitting}
             >
@@ -456,7 +456,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                     <>
                       <button
                         type="button"
-                        className="btn btn--danger"
+                        className="btn btn--danger btn--md"
                         onClick={handleSubmit((data) =>
                           onSubmit(data, ProjectStatus.DRAFT)
                         )}
@@ -466,7 +466,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn--danger"
+                        className="btn btn--danger btn--md"
                         onClick={handleSubmit((data) =>
                           onSubmit(data, ProjectStatus.CLOSED, "delete")
                         )}
@@ -482,7 +482,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                     <>
                       <button
                         type="button"
-                        className="btn btn--outline"
+                        className="btn btn--outline btn--md"
                         onClick={handleSubmit((data) =>
                           onSubmit(data, ProjectStatus.PUBLISHED, "delist")
                         )}
@@ -492,7 +492,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                       </button>
                       <button
                         type="submit"
-                        className="btn btn--primary"
+                        className="btn btn--primary btn--md"
                         onClick={handleSubmit((data) =>
                           onSubmit(data, ProjectStatus.PUBLISHED)
                         )}
@@ -502,7 +502,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn--danger"
+                        className="btn btn--danger btn--md"
                         onClick={handleSubmit((data) =>
                           onSubmit(data, ProjectStatus.CLOSED)
                         )}
@@ -518,7 +518,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                     <>
                       <button
                         type="button"
-                        className="btn btn--danger"
+                        className="btn btn--danger btn--md"
                         onClick={handleSubmit((data) =>
                           onSubmit(data, ProjectStatus.DRAFT, "delete")
                         )}
@@ -528,7 +528,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                       </button>
                       <button
                         type="button"
-                        className="btn btn--outline"
+                        className="btn btn--outline btn--md"
                         onClick={handleSubmit((data) =>
                           onSubmit(data, ProjectStatus.DRAFT)
                         )}
@@ -538,7 +538,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                       </button>
                       <button
                         type="submit"
-                        className="btn btn--primary"
+                        className="btn btn--primary btn--md"
                         onClick={handleSubmit((data) =>
                           onSubmit(data, ProjectStatus.PUBLISHED)
                         )}
@@ -556,7 +556,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                 <>
                   <button
                     type="button"
-                    className="btn btn--outline"
+                    className="btn btn--outline btn--md"
                     onClick={handleSubmit((data) =>
                       onSubmit(data, ProjectStatus.DRAFT)
                     )}
@@ -566,7 +566,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                   </button>
                   <button
                     type="submit"
-                    className="btn btn--primary"
+                    className="btn btn--primary btn--md"
                     onClick={handleSubmit((data) =>
                       onSubmit(data, ProjectStatus.PUBLISHED)
                     )}

@@ -1,3 +1,10 @@
+import { PROJECT_STATUS_LABELS, UI_CONSTANTS } from "@/common/constants";
+import { ProjectStatus } from "@/common/enums";
+import {
+  formatDeadline,
+  isDeadlineExpired,
+  isDeadlineSoon,
+} from "@/utils/dateUtils";
 import { Calendar, Users } from "lucide-react";
 import React from "react";
 import "./ProjectCard.scss";
@@ -16,7 +23,7 @@ interface ProjectCardProps {
     researchCategories: string[];
     positions: number;
     applicationDeadline?: Date;
-    status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+    status: ProjectStatus;
   };
   isSelected: boolean;
   onClick: () => void;
@@ -27,19 +34,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   isSelected,
   onClick,
 }) => {
-  const isDeadlineSoon = (deadline: Date): boolean => {
-    if (!deadline) return false;
-    const daysUntilDeadline = Math.ceil(
-      (new Date(deadline).getTime() - new Date().getTime()) / (1000 * 3600 * 24)
-    );
-    return daysUntilDeadline <= 7 && daysUntilDeadline > 0;
-  };
-
-  const isDeadlineExpired = (deadline: Date): boolean => {
-    if (!deadline) return false;
-    return new Date(deadline) < new Date();
-  };
-
   const getDeadlineClass = (deadline?: Date): string => {
     if (!deadline) return "";
     if (isDeadlineExpired(deadline)) return "project-card__deadline--expired";
@@ -51,16 +45,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     if (!deadline) return "";
     if (isDeadlineExpired(deadline)) return "Deadline passed";
     if (isDeadlineSoon(deadline)) return "Deadline soon";
-    return new Date(deadline).toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+    return formatDeadline(deadline);
   };
 
   return (
     <div
-      className={`project-card ${isSelected ? "project-card--selected" : ""}`}
+      className={`card card--hoverable ${
+        isSelected ? "card--selected" : ""
+      } project-card`}
       onClick={onClick}
       role="button"
       tabIndex={0}
@@ -72,63 +64,70 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       }}
       aria-selected={isSelected}
     >
-      {project.status !== "PUBLISHED" && (
-        <span
-          className={`project-card__status project-card__status--${project.status.toLowerCase()}`}
-        >
-          {project.status.charAt(0) + project.status.slice(1).toLowerCase()}
-        </span>
-      )}
-
-      <h3 className="project-card__title">{project.title}</h3>
-
-      <div className="project-card__professor">
-        {project.professor.name.firstName} {project.professor.name.lastName}
-      </div>
-
-      <div className="project-card__department">
-        {project.professor.department}
-      </div>
-
-      <div className="project-card__meta">
-        <span className="project-card__positions" title="Available positions">
-          <Users size={16} aria-hidden="true" />
-          {project.positions} position{project.positions !== 1 ? "s" : ""}
-        </span>
-
-        {project.applicationDeadline && (
+      <div className="card__content">
+        {project.status !== ProjectStatus.PUBLISHED && (
           <span
-            className={`project-card__deadline ${getDeadlineClass(
-              project.applicationDeadline
-            )}`}
-            title="Application deadline"
+            className={`project-card__status project-card__status--${project.status.toLowerCase()}`}
           >
-            <Calendar size={16} aria-hidden="true" />
-            {getDeadlineText(project.applicationDeadline)}
+            {PROJECT_STATUS_LABELS[project.status]}
           </span>
         )}
-      </div>
 
-      {project.researchCategories.length > 0 && (
-        <div
-          className="project-card__categories"
-          aria-label="Research categories"
-        >
-          {project.researchCategories.slice(0, 3).map((category) => (
-            <span key={category} className="project-card__category">
-              {category}
-            </span>
-          ))}
-          {project.researchCategories.length > 3 && (
+        <h3 className="project-card__title">{project.title}</h3>
+
+        <div className="project-card__professor">
+          {project.professor.name.firstName} {project.professor.name.lastName}
+        </div>
+
+        <div className="project-card__department">
+          {project.professor.department}
+        </div>
+
+        <div className="project-card__meta">
+          <span className="project-card__positions" title="Available positions">
+            <Users size={16} aria-hidden="true" />
+            {project.positions} position{project.positions !== 1 ? "s" : ""}
+          </span>
+
+          {project.applicationDeadline && (
             <span
-              className="project-card__category"
-              title="Additional categories"
+              className={`project-card__deadline ${getDeadlineClass(
+                project.applicationDeadline
+              )}`}
+              title="Application deadline"
             >
-              +{project.researchCategories.length - 3}
+              <Calendar size={16} aria-hidden="true" />
+              {getDeadlineText(project.applicationDeadline)}
             </span>
           )}
         </div>
-      )}
+
+        {project.researchCategories.length > 0 && (
+          <div
+            className="project-card__categories"
+            aria-label="Research categories"
+          >
+            {project.researchCategories
+              .slice(0, UI_CONSTANTS.MAX_VISIBLE_CATEGORIES)
+              .map((category) => (
+                <span key={category} className="project-card__category">
+                  {category}
+                </span>
+              ))}
+            {project.researchCategories.length >
+              UI_CONSTANTS.MAX_VISIBLE_CATEGORIES && (
+              <span
+                className="project-card__category"
+                title="Additional categories"
+              >
+                +
+                {project.researchCategories.length -
+                  UI_CONSTANTS.MAX_VISIBLE_CATEGORIES}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

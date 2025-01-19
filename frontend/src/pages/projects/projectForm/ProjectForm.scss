@@ -1,147 +1,154 @@
-@use "@/styles/abstracts" as *;
+@use "@styles/abstracts" as *;
 
 .project-form {
-  &__container {
-    @include card-base;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: var(--spacing-6);
-  }
-
-  &__loading {
-    @include flex-center;
-    padding: var(--spacing-8);
-
-    h2 {
-      color: var(--color-text-light);
-    }
-  }
+  background-color: var(--color-background);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-border);
 
   &__header {
-    margin-bottom: var(--spacing-8);
-    text-align: center;
+    padding: var(--spacing-6);
+    border-bottom: 1px solid var(--color-border);
 
     h1 {
-      @include heading("2xl");
-      margin-bottom: var(--spacing-2);
-    }
-
-    p {
-      color: var(--color-text-light);
-      font-size: var(--font-size-lg);
+      margin: 0;
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
     }
   }
 
-  .form-section {
-    margin-bottom: var(--spacing-8);
-    padding-bottom: var(--spacing-6);
-    border-bottom: 1px solid var(--color-border);
+  &__content {
+    padding: var(--spacing-6);
 
-    &__title {
-      @include heading("xl");
-      margin-bottom: var(--spacing-4);
-    }
-
-    &:last-of-type {
-      border-bottom: none;
+    @include respond-to("sm", "down") {
+      padding: var(--spacing-4);
     }
   }
 
   .form-group {
     margin-bottom: var(--spacing-6);
 
-    label {
-      @include font-style("medium");
+    &__label {
       display: block;
       margin-bottom: var(--spacing-2);
-      color: var(--color-text-dark);
+      font-weight: var(--font-weight-medium);
     }
 
-    input,
-    textarea {
-      @include input-base;
-      width: 100%;
-
-      &.error {
-        border-color: var(--color-error);
-      }
-
-      &::placeholder {
-        color: var(--color-text-light);
-      }
+    &__helper {
+      margin-top: var(--spacing-1);
+      color: var(--color-text-light);
+      font-size: var(--font-size-sm);
     }
 
-    textarea {
-      resize: vertical;
-      min-height: 120px;
-    }
-
-    .error-message {
-      display: block;
+    &__error {
+      margin-top: var(--spacing-1);
       color: var(--color-error);
       font-size: var(--font-size-sm);
-      margin-top: var(--spacing-1);
     }
   }
 
   .array-input {
     @include flex(row, flex-start, center);
-    gap: var(--spacing-4);
+    gap: var(--spacing-3);
     margin-bottom: var(--spacing-3);
+    position: relative;
 
     input {
       flex: 1;
     }
-
-    .btn {
-      flex-shrink: 0;
-    }
   }
 
   .form-actions {
-    @include flex(row, space-between, center);
-    margin-top: var(--spacing-8);
-    padding-top: var(--spacing-6);
+    padding: var(--spacing-6);
     border-top: 1px solid var(--color-border);
+    background-color: var(--color-background-alt);
+    border-bottom-left-radius: var(--radius-xl);
+    border-bottom-right-radius: var(--radius-xl);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-4);
+
+    @include respond-to("sm", "down") {
+      flex-direction: column-reverse;
+    }
 
     &__right {
-      @include flex(row, flex-end, center);
-      gap: var(--spacing-4);
+      display: flex;
+      gap: var(--spacing-3);
+      flex-wrap: wrap;
+      justify-content: flex-end;
+
+      @include respond-to("sm", "down") {
+        width: 100%;
+        justify-content: stretch;
+
+        .btn {
+          flex: 1;
+        }
+      }
     }
 
     .btn {
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
-
-      &--danger {
-        @include button-variant(--color-error, --color-background);
-        border: 1px solid var(--color-error);
-
-        &:hover {
-          filter: brightness(0.9);
-        }
-      }
-
-      &--outline {
-        background-color: transparent;
-        border: 1px solid var(--color-border);
-        color: var(--color-text);
-
-        &:hover {
-          background-color: var(--color-background-alt);
-        }
-      }
-
-      &--primary {
-        @include button-variant(--color-primary, --color-background);
-      }
-
-      &--secondary {
-        @include button-variant(--color-gray-200, --color-text);
-        border: 1px solid var(--color-border);
-      }
+      min-width: 120px;
+      text-align: center;
     }
+  }
+
+  .input-group {
+    position: relative;
+
+    &__icon {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: var(--spacing-3);
+      color: var(--color-text-light);
+      pointer-events: none;
+    }
+
+    input {
+      padding-left: calc(var(--spacing-3) * 2 + 16px);
+    }
+  }
+
+  textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: var(--spacing-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-size: var(--font-size-base);
+    transition: border-color var(--transition-base);
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+
+    &::placeholder {
+      color: var(--color-text-light);
+    }
+
+    &:disabled {
+      background-color: var(--color-background-alt);
+      cursor: not-allowed;
+    }
+  }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--spacing-3) center;
+    background-size: 12px;
+    padding-right: var(--spacing-8);
   }
 }

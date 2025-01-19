@@ -1,24 +1,25 @@
 @use "sass:color";
 
 // Base color palette
-$color-gray-50: #f9fafb;
-$color-gray-100: #f3f4f6;
-$color-gray-200: #e5e7eb;
-$color-gray-300: #d1d5db;
-$color-gray-400: #9ca3af;
-$color-gray-500: #6b7280;
-$color-gray-600: #4b5563;
-$color-gray-700: #374151;
-$color-gray-800: #1f2937;
-$color-gray-900: #111827;
+$color-gray-50: #f8fafc;
+$color-gray-100: #f1f5f9;
+$color-gray-200: #e2e8f0;
+$color-gray-300: #cbd5e1;
+$color-gray-400: #94a3b8;
+$color-gray-500: #64748b;
+$color-gray-600: #475569;
+$color-gray-700: #334155;
+$color-gray-800: #1e293b;
+$color-gray-900: #0f172a;
 
 // Brand colors
 $color-primary-400: #f47b20; // Miami Orange
 $color-primary-500: #005030; // Miami Green
-$color-accent-400: #4ade80; // Bonsai Green
-$color-accent-500: #22c55e; // Bonsai Green Darker
+$color-primary-600: #004528; // Darker shade for depth
+$color-accent-400: #38bdf8; // Fresh blue accent
+$color-accent-500: #0ea5e9; // Deeper blue accent
 
-// Text color variables
+// Text colors
 $text-color: $color-gray-700;
 $text-color-dark: $color-gray-900;
 $text-color-light: $color-gray-500;
@@ -29,28 +30,31 @@ $text-color-light: $color-gray-500;
   // Brand Colors
   --color-primary: #{$color-primary-400};
   --color-primary-dark: #{$color-primary-500};
+  --color-primary-darker: #{$color-primary-600};
   --color-accent: #{$color-accent-400};
   --color-accent-dark: #{$color-accent-500};
 
-  // Text Colors
+  // Semantic colors
   --color-text: #{$text-color};
   --color-text-dark: #{$text-color-dark};
   --color-text-light: #{$text-color-light};
 
-  // Background Colors
+  // Enhanced background system
   --color-background: #ffffff;
   --color-background-alt: #{$color-gray-50};
   --color-background-input: #{$color-gray-100};
   --color-background-elevated: #ffffff;
+  --color-background-selected: #{color.adjust($color-primary-400, $alpha: -0.9)};
 
-  // Border Colors
+  // Refined border system
   --color-border: #{$color-gray-200};
   --color-border-input: #{$color-gray-300};
   --color-border-dark: #{$color-gray-400};
+  --color-border-focus: #{color.adjust($color-primary-400, $alpha: -0.5)};
 
-  // Status Colors
-  --color-success: #22c55e;
-  --color-success-light: #{color.adjust(#22c55e, $lightness: 42%)};
+  // Status colors
+  --color-success: #10b981;
+  --color-success-light: #{color.adjust(#10b981, $lightness: 42%)};
   --color-error: #ef4444;
   --color-error-light: #{color.adjust(#ef4444, $lightness: 42%)};
   --color-warning: #f59e0b;
@@ -58,36 +62,40 @@ $text-color-light: $color-gray-500;
   --color-info: #3b82f6;
   --color-info-light: #{color.adjust(#3b82f6, $lightness: 42%)};
 
-  /* Typography
+  /* Typography System
   ----------------------------- */
-  // Font Families
-  --font-primary: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  // Modern font stack
+  --font-primary: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, monospace;
 
-  // Font Weights
+  // Refined font weights
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
 
-  // Font Sizes
+  // Enhanced type scale
   --font-size-xs: 0.75rem; /* 12px */
   --font-size-sm: 0.875rem; /* 14px */
   --font-size-base: 1rem; /* 16px */
   --font-size-lg: 1.125rem; /* 18px */
   --font-size-xl: 1.25rem; /* 20px */
   --font-size-2xl: 1.5rem; /* 24px */
-  --font-size-3xl: 1.875rem; /* 30px */
-  --font-size-4xl: 2.25rem; /* 36px */
+  --font-size-3xl: 2rem; /* 32px */
+  --font-size-4xl: 2.5rem; /* 40px */
+  --font-size-5xl: 3rem; /* 48px */
 
-  // Line Heights
+  // Refined line heights
   --line-height-none: 1;
   --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
   --line-height-normal: 1.5;
-  --line-height-relaxed: 1.75;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
 
-  /* Spacing
+  /* Enhanced Spacing Scale
   ----------------------------- */
   --spacing-0: 0;
   --spacing-1: 0.25rem; /* 4px */
@@ -102,14 +110,18 @@ $text-color-light: $color-gray-500;
   --spacing-16: 4rem; /* 64px */
   --spacing-20: 5rem; /* 80px */
   --spacing-24: 6rem; /* 96px */
+  --spacing-32: 8rem; /* 128px */
 
-  /* Layout
+  /* Refined Layout Values
   ----------------------------- */
   --container-width: 80rem; /* 1280px */
+  --container-width-sm: 640px; /* Small container */
+  --container-width-md: 768px; /* Medium container */
+  --container-width-lg: 1024px; /* Large container */
   --header-height: 4rem; /* 64px */
   --sidebar-width: 16rem; /* 256px */
 
-  /* Borders & Radius
+  /* Enhanced Border Radius
   ----------------------------- */
   --radius-none: 0;
   --radius-sm: 0.125rem; /* 2px */
@@ -120,7 +132,7 @@ $text-color-light: $color-gray-500;
   --radius-2xl: 1rem; /* 16px */
   --radius-full: 9999px;
 
-  /* Shadows
+  /* Refined Shadow System
   ----------------------------- */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-base: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
@@ -129,20 +141,26 @@ $text-color-light: $color-gray-500;
     0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
     0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
 
-  /* Component Specific
+  /* Component-Specific Tokens
   ----------------------------- */
-  // Buttons
+  // Enhanced button system
   --button-height-sm: 2rem; /* 32px */
   --button-height-base: 2.5rem; /* 40px */
   --button-height-lg: 3rem; /* 48px */
+  --button-border-radius: var(--radius-base);
+  --button-font-weight: var(--font-weight-medium);
+  --color-primary-transparent: #{color.adjust($color-primary-400, $alpha: -0.9)};
 
-  // Inputs
+  // Refined input system
   --input-height: 2.5rem; /* 40px */
   --input-radius: var(--radius-base);
   --input-border: 1px solid var(--color-border-input);
+  --input-shadow: var(--shadow-sm);
+  --input-focus-ring: 0 0 0 2px var(--color-border-focus);
 
-  // Navigation
+  // Navigation refinements
   --nav-item-height: 2.5rem; /* 40px */
   --nav-item-spacing: var(--spacing-4);
 
@@ -158,16 +176,18 @@ $text-color-light: $color-gray-500;
   --z-dropdown: 1000;
   --z-sticky: 1020;
   --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
   --z-modal: 1050;
   --z-popover: 1060;
   --z-tooltip: 1070;
 
   /* Transitions
   ----------------------------- */
-  --transition-all: all 0.2s ease;
-  --transition-colors: color 0.2s ease, background-color 0.2s ease,
-    border-color 0.2s ease;
-  --transition-opacity: opacity 0.2s ease;
-  --transition-shadow: box-shadow 0.2s ease;
-  --transition-transform: transform 0.2s ease;
+  --transition-all: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-colors: color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-opacity: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-shadow: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-transform: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }

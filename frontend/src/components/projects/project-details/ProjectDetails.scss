@@ -1,7 +1,6 @@
 @use "@/styles/abstracts" as *;
 
 .project-details {
-  background-color: var(--color-background);
   height: 100%;
 
   &--empty {
@@ -14,15 +13,7 @@
     background-color: var(--color-background-alt);
   }
 
-  &__content {
-    padding: var(--spacing-6);
-  }
-
-  &__header {
-    padding-bottom: var(--spacing-6);
-    border-bottom: 1px solid var(--color-border);
-  }
-
+  // Header Section
   &__title {
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
@@ -59,31 +50,25 @@
       font-size: var(--font-size-base);
       font-weight: var(--font-weight-medium);
       color: var(--color-text);
-    }
 
-    &--deadline {
-      .value {
-        &.urgent {
-          color: var(--color-error);
-        }
-        &.warning {
-          color: var(--color-warning);
-        }
+      &.urgent {
+        color: var(--color-error);
+      }
+      &.warning {
+        color: var(--color-warning);
       }
     }
   }
 
+  // Professor Section
   &__professor {
-    margin: var(--spacing-6) 0;
-    padding: var(--spacing-4) var(--spacing-5);
-    background-color: var(--color-background-alt);
-    border-radius: var(--radius-lg);
+    margin-bottom: var(--spacing-6);
 
     h3 {
       font-size: var(--font-size-lg);
       font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--spacing-3);
       color: var(--color-text-dark);
-      margin-bottom: var(--spacing-4);
     }
 
     .info {
@@ -91,54 +76,27 @@
       grid-template-columns: auto 1fr;
       gap: var(--spacing-3) var(--spacing-4);
       align-items: center;
-
-      .icon {
-        color: var(--color-text-light);
-      }
-
-      .text {
-        color: var(--color-text);
-      }
-
-      .email {
-        color: var(--color-primary);
-        text-decoration: none;
-        transition: color 0.2s ease;
-
-        &:hover {
-          color: var(--color-primary-dark);
-          text-decoration: underline;
-        }
-      }
-    }
-  }
-
-  &__section {
-    margin-bottom: var(--spacing-6);
-    padding-bottom: var(--spacing-6);
-    border-bottom: 1px solid var(--color-border);
-
-    &:last-child {
-      border-bottom: none;
-      margin-bottom: 0;
-      padding-bottom: 0;
     }
 
-    h3 {
-      font-size: var(--font-size-lg);
-      font-weight: var(--font-weight-semibold);
-      color: var(--color-text-dark);
-      margin-bottom: var(--spacing-3);
+    .icon {
+      color: var(--color-text-light);
     }
 
-    p {
+    .text {
       color: var(--color-text);
-      line-height: var(--line-height-relaxed);
-      margin-bottom: var(--spacing-4);
-      white-space: pre-wrap;
+    }
+
+    .email {
+      color: var(--color-primary);
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
   }
 
+  // Requirements Section
   &__requirements {
     list-style: none;
     padding: 0;
@@ -146,22 +104,15 @@
 
     li {
       position: relative;
-      padding: var(--spacing-3) var(--spacing-6);
+      padding-left: var(--spacing-6);
       margin-bottom: var(--spacing-3);
       color: var(--color-text);
-      background-color: var(--color-background-alt);
-      border-radius: var(--radius-lg);
 
       &::before {
-        content: "";
+        content: "•";
         position: absolute;
-        left: var(--spacing-3);
-        top: 50%;
-        transform: translateY(-50%);
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background-color: var(--color-primary);
+        left: var(--spacing-2);
+        color: var(--color-primary);
       }
 
       &:last-child {
@@ -170,6 +121,7 @@
     }
   }
 
+  // Categories Section
   &__categories {
     display: flex;
     flex-wrap: wrap;
@@ -177,15 +129,21 @@
 
     .category {
       font-size: var(--font-size-sm);
-      padding: var(--spacing-2) var(--spacing-3);
-      border-radius: var(--radius-full);
+      padding: var(--spacing-1) var(--spacing-3);
       background-color: var(--color-background-alt);
       border: 1px solid var(--color-border);
+      border-radius: var(--radius-full);
       color: var(--color-text);
-      font-weight: var(--font-weight-medium);
+      transition: var(--transition-all);
+
+      &:hover {
+        border-color: var(--color-primary);
+        background-color: var(--color-background);
+      }
     }
   }
 
+  // Files Section
   &__files {
     list-style: none;
     padding: 0;
@@ -201,45 +159,36 @@
 
     .file-link {
       @include flex(row, flex-start, center);
-      gap: var(--spacing-3);
+      gap: var(--spacing-2);
       color: var(--color-primary);
       text-decoration: none;
-      padding: var(--spacing-3);
-      border-radius: var(--radius-lg);
-      background-color: var(--color-background-alt);
-      transition: all 0.2s ease;
+      padding: var(--spacing-2);
+      border-radius: var(--radius-md);
+      transition: var(--transition-all);
 
       &:hover {
-        background-color: var(--color-background);
-        color: var(--color-primary-dark);
-
-        .icon {
-          color: var(--color-primary);
-        }
+        background-color: var(--color-background-alt);
+        text-decoration: underline;
       }
 
       .icon {
         color: var(--color-text-light);
-        transition: color 0.2s ease;
+        flex-shrink: 0;
       }
     }
   }
 
+  // Apply Section
   &__apply {
-    position: sticky;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: 0;
-    padding: var(--spacing-4);
-    background-color: var(--color-background);
-    border-top: 1px solid var(--color-border);
+    margin-top: var(--spacing-6);
+    text-align: right;
+  }
 
-    .btn {
-      width: 100%;
-      padding: var(--spacing-3) var(--spacing-4);
-      font-weight: var(--font-weight-semibold);
-      font-size: var(--font-size-base);
-    }
+  // Section Headers
+  h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-dark);
+    margin-bottom: var(--spacing-3);
   }
 }

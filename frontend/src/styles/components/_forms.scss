@@ -1,28 +1,412 @@
 @use "../abstracts" as *;
 
+/* Form Group
+----------------------------- */
 .form-group {
   margin-bottom: var(--spacing-4);
+  position: relative;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &--required {
+    .form-label::after {
+      content: "*";
+      color: var(--color-error);
+      margin-left: var(--spacing-1);
+    }
+  }
 }
 
+/* Form Label
+----------------------------- */
 .form-label {
-  display: block;
+  display: inline-block;
   margin-bottom: var(--spacing-2);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-dark);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+
+  &--hidden {
+    @include visually-hidden;
+  }
 }
 
+/* Base Input Styles
+----------------------------- */
 .form-input {
   @include input-base;
   width: 100%;
   height: var(--input-height);
+  padding: var(--spacing-2) var(--spacing-3);
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-base);
+  color: var(--color-text);
+  transition: var(--transition-all);
 
+  // Placeholder styling
+  &::placeholder {
+    color: var(--color-text-light);
+    opacity: 0.7;
+  }
+
+  // Hover state
+  &:hover:not(:disabled):not([readonly]) {
+    border-color: var(--color-border-dark);
+  }
+
+  // Focus state
+  &:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-transparent);
+  }
+
+  // Disabled state
+  &:disabled,
+  &[readonly] {
+    background-color: var(--color-background-alt);
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  // Error state
   &--error {
     border-color: var(--color-error);
+
+    &:focus {
+      box-shadow: 0 0 0 3px var(--color-error-light);
+    }
+  }
+
+  // Success state
+  &--success {
+    border-color: var(--color-success);
+
+    &:focus {
+      box-shadow: 0 0 0 3px var(--color-success-light);
+    }
   }
 }
 
-.form-error {
-  color: var(--color-error);
+/* Text Area
+----------------------------- */
+textarea.form-input {
+  height: auto;
+  min-height: 100px;
+  resize: vertical;
+  padding: var(--spacing-2) var(--spacing-3);
+  line-height: var(--line-height-normal);
+}
+
+/* Select Input
+----------------------------- */
+.form-select {
+  @extend .form-input;
+  padding-right: var(--spacing-8);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right var(--spacing-2) center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+
+  &::-ms-expand {
+    display: none;
+  }
+}
+
+/* Checkbox and Radio
+----------------------------- */
+.form-checkbox,
+.form-radio {
+  --indicator-size: 1.25rem;
+  --indicator-border: 2px;
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: var(--indicator-size);
+    height: var(--indicator-size);
+    margin: 0;
+    cursor: pointer;
+
+    & + span {
+      position: relative;
+      display: inline-block;
+      width: var(--indicator-size);
+      height: var(--indicator-size);
+      border: var(--indicator-border) solid var(--color-border-input);
+      background-color: var(--color-background);
+      transition: var(--transition-all);
+    }
+
+    &:focus + span {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-transparent);
+    }
+
+    &:checked + span {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+
+    &:disabled + span {
+      background-color: var(--color-background-alt);
+      border-color: var(--color-border);
+      cursor: not-allowed;
+    }
+  }
+}
+
+.form-checkbox {
+  input + span {
+    border-radius: var(--radius-sm);
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      width: 0.4em;
+      height: 0.8em;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: translate(-50%, -50%) rotate(45deg);
+      opacity: 0;
+      transition: var(--transition-all);
+    }
+  }
+
+  input:checked + span::after {
+    opacity: 1;
+  }
+}
+
+.form-radio {
+  input + span {
+    border-radius: 50%;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: calc(var(--indicator-size) * 0.5);
+      height: calc(var(--indicator-size) * 0.5);
+      background-color: white;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      transition: var(--transition-transform);
+    }
+  }
+
+  input:checked + span::after {
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+}
+
+/* Switch Toggle
+----------------------------- */
+.form-switch {
+  --switch-width: 2.75rem;
+  --switch-height: 1.5rem;
+  --switch-padding: 0.125rem;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  cursor: pointer;
+  user-select: none;
+
+  input {
+    position: absolute;
+    opacity: 0;
+    width: var(--switch-width);
+    height: var(--switch-height);
+    margin: 0;
+    cursor: pointer;
+
+    & + span {
+      position: relative;
+      display: inline-block;
+      width: var(--switch-width);
+      height: var(--switch-height);
+      background-color: var(--color-border);
+      border-radius: var(--radius-full);
+      transition: var(--transition-all);
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: var(--switch-padding);
+        left: var(--switch-padding);
+        width: calc(var(--switch-height) - 2 * var(--switch-padding));
+        height: calc(var(--switch-height) - 2 * var(--switch-padding));
+        border-radius: 50%;
+        background-color: white;
+        transition: var(--transition-transform);
+      }
+    }
+
+    &:focus + span {
+      box-shadow: 0 0 0 3px var(--color-primary-transparent);
+    }
+
+    &:checked + span {
+      background-color: var(--color-primary);
+
+      &::after {
+        transform: translateX(calc(var(--switch-width) - var(--switch-height)));
+      }
+    }
+
+    &:disabled + span {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* Form Help Text
+----------------------------- */
+.form-help {
+  margin-top: var(--spacing-1);
   font-size: var(--font-size-sm);
-  margin-top: var(--spacing-2);
+  color: var(--color-text-light);
+}
+
+/* Form Error
+----------------------------- */
+.form-error {
+  margin-top: var(--spacing-1);
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  animation: errorShake 0.6s;
+}
+
+/* Form Layout Helpers
+----------------------------- */
+.form-row {
+  display: flex;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+
+  @media (max-width: 640px) {
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+
+  > * {
+    flex: 1;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-6);
+
+  &--end {
+    justify-content: flex-end;
+  }
+
+  &--between {
+    justify-content: space-between;
+  }
+}
+
+/* Input Groups
+----------------------------- */
+.input-group {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+
+  .form-input {
+    position: relative;
+    flex: 1 1 auto;
+    width: 1%;
+  }
+
+  &-text {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    background-color: var(--color-background-alt);
+    border: 1px solid var(--color-border-input);
+
+    &:first-child {
+      border-right: 0;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+
+    &:last-child {
+      border-left: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+
+  .form-input:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .form-input:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+}
+
+/* Form Validation Icons
+----------------------------- */
+.form-validation-icon {
+  position: absolute;
+  top: 50%;
+  right: var(--spacing-3);
+  transform: translateY(-50%);
+  pointer-events: none;
+
+  svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  &--error svg {
+    color: var(--color-error);
+  }
+
+  &--success svg {
+    color: var(--color-success);
+  }
+}
+
+/* Animations
+----------------------------- */
+@keyframes errorShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
 }

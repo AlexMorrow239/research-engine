@@ -1,23 +1,35 @@
+import { navigationItems } from "@/config/navigation";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { logout } from "@/store/features/auth/authSlice";
 import ugrLogo from "@public/images/navBar/miami-ugr.png";
 import poweredBy from "@public/images/navBar/powered-by-bonsai.png";
+import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import "./NavBar.scss";
 
 export const NavBar = (): JSX.Element => {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = (): void => {
     dispatch(logout());
+    setIsMobileMenuOpen(false);
+  };
+
+  const toggleMobileMenu = (): void => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const handleNavLinkClick = (): void => {
+    setIsMobileMenuOpen(false);
   };
 
   return (
     <nav className="nav">
       <div className="nav__container">
         <div className="nav__brand">
-          <Link to="/" className="nav__logo">
+          <Link to="/" className="nav__logo" onClick={handleNavLinkClick}>
             <img
               src={ugrLogo}
               alt="University Logo"
@@ -26,30 +38,50 @@ export const NavBar = (): JSX.Element => {
           </Link>
         </div>
 
-        <div className="nav__menu">
-          {/* Always visible links */}
-          <NavLink to="/" className="nav__link">
-            Positions
-          </NavLink>
-          <NavLink to="/about" className="nav__link">
-            About
-          </NavLink>
+        <div
+          className={`nav__menu ${isMobileMenuOpen ? "nav__menu--open" : ""}`}
+        >
+          {/* Public navigation items */}
+          {navigationItems.public.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                `nav__link ${isActive ? "nav__link--active" : ""}`
+              }
+              onClick={handleNavLinkClick}
+            >
+              {item.label}
+            </NavLink>
+          ))}
 
           {isAuthenticated ? (
-            // Links for authenticated professors
+            // Authenticated navigation items
             <>
-              <NavLink to="faculty/dashboard" className="nav__link">
-                Your Listings
-              </NavLink>
-              <NavLink to="/faculty/projects/new" className="nav__link">
-                List Position
-              </NavLink>
+              {navigationItems.authenticated.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `nav__link ${isActive ? "nav__link--active" : ""}`
+                  }
+                  onClick={handleNavLinkClick}
+                >
+                  {item.label}
+                </NavLink>
+              ))}
               <button className="nav__link" onClick={handleLogout}>
                 Logout
               </button>
             </>
           ) : (
-            <NavLink to="/faculty/login" className="nav__link">
+            <NavLink
+              to="/faculty/login"
+              className={({ isActive }) =>
+                `nav__link ${isActive ? "nav__link--active" : ""}`
+              }
+              onClick={handleNavLinkClick}
+            >
               Faculty Login/Register
             </NavLink>
           )}
@@ -61,7 +93,13 @@ export const NavBar = (): JSX.Element => {
         </div>
 
         {/* Mobile menu toggle button */}
-        <button className="nav__menu-toggle">
+        <button
+          className={`nav__menu-toggle ${
+            isMobileMenuOpen ? "nav__menu-toggle--open" : ""
+          }`}
+          onClick={toggleMobileMenu}
+          aria-label="Toggle navigation menu"
+        >
           <span></span>
           <span></span>
           <span></span>
