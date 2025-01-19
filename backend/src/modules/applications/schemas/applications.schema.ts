@@ -66,28 +66,28 @@ export class StudentInfo {
   gpa: number;
 }
 
-@Schema()
-export class Availability {
-  @Prop({ required: true })
+@Schema({ _id: false })
+export class AvailabilityInfo {
+  @Prop({ required: true, enum: WeeklyAvailability })
+  weeklyHours: string;
+
+  @Prop({ required: true, enum: ProjectLength })
+  desiredProjectLength: string;
+
+  @Prop({ required: true, type: String })
   mondayAvailability: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: String })
   tuesdayAvailability: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: String })
   wednesdayAvailability: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: String })
   thursdayAvailability: string;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: String })
   fridayAvailability: string;
-
-  @Prop({ type: String, enum: WeeklyAvailability, required: true })
-  weeklyHours: WeeklyAvailability;
-
-  @Prop({ type: String, enum: ProjectLength, required: true })
-  desiredProjectLength: ProjectLength;
 }
 
 @Schema()
@@ -122,8 +122,8 @@ export class Application extends Document {
   @Prop({ type: StudentInfo, required: true })
   studentInfo: StudentInfo;
 
-  @Prop({ type: Availability, required: true })
-  availability: Availability;
+  @Prop({ type: AvailabilityInfo, required: true })
+  availability: AvailabilityInfo;
 
   @Prop({ type: AdditionalInfo, required: true })
   additionalInfo: AdditionalInfo;

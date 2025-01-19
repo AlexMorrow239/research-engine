@@ -1,5 +1,6 @@
 interface FetchOptions extends RequestInit {
   requiresAuth?: boolean;
+  isFormData?: boolean;
 }
 
 export class ApiError extends Error {
@@ -18,7 +19,11 @@ export const api = {
     endpoint: string,
     options: FetchOptions = {}
   ): Promise<T> => {
-    const { requiresAuth = true, ...fetchOptions } = options;
+    const {
+      requiresAuth = true,
+      isFormData = false,
+      ...fetchOptions
+    } = options;
     const baseUrl = import.meta.env.VITE_API_URL;
 
     // Construct URL, handling trailing slashes
@@ -27,10 +32,12 @@ export const api = {
       : `${baseUrl}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
 
     // Initialize headers
-    const headers = new Headers({
-      "Content-Type": "application/json",
-      ...fetchOptions.headers,
-    });
+    const headers = new Headers(fetchOptions.headers);
+
+    // Only set Content-Type if not FormData
+    if (!isFormData) {
+      headers.set("Content-Type", "application/json");
+    }
 
     // Add auth token if required
     if (requiresAuth) {
@@ -92,7 +99,6 @@ export const api = {
         return blobResponse as unknown as T;
       }
     } catch (error) {
-      // Handle network errors and other exceptions
       if (error instanceof ApiError) {
         throw error;
       }
@@ -118,10 +124,12 @@ export const api = {
     data: unknown,
     options: FetchOptions = {}
   ): Promise<T> => {
+    const { isFormData = false, ...rest } = options;
     return api.fetch<T>(endpoint, {
-      ...options,
+      ...rest,
       method: "POST",
-      body: JSON.stringify(data),
+      body: isFormData ? (data as FormData) : JSON.stringify(data),
+      isFormData,
     });
   },
 

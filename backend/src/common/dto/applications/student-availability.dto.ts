@@ -1,41 +1,33 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
-import { WeeklyAvailability, ProjectLength } from '@common/enums/application.enums';
+import { WeeklyAvailability, ProjectLength } from '@common/enums';
 
 export class AvailabilityDto {
-  @ApiProperty()
-  @IsString()
-  mondayAvailability: string;
-
-  @ApiProperty()
-  @IsString()
-  tuesdayAvailability: string;
-
-  @ApiProperty()
-  @IsString()
-  wednesdayAvailability: string;
-
-  @ApiProperty()
-  @IsString()
-  thursdayAvailability: string;
-
-  @ApiProperty()
-  @IsString()
-  fridayAvailability: string;
-  @ApiProperty({
-    enum: WeeklyAvailability,
-    description: 'Number of hours available per week',
-    example: WeeklyAvailability.NINE_TO_ELEVEN,
-  })
   @IsEnum(WeeklyAvailability)
+  @IsNotEmpty()
   weeklyHours: string;
 
-  @ApiProperty({
-    enum: ProjectLength,
-    description: 'Desired length of the project',
-    example: ProjectLength.FOUR_PLUS,
-  })
   @IsEnum(ProjectLength)
-  desiredProjectLength: ProjectLength;
+  @IsNotEmpty()
+  desiredProjectLength: string;
+
+  @IsString()
+  @IsNotEmpty()
+  mondayAvailability: string;
+
+  @IsString()
+  @IsNotEmpty()
+  tuesdayAvailability: string;
+
+  @IsString()
+  @IsNotEmpty()
+  wednesdayAvailability: string;
+
+  @IsString()
+  @IsNotEmpty()
+  thursdayAvailability: string;
+
+  @IsString()
+  @IsNotEmpty()
+  fridayAvailability: string;
 }

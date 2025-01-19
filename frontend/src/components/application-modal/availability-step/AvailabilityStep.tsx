@@ -46,11 +46,6 @@ export const AvailabilityStep: React.FC<AvailabilityStepProps> = ({ form }) => {
             <input
               {...register(`availability.${getDayAvailabilityField(day)}`, {
                 required: `${day} availability is required`,
-                pattern: {
-                  value:
-                    /^([1-9]|1[0-2])?([AaPp][Mm])?-([1-9]|1[0-2])?([AaPp][Mm])?$/,
-                  message: "Please use format like 9AM-5PM",
-                },
               })}
               className={getInputClassName()}
               placeholder="e.g., 9AM-5PM"

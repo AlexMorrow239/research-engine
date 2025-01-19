@@ -132,41 +132,60 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
       return;
     }
 
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
-      console.log("Submitting application data...", data);
+      // Create FormData object
+      const formData = new FormData();
 
+      // Prepare the application data
       const applicationData = {
-        projectId,
-        firstName: data.studentInfo.name.firstName,
-        lastName: data.studentInfo.name.lastName,
-        cNumber: data.studentInfo.cNumber,
-        email: data.studentInfo.email,
-        phoneNumber: data.studentInfo.phoneNumber,
-        racialEthnicGroups: data.studentInfo.racialEthnicGroups,
-        citizenship: data.studentInfo.citizenship,
-        academicStanding: data.studentInfo.academicStanding,
-        graduationDate: data.studentInfo.graduationDate,
-        major1College: data.studentInfo.major1College,
-        major1: data.studentInfo.major1,
-        hasAdditionalMajor: data.studentInfo.hasAdditionalMajor,
-        major2College: data.studentInfo.major2College,
-        major2: data.studentInfo.major2,
-        isPreHealth: data.studentInfo.isPreHealth,
-        preHealthTrack: data.studentInfo.preHealthTrack,
-        gpa: data.studentInfo.gpa,
-        ...data.availability,
-        ...data.additionalInfo,
+        studentInfo: {
+          name: {
+            firstName: data.studentInfo.name.firstName,
+            lastName: data.studentInfo.name.lastName,
+          },
+          email: data.studentInfo.email,
+          phoneNumber: data.studentInfo.phoneNumber,
+          cNumber: data.studentInfo.cNumber,
+          major1: data.studentInfo.major1,
+          major1College: data.studentInfo.major1College,
+          academicStanding: data.studentInfo.academicStanding,
+          gpa: data.studentInfo.gpa,
+          graduationDate: data.studentInfo.graduationDate,
+          citizenship: data.studentInfo.citizenship,
+          isPreHealth: data.studentInfo.isPreHealth,
+          hasAdditionalMajor: data.studentInfo.hasAdditionalMajor,
+          racialEthnicGroups: data.studentInfo.racialEthnicGroups,
+        },
+        availability: {
+          weeklyHours: data.availability.weeklyHours,
+          desiredProjectLength: data.availability.desiredProjectLength,
+          mondayAvailability: data.availability.mondayAvailability,
+          tuesdayAvailability: data.availability.tuesdayAvailability,
+          wednesdayAvailability: data.availability.wednesdayAvailability,
+          thursdayAvailability: data.availability.thursdayAvailability,
+          fridayAvailability: data.availability.fridayAvailability,
+        },
+        additionalInfo: {
+          hasPrevResearchExperience:
+            data.additionalInfo.hasPrevResearchExperience,
+          prevResearchExperience: data.additionalInfo.prevResearchExperience,
+          hasFederalWorkStudy: data.additionalInfo.hasFederalWorkStudy,
+          speaksOtherLanguages: data.additionalInfo.speaksOtherLanguages,
+          additionalLanguages: data.additionalInfo.additionalLanguages,
+          comfortableWithAnimals: data.additionalInfo.comfortableWithAnimals,
+          researchInterestDescription:
+            data.additionalInfo.researchInterestDescription,
+        },
       };
 
-      const formData = new FormData();
-      Object.entries(applicationData).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          value.forEach((item) => formData.append(key, item));
-        } else if (value !== undefined) {
-          formData.append(key, String(value));
-        }
-      });
+      // Add the application data as a JSON string
+      formData.append("application", JSON.stringify(applicationData));
+
+      // TODO: Add resume file upload later
+      // For now, add a placeholder empty file
+      const emptyBlob = new Blob([""], { type: "application/pdf" });
+      formData.append("resume", emptyBlob, "placeholder.pdf");
 
       await dispatch(
         createApplication({
@@ -175,11 +194,14 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
         })
       ).unwrap();
 
-      alert("Application submitted successfully!");
       onClose();
+      alert("Application submitted successfully");
     } catch (error) {
       console.error("Failed to submit application:", error);
-      alert("Failed to submit application. Please try again.");
+      alert(
+        "Failed to submit application: " +
+          (error instanceof Error ? error.message : "An error occurred")
+      );
     } finally {
       setIsSubmitting(false);
     }

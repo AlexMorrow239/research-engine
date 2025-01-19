@@ -1,4 +1,5 @@
-import type { ApiResponse, Application, ApplicationStatus } from "@/types/api";
+import { type ApplicationStatus } from "@/common/enums";
+import type { ApiResponse, Application } from "@/types";
 import { api } from "@/utils/api";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -33,27 +34,30 @@ const initialState: ApplicationsState = {
 export const createApplication = createAsyncThunk(
   "applications/create",
   async (
-    { projectId, formData }: { projectId: string; formData: FormData },
+    {
+      projectId,
+      formData,
+    }: {
+      projectId: string;
+      formData: FormData;
+    },
     { rejectWithValue }
   ) => {
     try {
-      const response = await api.fetch<ApiResponse<Application>>(
+      const response = await api.post<Application>(
         `/api/projects/${projectId}/applications`,
+        formData,
         {
-          method: "POST",
-          body: formData,
-          headers: {
-            // Don't set Content-Type as it's automatically set for FormData
-          },
-          requiresAuth: false,
+          isFormData: true,
+          requiresAuth: true,
         }
       );
-      return response.data;
+      return response;
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue("Failed to submit application");
+      return rejectWithValue("Failed to create application");
     }
   }
 );
