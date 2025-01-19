@@ -10,18 +10,18 @@ import { InjectModel } from '@nestjs/mongoose';
 
 import { Model } from 'mongoose';
 
-import { ApplicationStatus } from '@/common/enums';
-import { ErrorHandler } from '@/common/utils/error-handler.util';
-import { AnalyticsService } from '@/modules/analytics/analytics.service';
-
 import { CreateApplicationDto } from '../../common/dto/applications/create-application.dto';
 
 import { EmailService } from '../email/email.service';
 import { FileStorageService } from '../file-storage/file-storage.service';
 import { ProjectsService } from '../projects/projects.service';
-import { ProjectStatus } from '../projects/schemas/projects.schema';
 
 import { Application } from './schemas/applications.schema';
+
+import { ApplicationStatus } from '@/common/enums';
+import { AwsS3Service } from '@/common/services/aws-s3.service';
+import { ErrorHandler } from '@/common/utils/error-handler.util';
+import { AnalyticsService } from '@/modules/analytics/analytics.service';
 
 @Injectable()
 export class ApplicationsService {
@@ -31,69 +31,81 @@ export class ApplicationsService {
     @InjectModel(Application.name) private applicationModel: Model<Application>,
     @Inject(forwardRef(() => ProjectsService))
     private readonly projectsService: ProjectsService,
-    private readonly fileStorageService: FileStorageService,
     private readonly emailService: EmailService,
     private readonly analyticsService: AnalyticsService,
+    private readonly s3Service: AwsS3Service,
   ) {}
 
-  async create(
-    projectId: string,
-    createApplicationDto: CreateApplicationDto,
-    resumeFile: Express.Multer.File,
-  ): Promise<Application> {
+  private generateResumeKey(applicationId: string, originalname: string): string {
+    const extension = originalname.split('.').pop();
+    return `applications/${applicationId}/cv/${Date.now()}.${extension}`;
+  }
+
+  async create(createApplicationDto: CreateApplicationDto, resume: Express.Multer.File) {
+    this.logger.debug('Starting application creation', {
+      dto: createApplicationDto,
+      resumeFile: {
+        filename: resume?.originalname,
+        size: resume?.size,
+      },
+    });
+
     try {
-      const project = await this.projectsService.findOne(projectId);
+      // Generate a unique key for the resume file
+      const resumeKey = this.generateResumeKey(Date.now().toString(), resume.originalname);
+      this.logger.debug('Generated resume key', { resumeKey });
 
-      if (project.status !== ProjectStatus.PUBLISHED) {
-        throw new BadRequestException('Project is not accepting applications');
-      }
+      // Upload the resume file to S3 first
+      await this.s3Service.uploadFile(resume, resumeKey);
+      this.logger.debug('Uploaded resume to S3');
 
-      if (project.applicationDeadline && new Date() > new Date(project.applicationDeadline)) {
-        throw new BadRequestException('Application deadline has passed');
-      }
-
-      const fileName = await this.fileStorageService.saveFile(resumeFile, `resumes`);
-
-      // Create the application
-      const application = await this.applicationModel.create({
-        project: projectId,
+      // Create the application with the resume path
+      const application = new this.applicationModel({
+        project: createApplicationDto.projectId,
         studentInfo: createApplicationDto.studentInfo,
         availability: createApplicationDto.availability,
         additionalInfo: createApplicationDto.additionalInfo,
-        resumeFile: fileName,
+        resumePath: resumeKey,
         status: ApplicationStatus.PENDING,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       });
 
-      // Populate the application with project and professor data
-      const populatedApplication = await this.applicationModel.findById(application._id).populate({
-        path: 'project',
-        populate: {
-          path: 'professor',
-          select: 'email name department',
-        },
+      this.logger.debug('Created application model', {
+        applicationData: application.toObject(),
       });
 
-      // Send confirmation emails
-      await this.emailService.sendApplicationConfirmation(populatedApplication, project.title);
-      await this.emailService.sendProfessorNewApplication(
-        project.professor.email,
-        populatedApplication,
-        project.title,
-      );
+      // Save the application
+      const savedApplication = await application.save();
+      this.logger.debug('Saved application to database', {
+        applicationId: savedApplication.id,
+      });
 
-      // Update analytics
+      if (!savedApplication) {
+        this.logger.error('Failed to save application');
+        await this.s3Service.deleteFile(resumeKey);
+        throw new Error('Failed to save application');
+      }
+
+      // Track analytics
       await this.analyticsService.updateApplicationMetrics(
-        projectId,
+        savedApplication.project.toString(),
         null,
         ApplicationStatus.PENDING,
       );
 
-      return populatedApplication;
-    } catch (error) {
-      ErrorHandler.handleServiceError(this.logger, error, 'create application', {
-        projectId,
-        studentEmail: createApplicationDto.studentInfo.email,
+      this.logger.debug('Application creation completed successfully', {
+        applicationId: savedApplication.id,
       });
+
+      return savedApplication;
+    } catch (error) {
+      this.logger.error('Failed to create application', {
+        error: error.message,
+        stack: error.stack,
+        dto: createApplicationDto,
+      });
+      throw new BadRequestException(`Failed to create application: ${error.message}`);
     }
   }
 
@@ -189,7 +201,7 @@ export class ApplicationsService {
   async getResume(
     professorId: string,
     applicationId: string,
-  ): Promise<{ file: Buffer; fileName: string; mimeType: string }> {
+  ): Promise<{ url: string; fileName: string; mimeType: string }> {
     try {
       const application = await this.applicationModel.findById(applicationId).populate({
         path: 'project',
@@ -204,13 +216,20 @@ export class ApplicationsService {
         throw new NotFoundException('Application not found');
       }
 
-      const fileData = await this.fileStorageService.getFile(application.resumeFile);
-      const mimeType = this.getMimeType(application.resumeFile);
+      if (!application.resumePath) {
+        throw new NotFoundException('Resume not found');
+      }
 
-      this.logger.log(`Resume retrieved for application ${applicationId}`);
+      const fileName = application.resumePath.split('/').pop();
+      const mimeType = this.getMimeType(fileName);
+
+      // Generate a pre-signed URL for temporary access to the file
+      const url = await this.s3Service.getSignedUrl(application.resumePath);
+
+      this.logger.log(`Resume URL generated for application ${applicationId}`);
       return {
-        file: fileData.buffer,
-        fileName: application.resumeFile,
+        url,
+        fileName,
         mimeType,
       };
     } catch (error) {
@@ -225,6 +244,10 @@ export class ApplicationsService {
   }
 
   private getMimeType(fileName: string): string {
+    if (!fileName) {
+      return 'application/octet-stream';
+    }
+
     try {
       const extension = fileName.split('.').pop()?.toLowerCase();
       switch (extension) {
@@ -267,6 +290,39 @@ export class ApplicationsService {
       ErrorHandler.handleServiceError(this.logger, error, 'close project applications', {
         projectId,
       });
+    }
+  }
+
+  async deleteApplication(professorId: string, applicationId: string): Promise<void> {
+    try {
+      const application = await this.applicationModel.findById(applicationId).populate({
+        path: 'project',
+        select: 'professor',
+      });
+
+      if (!application) {
+        throw new NotFoundException('Application not found');
+      }
+
+      if (application.project.professor.toString() !== professorId) {
+        throw new NotFoundException('Application not found');
+      }
+
+      // Delete resume from S3 if it exists
+      if (application.resumePath) {
+        await this.s3Service.deleteFile(application.resumePath);
+      }
+
+      await application.deleteOne();
+      this.logger.log(`Application ${applicationId} deleted successfully`);
+    } catch (error) {
+      ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        'delete application',
+        { applicationId, professorId },
+        [NotFoundException],
+      );
     }
   }
 }

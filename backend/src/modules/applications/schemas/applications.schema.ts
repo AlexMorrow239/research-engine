@@ -2,9 +2,9 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
-import { ApplicationStatus, ProjectLength, WeeklyAvailability } from '@/common/enums';
-
 import { Project } from '../../projects/schemas/projects.schema';
+
+import { ApplicationStatus, ProjectLength, WeeklyAvailability } from '@/common/enums';
 
 @Schema()
 export class StudentInfo {
@@ -128,8 +128,8 @@ export class Application extends Document {
   @Prop({ type: AdditionalInfo, required: true })
   additionalInfo: AdditionalInfo;
 
-  @Prop({ type: String, required: true })
-  resumeFile: string;
+  @Prop({ type: String })
+  resumePath: string;
 
   @Prop({ type: String, enum: ApplicationStatus, default: ApplicationStatus.PENDING })
   status: ApplicationStatus;

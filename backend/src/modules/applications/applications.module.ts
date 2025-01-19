@@ -1,7 +1,5 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Logger, Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-
-import { AnalyticsModule } from '@/modules/analytics/analytics.module';
 
 import { EmailModule } from '../email/email.module';
 import { FileStorageModule } from '../file-storage/file-storage.module';
@@ -11,6 +9,9 @@ import { ApplicationsController } from './applications.controller';
 import { ApplicationsService } from './applications.service';
 import { Application, ApplicationSchema } from './schemas/applications.schema';
 
+import { AwsS3Service } from '@/common/services/aws-s3.service';
+import { AnalyticsModule } from '@/modules/analytics/analytics.module';
+
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Application.name, schema: ApplicationSchema }]),
@@ -19,7 +20,7 @@ import { Application, ApplicationSchema } from './schemas/applications.schema';
     EmailModule,
     AnalyticsModule,
   ],
-  providers: [ApplicationsService],
+  providers: [ApplicationsService, AwsS3Service, Logger],
   controllers: [ApplicationsController],
   exports: [ApplicationsService],
 })

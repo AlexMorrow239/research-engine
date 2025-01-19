@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   FileTypeValidator,
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   MaxFileSizeValidator,
   Param,
   ParseFilePipe,
@@ -12,7 +14,6 @@ import {
   Post,
   Query,
   Res,
-  UnauthorizedException,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -21,17 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 
 import { Response } from 'express';
-
-import {
-  ApiCreateApplication,
-  ApiDownloadResume,
-  ApiFindAllApplications,
-  ApiUpdateApplicationStatus,
-} from '@/common/docs/decorators/applications.decorator';
-import { CreateApplicationDto, UpdateApplicationStatusDto } from '@/common/dto/applications';
-import { ApplicationStatus } from '@/common/enums';
-import { ParseFormJsonPipe } from '@/common/pipes/parse-form-json.pipe';
-import { DownloadTokenService } from '@/modules/file-storage/download-token.service';
+import { memoryStorage } from 'multer';
 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetProfessor } from '../professors/decorators/get-professor.decorator';
@@ -39,36 +30,69 @@ import { Professor } from '../professors/schemas/professors.schema';
 
 import { ApplicationsService } from './applications.service';
 
+import { ApiCreateApplication } from '@/common/docs/decorators/applications.decorator';
+import { CreateApplicationDto, UpdateApplicationStatusDto } from '@/common/dto/applications';
+import { ApplicationStatus } from '@/common/enums';
+import { ParseFormJsonPipe } from '@/common/pipes/parse-form-json.pipe';
+
 @ApiTags('Applications')
 @Controller('projects/:projectId/applications')
 export class ApplicationsController {
   constructor(
     private readonly applicationsService: ApplicationsService,
-    private readonly downloadTokenService: DownloadTokenService,
+    private readonly logger: Logger,
   ) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('resume'))
+  @UseInterceptors(
+    FileInterceptor('resume', {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB
+      },
+    }),
+  )
   @ApiCreateApplication()
   async create(
     @Param('projectId') projectId: string,
-    @Body(new ParseFormJsonPipe()) body: { application: CreateApplicationDto },
+    @Body('application', new ParseFormJsonPipe()) applicationData: any,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
-          new FileTypeValidator({ fileType: /(pdf|doc|docx)$/ }),
+          new FileTypeValidator({
+            fileType: /(pdf|doc|docx)$/i,
+          }),
+          new MaxFileSizeValidator({
+            maxSize: 5 * 1024 * 1024, // 5MB
+          }),
         ],
       }),
     )
     resume: Express.Multer.File,
   ) {
-    return await this.applicationsService.create(projectId, body.application, resume);
+    // Create the DTO with the project ID from the URL
+    const createApplicationDto: CreateApplicationDto = {
+      projectId,
+      studentInfo: applicationData.studentInfo,
+      availability: applicationData.availability,
+      additionalInfo: applicationData.additionalInfo,
+    };
+
+    this.logger.debug('Processing application request', {
+      projectId,
+      applicationData: createApplicationDto,
+      resumeFile: {
+        filename: resume?.originalname,
+        mimetype: resume?.mimetype,
+        size: resume?.size,
+      },
+    });
+
+    return this.applicationsService.create(createApplicationDto, resume);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @ApiFindAllApplications()
   async findAll(
     @Param('projectId') projectId: string,
     @GetProfessor() professor: Professor,
@@ -80,7 +104,6 @@ export class ApplicationsController {
   @Patch(':applicationId/status')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiUpdateApplicationStatus()
   async updateStatus(
     @Param('applicationId') applicationId: string,
     @GetProfessor() professor: Professor,
@@ -95,34 +118,24 @@ export class ApplicationsController {
 
   @Get(':applicationId/resume')
   @UseGuards(JwtAuthGuard)
-  @ApiDownloadResume()
   async downloadResume(
-    @Param('projectId') projectId: string,
     @Param('applicationId') applicationId: string,
     @GetProfessor() professor: Professor,
     @Res() res: Response,
   ) {
     const fileData = await this.applicationsService.getResume(professor.id, applicationId);
 
-    res.setHeader('Content-Type', fileData.mimeType);
-    res.setHeader('Content-Disposition', `attachment; filename="${fileData.fileName}"`);
-    return res.send(fileData.file);
+    // Redirect to the pre-signed URL
+    return res.redirect(fileData.url);
   }
 
-  @Get('download/:token')
-  async downloadResumeWithToken(@Param('token') token: string, @Res() res: Response) {
-    const tokenData = await this.downloadTokenService.verifyToken(token);
-    if (!tokenData) {
-      throw new UnauthorizedException('Invalid or expired download token');
-    }
-
-    const fileData = await this.applicationsService.getResume(
-      tokenData.professorId,
-      tokenData.applicationId,
-    );
-
-    res.setHeader('Content-Type', fileData.mimeType);
-    res.setHeader('Content-Disposition', `attachment; filename="${fileData.fileName}"`);
-    return res.send(fileData.file);
+  @Delete(':applicationId')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteApplication(
+    @Param('applicationId') applicationId: string,
+    @GetProfessor() professor: Professor,
+  ) {
+    await this.applicationsService.deleteApplication(professor.id, applicationId);
   }
 }

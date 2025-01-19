@@ -1,27 +1,31 @@
-/**
- * Custom pipe for parsing JSON strings in form data
- * Specifically handles the 'application' field in form submissions
- * by converting JSON strings to objects
- */
-
-import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import {
+  PipeTransform,
+  Injectable,
+  ArgumentMetadata,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 
 @Injectable()
 export class ParseFormJsonPipe implements PipeTransform {
-  /**
-   * Transforms form data by parsing JSON strings
-   * @param value The form data to transform
-   * @returns Transformed form data with parsed JSON
-   * @throws BadRequestException if JSON parsing fails
-   */
-  transform(value: any) {
+  private readonly logger = new Logger(ParseFormJsonPipe.name);
+
+  transform(value: any, metadata: ArgumentMetadata) {
+    this.logger.debug('Parsing form data', { value });
+
+    if (!value) {
+      throw new BadRequestException('Application data is required');
+    }
+
     try {
-      if (value.application && typeof value.application === 'string') {
-        value.application = JSON.parse(value.application);
-      }
-      return value;
+      // Parse the JSON string if it's a string, otherwise use the value as-is
+      const parsedData = typeof value === 'string' ? JSON.parse(value) : value;
+
+      this.logger.debug('Successfully parsed application data', { parsedData });
+      return parsedData;
     } catch (error) {
-      throw new BadRequestException('Invalid JSON format in application field');
+      this.logger.error('Failed to parse application data', { error });
+      throw new BadRequestException('Invalid application data format');
     }
   }
 }
