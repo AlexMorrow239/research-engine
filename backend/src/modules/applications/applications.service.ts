@@ -13,7 +13,6 @@ import { Model } from 'mongoose';
 import { CreateApplicationDto } from '../../common/dto/applications/create-application.dto';
 
 import { EmailService } from '../email/email.service';
-import { FileStorageService } from '../file-storage/file-storage.service';
 import { ProjectsService } from '../projects/projects.service';
 
 import { Application } from './schemas/applications.schema';
@@ -36,28 +35,20 @@ export class ApplicationsService {
     private readonly s3Service: AwsS3Service,
   ) {}
 
-  private generateResumeKey(applicationId: string, originalname: string): string {
-    const extension = originalname.split('.').pop();
-    return `applications/${applicationId}/cv/${Date.now()}.${extension}`;
+  private generateResumeKey(projectId: string, originalName: string): string {
+    const sanitizedName = originalName.replace(/[^a-zA-Z0-9.]/g, '_');
+    const timestamp = Date.now();
+    return `applications/${projectId}/cv/${timestamp}-${sanitizedName}`;
   }
 
   async create(createApplicationDto: CreateApplicationDto, resume: Express.Multer.File) {
-    this.logger.debug('Starting application creation', {
-      dto: createApplicationDto,
-      resumeFile: {
-        filename: resume?.originalname,
-        size: resume?.size,
-      },
-    });
-
     try {
-      // Generate a unique key for the resume file
-      const resumeKey = this.generateResumeKey(Date.now().toString(), resume.originalname);
-      this.logger.debug('Generated resume key', { resumeKey });
+      // Generate a unique key for the resume file using projectId
+      const resumeKey = this.generateResumeKey(createApplicationDto.projectId, resume.originalname);
+      this.logger.debug('Uploading resume', { key: resumeKey });
 
-      // Upload the resume file to S3 first
+      // Upload the resume file to S3
       await this.s3Service.uploadFile(resume, resumeKey);
-      this.logger.debug('Uploaded resume to S3');
 
       // Create the application with the resume path
       const application = new this.applicationModel({
@@ -71,18 +62,10 @@ export class ApplicationsService {
         updatedAt: new Date(),
       });
 
-      this.logger.debug('Created application model', {
-        applicationData: application.toObject(),
-      });
-
       // Save the application
       const savedApplication = await application.save();
-      this.logger.debug('Saved application to database', {
-        applicationId: savedApplication.id,
-      });
 
       if (!savedApplication) {
-        this.logger.error('Failed to save application');
         await this.s3Service.deleteFile(resumeKey);
         throw new Error('Failed to save application');
       }
@@ -94,8 +77,9 @@ export class ApplicationsService {
         ApplicationStatus.PENDING,
       );
 
-      this.logger.debug('Application creation completed successfully', {
+      this.logger.debug('Application created successfully', {
         applicationId: savedApplication.id,
+        resumePath: resumeKey,
       });
 
       return savedApplication;
@@ -103,7 +87,6 @@ export class ApplicationsService {
       this.logger.error('Failed to create application', {
         error: error.message,
         stack: error.stack,
-        dto: createApplicationDto,
       });
       throw new BadRequestException(`Failed to create application: ${error.message}`);
     }
