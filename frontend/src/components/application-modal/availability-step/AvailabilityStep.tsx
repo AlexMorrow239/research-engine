@@ -1,3 +1,7 @@
+import {
+  PROJECT_LENGTH_OPTIONS,
+  WEEKLY_AVAILABILITY_OPTIONS,
+} from "@/common/constants";
 import { type ApplicationFormData } from "@/types";
 import React from "react";
 import { type UseFormReturn } from "react-hook-form";
@@ -70,10 +74,11 @@ export const AvailabilityStep: React.FC<AvailabilityStepProps> = ({ form }) => {
             className={getInputClassName()}
           >
             <option value="">Select weekly hours</option>
-            <option value="SIX_TO_EIGHT">6-8 hours</option>
-            <option value="NINE_TO_ELEVEN">9-11 hours</option>
-            <option value="TWELVE_TO_FOURTEEN">12-14 hours</option>
-            <option value="FIFTEEN_PLUS">15+ hours</option>
+            {WEEKLY_AVAILABILITY_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
           </select>
           {errors.availability?.weeklyHours && (
             <span className="form-group__error">
@@ -93,10 +98,11 @@ export const AvailabilityStep: React.FC<AvailabilityStepProps> = ({ form }) => {
             className={getInputClassName()}
           >
             <option value="">Select project length</option>
-            <option value="ONE">1 Semester</option>
-            <option value="TWO">2 Semesters</option>
-            <option value="THREE">3 Semesters</option>
-            <option value="FOUR_PLUS">4+ Semesters</option>
+            {PROJECT_LENGTH_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
           </select>
           {errors.availability?.desiredProjectLength && (
             <span className="form-group__error">

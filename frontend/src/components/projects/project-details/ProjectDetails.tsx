@@ -7,6 +7,7 @@ import "./ProjectDetails.scss";
 
 interface ProjectDetailsProps {
   project: {
+    id: string;
     title: string;
     description: string;
     professor: {
@@ -180,6 +181,7 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({
           isOpen={isApplicationModalOpen}
           onClose={() => setIsApplicationModalOpen(false)}
           projectTitle={project.title}
+          projectId={project.id}
         />
       </div>
     </article>

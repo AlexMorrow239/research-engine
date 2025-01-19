@@ -14,7 +14,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
 import { z } from "zod";
 import { AdditionalInfoStep } from "./additional-info-step/AdditionalInfo";
 import "./ApplicationModal.scss";
@@ -25,6 +24,7 @@ interface ApplicationModalProps {
   isOpen: boolean;
   onClose: () => void;
   projectTitle: string;
+  projectId: string;
 }
 
 // Form schema based on CreateApplicationDto
@@ -35,10 +35,7 @@ const applicationSchema = z.object({
       lastName: z.string().min(2, "Last name is required"),
     }),
     cNumber: z.string().regex(/^C[0-9]{8}$/, "Must be in format C12345678"),
-    email: z
-      .string()
-      .email()
-      .endsWith("@miami.edu", "Must be a miami.edu email"),
+    email: z.string().email("Must be a valid email address"),
     phoneNumber: z.string(),
     racialEthnicGroups: z.array(z.nativeEnum(RacialEthnicGroup)).min(1),
     citizenship: z.nativeEnum(Citizenship),
@@ -79,9 +76,9 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
   isOpen,
   onClose,
   projectTitle,
+  projectId,
 }) => {
   const dispatch = useAppDispatch();
-  const { projectId } = useParams<{ projectId: string }>();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -130,10 +127,14 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
   };
 
   const onSubmit = async (data: ApplicationFormData): Promise<void> => {
-    if (!projectId) return;
+    if (!projectId) {
+      console.error("Project ID is missing");
+      return;
+    }
 
     try {
       setIsSubmitting(true);
+      console.log("Submitting application data...", data);
 
       const applicationData = {
         projectId,
@@ -167,17 +168,15 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
         }
       });
 
-      const result = await dispatch(
+      await dispatch(
         createApplication({
           projectId,
           formData,
         })
       ).unwrap();
 
-      if (result) {
-        alert("Application submitted successfully!");
-        onClose();
-      }
+      alert("Application submitted successfully!");
+      onClose();
     } catch (error) {
       console.error("Failed to submit application:", error);
       alert("Failed to submit application. Please try again.");
@@ -224,18 +223,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
             </div>
           </div>
 
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              const isValid = await form.trigger();
-              if (!isValid) {
-                console.log("Validation failed:", form.formState.errors);
-                return;
-              }
-              onSubmit(form.getValues());
-            }}
-            noValidate
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
             {currentStep === 1 && <PersonalInfoStep form={form} />}
             {currentStep === 2 && <AvailabilityStep form={form} />}
             {currentStep === 3 && <AdditionalInfoStep form={form} />}

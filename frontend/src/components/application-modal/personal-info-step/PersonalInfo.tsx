@@ -1,5 +1,9 @@
-import { COLLEGE_OPTIONS, RACIAL_ETHNIC_OPTIONS } from "@/common/constants";
-import { AcademicStanding, Citizenship } from "@/common/enums";
+import {
+  ACADEMIC_STANDING_OPTIONS,
+  CITIZENSHIP_OPTIONS,
+  COLLEGE_OPTIONS,
+  RACIAL_ETHNIC_OPTIONS,
+} from "@/common/constants";
 import { type ApplicationFormData } from "@/types";
 import React from "react";
 import { type UseFormReturn } from "react-hook-form";
@@ -101,8 +105,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             {...register("studentInfo.email", {
               required: "Email is required",
               pattern: {
-                value: /^[A-Z0-9._%+-]+@miami\.edu$/i,
-                message: "Must be a valid miami.edu email",
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Must be a valid email address",
               },
             })}
             className={getInputClassName("email")}
@@ -149,9 +153,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             className={getInputClassName("citizenship")}
           >
             <option value="">Select citizenship status</option>
-            {Object.entries(Citizenship).map(([key, value]) => (
-              <option key={key} value={key}>
-                {value}
+            {CITIZENSHIP_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
               </option>
             ))}
           </select>
@@ -173,9 +177,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             className={getInputClassName("academicStanding")}
           >
             <option value="">Select academic standing</option>
-            {Object.entries(AcademicStanding).map(([key, value]) => (
-              <option key={key} value={key}>
-                {value.charAt(0).toUpperCase() + value.slice(1)}
+            {ACADEMIC_STANDING_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
               </option>
             ))}
           </select>
