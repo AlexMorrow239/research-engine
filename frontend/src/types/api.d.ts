@@ -110,8 +110,3 @@ export interface Application {
   createdAt: Date;
   updatedAt: Date;
 }
-
-export enum ApplicationStatus {
-  PENDING = "PENDING",
-  CLOSED = "CLOSED",
-}

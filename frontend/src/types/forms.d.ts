@@ -1,4 +1,11 @@
-import type { Citizenship } from "@/common/enums";
+import type {
+  AcademicStanding,
+  Citizenship,
+  College,
+  ProjectLength,
+  RacialEthnicGroup,
+  WeeklyAvailability,
+} from "@/common/enums";
 
 export interface ApplicationFormData {
   studentInfo: {
@@ -9,14 +16,14 @@ export interface ApplicationFormData {
     cNumber: string;
     email: string;
     phoneNumber: string;
-    racialEthnicGroups: string[];
+    racialEthnicGroups: RacialEthnicGroup[];
     citizenship: Citizenship;
-    academicStanding: "FRESHMAN" | "SOPHOMORE" | "JUNIOR" | "SENIOR";
+    academicStanding: AcademicStanding;
     graduationDate: string;
-    major1College: string;
+    major1College: College;
     major1: string;
     hasAdditionalMajor: boolean;
-    major2College?: string;
+    major2College?: College;
     major2?: string;
     isPreHealth: boolean;
     preHealthTrack?: string;
@@ -28,8 +35,8 @@ export interface ApplicationFormData {
     wednesdayAvailability: string;
     thursdayAvailability: string;
     fridayAvailability: string;
-    weeklyHours: string;
-    desiredProjectLength: string;
+    weeklyHours: WeeklyAvailability;
+    desiredProjectLength: ProjectLength;
   };
   additionalInfo: {
     hasPrevResearchExperience: boolean;

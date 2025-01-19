@@ -1,3 +1,11 @@
+import {
+  AcademicStanding,
+  Citizenship,
+  College,
+  ProjectLength,
+  RacialEthnicGroup,
+  WeeklyAvailability,
+} from "@/common/enums";
 import { useAppDispatch } from "@/store";
 import { createApplication } from "@/store/features/applications/applicationsSlice";
 import { type ApplicationFormData } from "@/types";
@@ -32,14 +40,14 @@ const applicationSchema = z.object({
       .email()
       .endsWith("@miami.edu", "Must be a miami.edu email"),
     phoneNumber: z.string(),
-    racialEthnicGroups: z.array(z.string()).min(1),
-    citizenship: z.enum(["US_CITIZEN", "PERMANENT_RESIDENT", "INTERNATIONAL"]),
-    academicStanding: z.enum(["FRESHMAN", "SOPHOMORE", "JUNIOR", "SENIOR"]),
+    racialEthnicGroups: z.array(z.nativeEnum(RacialEthnicGroup)).min(1),
+    citizenship: z.nativeEnum(Citizenship),
+    academicStanding: z.nativeEnum(AcademicStanding),
     graduationDate: z.string(),
-    major1College: z.string(),
+    major1College: z.nativeEnum(College),
     major1: z.string(),
     hasAdditionalMajor: z.boolean(),
-    major2College: z.string().optional(),
+    major2College: z.nativeEnum(College).optional(),
     major2: z.string().optional(),
     isPreHealth: z.boolean(),
     preHealthTrack: z.string().optional(),
@@ -51,8 +59,8 @@ const applicationSchema = z.object({
     wednesdayAvailability: z.string(),
     thursdayAvailability: z.string(),
     fridayAvailability: z.string(),
-    weeklyHours: z.string(),
-    desiredProjectLength: z.string(),
+    weeklyHours: z.nativeEnum(WeeklyAvailability),
+    desiredProjectLength: z.nativeEnum(ProjectLength),
   }),
   additionalInfo: z.object({
     hasPrevResearchExperience: z.boolean(),

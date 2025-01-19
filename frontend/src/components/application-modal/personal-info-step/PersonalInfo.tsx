@@ -1,3 +1,5 @@
+import { COLLEGE_OPTIONS, RACIAL_ETHNIC_OPTIONS } from "@/common/constants";
+import { AcademicStanding, Citizenship } from "@/common/enums";
 import { type ApplicationFormData } from "@/types";
 import React from "react";
 import { type UseFormReturn } from "react-hook-form";
@@ -6,27 +8,6 @@ import "./PersonalInfo.scss";
 interface PersonalInfoStepProps {
   form: UseFormReturn<ApplicationFormData>;
 }
-
-const RACIAL_ETHNIC_OPTIONS = [
-  "AMERICAN_INDIAN",
-  "ASIAN",
-  "BLACK",
-  "HISPANIC",
-  "PACIFIC_ISLANDER",
-  "WHITE",
-  "OTHER",
-];
-
-const COLLEGE_OPTIONS = [
-  { value: "ARTS_AND_SCIENCES", label: "College of Arts and Sciences" },
-  { value: "ENGINEERING", label: "College of Engineering" },
-  { value: "BUSINESS", label: "Miami Herbert Business School" },
-  { value: "COMMUNICATION", label: "School of Communication" },
-  { value: "EDUCATION", label: "School of Education" },
-  { value: "NURSING", label: "School of Nursing" },
-  { value: "ARCHITECTURE", label: "School of Architecture" },
-  { value: "MUSIC", label: "Frost School of Music" },
-];
 
 export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
   const {
@@ -168,9 +149,11 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             className={getInputClassName("citizenship")}
           >
             <option value="">Select citizenship status</option>
-            <option value="US_CITIZEN">U.S. Citizen</option>
-            <option value="PERMANENT_RESIDENT">Permanent Resident</option>
-            <option value="INTERNATIONAL">International Student</option>
+            {Object.entries(Citizenship).map(([key, value]) => (
+              <option key={key} value={key}>
+                {value}
+              </option>
+            ))}
           </select>
           {errors.studentInfo?.citizenship && (
             <span className="form-group__error">
@@ -190,10 +173,11 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             className={getInputClassName("academicStanding")}
           >
             <option value="">Select academic standing</option>
-            <option value="FRESHMAN">Freshman</option>
-            <option value="SOPHOMORE">Sophomore</option>
-            <option value="JUNIOR">Junior</option>
-            <option value="SENIOR">Senior</option>
+            {Object.entries(AcademicStanding).map(([key, value]) => (
+              <option key={key} value={key}>
+                {value.charAt(0).toUpperCase() + value.slice(1)}
+              </option>
+            ))}
           </select>
           {errors.studentInfo?.academicStanding && (
             <span className="form-group__error">
@@ -300,9 +284,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             className={getInputClassName("racialEthnicGroups")}
             multiple
           >
-            {RACIAL_ETHNIC_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option.replace(/_/g, " ")}
+            {RACIAL_ETHNIC_OPTIONS.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
               </option>
             ))}
           </select>
