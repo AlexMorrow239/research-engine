@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { fetchProfessorProjects } from "@/store/features/projects/projectsSlice";
 import { ProjectStatus } from "@/common/enums";
 import "./ProjectDashboard.scss";
-import { ProjectSection } from "@/components/projectSection/ProjectSection";
+import { ProjectSection } from "@/components/projects/project-section/ProjectSection";
 
 export default function ProjectDashboard() {
   const dispatch = useAppDispatch();

@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ChevronLeft } from "lucide-react";
-import { Banner } from "@/common/banner/Banner";
+import { Banner } from "@/components/common/banner/Banner";
 import {
   fetchProjects,
   setCurrentProject,
   setFilters,
 } from "@/store/features/projects/projectsSlice";
-import { RootState, AppDispatch } from "@/store";
-import "./Positions.scss";
-import { ProjectCard } from "@/components/projectCard/ProjectCard";
-import { ProjectDetails } from "@/components/projectDetails/ProjectDetails";
-import { ProjectFilters } from "@/components/projectFilters/projectFilters";
-import { Project } from "@/types/api";
+import type { AppDispatch, RootState } from "@/store";
+import "./Listings.scss";
+import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
+import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
+import { ProjectFilters } from "@/components/projects/project-filters/ProjectFilters";
+import type { Project } from "@/types/api";
+import { BannerType } from "@/common/enums";
 
-export default function Positions() {
+export default function Listings() {
   const dispatch = useDispatch<AppDispatch>();
   const {
     items: projects,
@@ -48,9 +49,9 @@ export default function Positions() {
 
   if (isLoading && !projects.length) {
     return (
-      <div className="positions-page">
-        <Banner />
-        <div className="positions-content">
+      <div className="listings-page">
+        <Banner type={BannerType.RESEARCH} />{" "}
+        <div className="listings-content">
           <div className="loading-spinner">Loading projects...</div>
         </div>
       </div>
@@ -59,9 +60,9 @@ export default function Positions() {
 
   if (error) {
     return (
-      <div className="positions-page">
-        <Banner />
-        <div className="positions-content">
+      <div className="listings-page">
+        <Banner type={BannerType.RESEARCH} />{" "}
+        <div className="listings-content">
           <div className="error-message">Error loading projects: {error}</div>
         </div>
       </div>
@@ -69,22 +70,22 @@ export default function Positions() {
   }
 
   return (
-    <div className="positions-page">
-      <Banner />
-      <div className="positions-content">
+    <div className="listings-page">
+      <Banner type={BannerType.RESEARCH} />
+      <div className="listings-content">
         <ProjectFilters />
 
-        <div className="positions-layout">
+        <div className="listings-layout">
           <div
-            className={`positions-list ${
-              isMobileDetailView ? "positions-list--hidden" : ""
+            className={`listings-list ${
+              isMobileDetailView ? "listings-list--hidden" : ""
             }`}
           >
-            <div className="positions-list__header">
+            <div className="listings-list__header">
               <h2>Available Positions ({totalProjects})</h2>
             </div>
 
-            <div className="positions-list__content">
+            <div className="listings-list__content">
               {projects.length === 0 ? (
                 <div className="no-results">
                   No research positions found matching your criteria
@@ -132,8 +133,8 @@ export default function Positions() {
           </div>
 
           <div
-            className={`positions-detail ${
-              isMobileDetailView ? "positions-detail--active" : ""
+            className={`listings-detail ${
+              isMobileDetailView ? "listings-detail--active" : ""
             }`}
           >
             {isMobileDetailView && (

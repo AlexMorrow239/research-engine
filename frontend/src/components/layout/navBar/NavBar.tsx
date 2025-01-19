@@ -1,87 +1,74 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { logout } from "@/store/features/auth/authSlice";
+import ugrLogo from "@public/images/navBar/miami-ugr.png";
+import poweredBy from "@public/images/navBar/powered-by-bonsai.png";
 import "./NavBar.scss";
-import { useState } from "react";
 
 export const NavBar = () => {
-  const location = useLocation();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const dispatch = useAppDispatch();
 
-  const isActive = (path: string) => {
-    return location.pathname === path ? "nav__link--active" : "";
-  };
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
+  const handleLogout = () => {
+    dispatch(logout());
   };
 
   return (
     <nav className="nav">
       <div className="nav__container">
-        {/* University Logo Section */}
         <div className="nav__brand">
           <Link to="/" className="nav__logo">
             <img
-              src="/images/navBar/miami-ugr.png"
-              alt="University of Miami Office of Undergraduate Research and Community Outreach"
+              src={ugrLogo}
+              alt="University Logo"
               className="nav__university-logo"
             />
           </Link>
         </div>
 
-        {/* Hamburger Menu Button */}
-        <button
-          className={`nav__menu-toggle ${
-            isMenuOpen ? "nav__menu-toggle--open" : ""
-          }`}
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
+        <div className="nav__menu">
+          {/* Always visible links */}
+          <NavLink to="/" className="nav__link">
+            Positions
+          </NavLink>
+          <NavLink to="/about" className="nav__link">
+            About
+          </NavLink>
+
+          {isAuthenticated ? (
+            // Links for authenticated professors
+            <>
+              <NavLink to="faculty/dashboard" className="nav__link">
+                Your Listings
+              </NavLink>
+              <NavLink to="/faculty/projects/new" className="nav__link">
+                List Position
+              </NavLink>
+              <button className="nav__link" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <NavLink to="/faculty/login" className="nav__link">
+              Faculty Login/Register
+            </NavLink>
+          )}
+        </div>
+
+        {/* Powered By section */}
+        <div className="nav__powered-by">
+          <img src={poweredBy} alt="Bonsai Logo" className="nav__bonsai-logo" />
+        </div>
+
+        {/* Mobile menu toggle button */}
+        <button className="nav__menu-toggle">
           <span></span>
           <span></span>
           <span></span>
         </button>
-
-        {/* Main Navigation */}
-        <div className={`nav__menu ${isMenuOpen ? "nav__menu--open" : ""}`}>
-          <Link
-            to="/"
-            className={`nav__link ${isActive("/")}`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Home
-          </Link>
-          <Link
-            to="/about"
-            className={`nav__link ${isActive("/about")}`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            About
-          </Link>
-          <Link
-            to="/faculty/projects/new"
-            className={`nav__link ${isActive("/positions")}`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            List a Position
-          </Link>
-          <Link
-            to="/faculty/dashboard"
-            className={`nav__link ${isActive("/listings")}`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Your Listings
-          </Link>
-        </div>
-
-        {/* Powered By Section */}
-        <div className="nav__powered-by">
-          <img
-            src="/images/navBar/powered-by-bonsai.png"
-            alt="Powered by Bonsai"
-            className="nav__bonsai-logo"
-          />
-        </div>
       </div>
     </nav>
   );
 };
+
+export default NavBar;

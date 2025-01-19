@@ -27,13 +27,7 @@ export enum ProjectStatus {
   CLOSED = "CLOSED",
 }
 
-/**
- * Represents the different types of banner images used across pages
- * Maps to image files in public/images/banners/
- */
 export enum BannerType {
   ABOUT = "about",
   RESEARCH = "research",
-  LISTINGS = "listings",
-  PROFILE = "profile",
 }

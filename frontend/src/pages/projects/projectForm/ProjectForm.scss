@@ -2,18 +2,19 @@
 
 .project-form {
   &__container {
+    @include card-base;
     max-width: 800px;
     margin: 0 auto;
     padding: var(--spacing-6);
-    background-color: var(--color-background);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--color-border);
   }
 
   &__loading {
-    text-align: center;
+    @include flex-center;
     padding: var(--spacing-8);
-    color: var(--color-text-light);
+
+    h2 {
+      color: var(--color-text-light);
+    }
   }
 
   &__header {
@@ -21,8 +22,7 @@
     text-align: center;
 
     h1 {
-      font-size: var(--font-size-2xl);
-      color: var(--color-text-dark);
+      @include heading("2xl");
       margin-bottom: var(--spacing-2);
     }
 
@@ -38,8 +38,7 @@
     border-bottom: 1px solid var(--color-border);
 
     &__title {
-      font-size: var(--font-size-xl);
-      color: var(--color-text-dark);
+      @include heading("xl");
       margin-bottom: var(--spacing-4);
     }
 
@@ -52,29 +51,23 @@
     margin-bottom: var(--spacing-6);
 
     label {
+      @include font-style("medium");
       display: block;
       margin-bottom: var(--spacing-2);
-      font-weight: var(--font-weight-medium);
       color: var(--color-text-dark);
     }
 
     input,
     textarea {
+      @include input-base;
       width: 100%;
-      padding: var(--spacing-3);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-base);
-      font-size: var(--font-size-base);
-      transition: var(--transition-all);
-
-      &:focus {
-        outline: none;
-        border-color: var(--color-primary);
-        box-shadow: 0 0 0 2px var(--color-primary-transparent);
-      }
 
       &.error {
         border-color: var(--color-error);
+      }
+
+      &::placeholder {
+        color: var(--color-text-light);
       }
     }
 
@@ -99,21 +92,55 @@
     input {
       flex: 1;
     }
+
+    .btn {
+      flex-shrink: 0;
+    }
   }
 
   .form-actions {
     @include flex(row, space-between, center);
     margin-top: var(--spacing-8);
+    padding-top: var(--spacing-6);
+    border-top: 1px solid var(--color-border);
 
     &__right {
       @include flex(row, flex-end, center);
       gap: var(--spacing-4);
     }
 
-    button {
+    .btn {
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+      }
+
+      &--danger {
+        @include button-variant(--color-error, --color-background);
+        border: 1px solid var(--color-error);
+
+        &:hover {
+          filter: brightness(0.9);
+        }
+      }
+
+      &--outline {
+        background-color: transparent;
+        border: 1px solid var(--color-border);
+        color: var(--color-text);
+
+        &:hover {
+          background-color: var(--color-background-alt);
+        }
+      }
+
+      &--primary {
+        @include button-variant(--color-primary, --color-background);
+      }
+
+      &--secondary {
+        @include button-variant(--color-gray-200, --color-text);
+        border: 1px solid var(--color-border);
       }
     }
   }

@@ -1,4 +1,4 @@
-import { User, Project, Application } from "./api";
+import type { Application, Project, User } from "./api";
 
 export interface BaseState {
   isLoading: boolean;

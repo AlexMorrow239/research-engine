@@ -1,4 +1,4 @@
-import { ToastType, ModalType } from "@/store/features/ui/uiSlice";
+import type { ModalType, ToastType } from "@/store/features/ui/uiSlice";
 
 export interface Toast {
   id: string;
@@ -6,7 +6,6 @@ export interface Toast {
   type: ToastType;
   duration?: number;
 }
-
 export interface ModalData {
   type: ModalType;
   props?: Record<string, unknown>;

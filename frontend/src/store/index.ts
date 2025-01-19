@@ -1,21 +1,22 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { useDispatch, useSelector, TypedUseSelectorHook } from "react-redux";
+import type { TypedUseSelectorHook } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  persistStore,
-  persistReducer,
   FLUSH,
-  REHYDRATE,
   PAUSE,
   PERSIST,
+  persistReducer,
+  persistStore,
   PURGE,
   REGISTER,
+  REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import projectsReducer from "./features/projects/projectsSlice";
 import authReducer from "./features/auth/authSlice";
 import uiReducer from "./features/ui/uiSlice";
 import { errorMiddleware } from "./middleware/errorMiddleWare";
-import { AuthState, UIState } from "@/types/global";
+import type { AuthState, UIState } from "@/types/global";
 
 const authPersistConfig = {
   key: "auth",

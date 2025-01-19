@@ -1,10 +1,10 @@
 @use "@/styles/abstracts" as *;
 
-.positions-page {
+.listings-page {
   min-height: 100vh;
   background-color: var(--color-background-alt);
 
-  .positions-content {
+  .listings-content {
     max-width: 1600px;
     margin: 0 auto;
     padding: var(--spacing-4);
@@ -14,34 +14,36 @@
     }
   }
 
-  .positions-layout {
+  .listings-layout {
     display: grid;
     grid-template-columns: minmax(300px, 400px) 1fr;
     gap: var(--spacing-6);
     margin-top: var(--spacing-4);
-    min-height: calc(100vh - 200px); // Adjust based on your header/footer
     position: relative;
+    min-height: calc(100vh - 200px);
 
     @include respond-to("md", "down") {
       grid-template-columns: 1fr;
-      gap: 0;
+      gap: var(--spacing-4);
     }
   }
 
-  .positions-list {
+  .listings-list {
     background-color: var(--color-background);
     border-radius: var(--radius-lg);
     border: 1px solid var(--color-border);
-    height: calc(100vh - 250px); // Adjust based on your layout
     display: flex;
     flex-direction: column;
     position: sticky;
     top: var(--spacing-4);
+    max-height: calc(100vh - var(--spacing-4) * 2);
 
     &__header {
       padding: var(--spacing-4);
       border-bottom: 1px solid var(--color-border);
       background-color: var(--color-background);
+      border-top-left-radius: var(--radius-lg);
+      border-top-right-radius: var(--radius-lg);
       position: sticky;
       top: 0;
       z-index: 10;
@@ -61,12 +63,11 @@
 
       // Styling scrollbar
       &::-webkit-scrollbar {
-        width: 8px;
+        width: 6px;
       }
 
       &::-webkit-scrollbar-track {
-        background: var(--color-background-alt);
-        border-radius: var(--radius-full);
+        background: transparent;
       }
 
       &::-webkit-scrollbar-thumb {
@@ -80,8 +81,8 @@
     }
 
     @include respond-to("md", "down") {
-      height: calc(100vh - 180px);
       position: static;
+      max-height: none;
 
       &--hidden {
         display: none;
@@ -105,6 +106,8 @@
       align-items: center;
       gap: var(--spacing-4);
       background-color: var(--color-background);
+      border-bottom-left-radius: var(--radius-lg);
+      border-bottom-right-radius: var(--radius-lg);
 
       button {
         @include button-base;
@@ -132,23 +135,22 @@
     }
   }
 
-  .positions-detail {
+  .listings-detail {
     background-color: var(--color-background);
     border-radius: var(--radius-lg);
     border: 1px solid var(--color-border);
-    height: calc(100vh - 250px); // Match list height
-    overflow-y: auto;
     position: sticky;
     top: var(--spacing-4);
+    max-height: calc(100vh - var(--spacing-4) * 2);
+    overflow-y: auto;
 
     // Styling scrollbar
     &::-webkit-scrollbar {
-      width: 8px;
+      width: 6px;
     }
 
     &::-webkit-scrollbar-track {
-      background: var(--color-background-alt);
-      border-radius: var(--radius-full);
+      background: transparent;
     }
 
     &::-webkit-scrollbar-thumb {
@@ -162,7 +164,7 @@
 
     @include respond-to("md", "down") {
       position: static;
-      height: auto;
+      max-height: none;
       display: none;
       margin-top: var(--spacing-4);
 
@@ -175,7 +177,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100%;
+      min-height: 400px;
       color: var(--color-text-light);
       font-size: var(--font-size-lg);
       text-align: center;

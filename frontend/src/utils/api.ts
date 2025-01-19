@@ -3,7 +3,11 @@ interface FetchOptions extends RequestInit {
 }
 
 export class ApiError extends Error {
-  constructor(message: string, public status?: number, public data?: unknown) {
+  constructor(
+    message: string,
+    public status?: number,
+    public data?: unknown
+  ) {
     super(message);
     this.name = "ApiError";
   }

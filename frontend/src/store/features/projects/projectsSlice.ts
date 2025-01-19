@@ -1,8 +1,9 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { ProjectStatus } from "@/common/enums";
-import { RootState } from "../../index";
+import type { RootState } from "../../index";
 import { api } from "@/utils/api";
-import { ApiResponse, Project } from "@/types/api";
+import type { ApiResponse, Project } from "@/types/api";
 
 interface ProjectsState {
   items: Project[];
@@ -174,6 +175,45 @@ export const updateProject = createAsyncThunk(
   }
 );
 
+export const deleteProject = createAsyncThunk(
+  "projects/delete",
+  async (projectId: string, { rejectWithValue }) => {
+    try {
+      await api.fetch(`/api/projects/${projectId}`, {
+        method: "DELETE",
+        requiresAuth: true,
+      });
+      return projectId;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
+export const delistProject = createAsyncThunk(
+  "projects/delist",
+  async (projectId: string, { rejectWithValue }) => {
+    try {
+      const response = await api.fetch<ApiResponse<Project>>(
+        `/api/projects/${projectId}/close`,
+        {
+          method: "PATCH",
+          requiresAuth: true,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      if (error instanceof Error) {
+        return rejectWithValue(error.message);
+      }
+      return rejectWithValue("An unknown error occurred");
+    }
+  }
+);
+
 const projectsSlice = createSlice({
   name: "projects",
   initialState,
@@ -277,6 +317,52 @@ const projectsSlice = createSlice({
         }
       })
       .addCase(updateProject.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(deleteProject.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(deleteProject.fulfilled, (state, action) => {
+        const projectId = action.payload;
+        if (!projectId) return;
+
+        state.items = state.items.filter((project) => project.id !== projectId);
+        state.totalProjects = state.totalProjects - 1;
+        if (state.currentProject?.id === projectId) {
+          state.currentProject = null;
+        }
+
+        state.isLoading = false;
+        state.error = "";
+      })
+      .addCase(deleteProject.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(delistProject.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(delistProject.fulfilled, (state, action) => {
+        const updatedProject = action.payload;
+        if (!updatedProject) return;
+
+        const index = state.items.findIndex(
+          (project) => project.id === updatedProject.id
+        );
+        if (index !== -1) {
+          state.items[index] = updatedProject;
+        }
+        if (state.currentProject?.id === updatedProject.id) {
+          state.currentProject = updatedProject;
+        }
+
+        state.isLoading = false;
+        state.error = "";
+      })
+      .addCase(delistProject.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

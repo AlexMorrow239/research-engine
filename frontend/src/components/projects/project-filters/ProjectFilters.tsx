@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Search, ChevronDown, X, RotateCcw } from "lucide-react";
+import { ChevronDown, RotateCcw, Search, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  setFilters,
   resetFilters,
+  setFilters,
 } from "@/store/features/projects/projectsSlice";
-import { RootState, AppDispatch } from "@/store";
+import type { AppDispatch, RootState } from "@/store";
 import "./ProjectFilters.scss";
 
 // Constants

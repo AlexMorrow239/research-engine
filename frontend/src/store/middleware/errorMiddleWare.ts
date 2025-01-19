@@ -1,4 +1,5 @@
-import { Middleware, isRejectedWithValue } from "@reduxjs/toolkit";
+import type { Middleware } from "@reduxjs/toolkit";
+import { isRejectedWithValue } from "@reduxjs/toolkit";
 import { addToast } from "../features/ui/uiSlice";
 import { logout } from "../features/auth/authSlice";
 import { ApiError } from "@/utils/api";

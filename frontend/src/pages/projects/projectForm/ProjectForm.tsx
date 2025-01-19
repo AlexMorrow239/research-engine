@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Banner } from "@/common/banner/Banner";
 import "./ProjectForm.scss";
 import {
   createProject,
-  updateProject,
+  deleteProject,
   fetchProject,
+  updateProject,
 } from "@/store/features/projects/projectsSlice";
 import { addToast } from "@/store/features/ui/uiSlice";
 import { useAppDispatch } from "@/store";
 import { ProjectStatus } from "@/common/enums";
-import { Project } from "@/types/api";
+import type { Project } from "@/types/api";
 import { ApiError } from "@/utils/api";
 
 // Zod schema for project creation/editing
@@ -160,13 +160,14 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
 
   const onSubmit = async (
     data: ProjectFormData,
-    status: "DRAFT" | "PUBLISHED"
+    status: ProjectStatus,
+    action?: "delete" | "delist"
   ) => {
     setIsSubmitting(true);
     try {
       const formattedData = {
         ...data,
-        status: status as ProjectStatus,
+        status: status,
         applicationDeadline: new Date(data.applicationDeadline),
       };
 
@@ -180,29 +181,35 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
         return;
       }
 
-      if (mode === "edit" && projectId) {
+      if (action === "delete" && projectId) {
+        await dispatch(deleteProject(projectId)).unwrap();
+        dispatch(
+          addToast({
+            type: "success",
+            message: "Project deleted successfully!",
+          })
+        );
+      } else if (mode === "edit" && projectId) {
         await dispatch(
           updateProject({ id: projectId, project: formattedData })
         ).unwrap();
+        dispatch(
+          addToast({
+            type: "success",
+            message: getSuccessMessage(status, action),
+          })
+        );
       } else {
         await dispatch(createProject(formattedData)).unwrap();
+        dispatch(
+          addToast({
+            type: "success",
+            message: `Project ${
+              status === ProjectStatus.DRAFT ? "saved as draft" : "published"
+            } successfully!`,
+          })
+        );
       }
-
-      dispatch(
-        addToast({
-          type: "success",
-          message:
-            mode === "edit"
-              ? `Project ${
-                  status === ProjectStatus.DRAFT ? "saved as draft" : "updated"
-                } successfully!`
-              : `Project ${
-                  status === ProjectStatus.DRAFT
-                    ? "saved as draft"
-                    : "published"
-                } successfully!`,
-        })
-      );
 
       navigate("/faculty/dashboard");
     } catch (error) {
@@ -221,11 +228,27 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
     }
   };
 
+  const getSuccessMessage = (
+    status: ProjectStatus,
+    action?: "delete" | "delist"
+  ) => {
+    if (action === "delist") return "Project delisted successfully!";
+    switch (status) {
+      case ProjectStatus.DRAFT:
+        return "Project moved to drafts successfully!";
+      case ProjectStatus.PUBLISHED:
+        return "Project updated successfully!";
+      case ProjectStatus.CLOSED:
+        return "Project closed successfully!";
+      default:
+        return "Project updated successfully!";
+    }
+  };
+
   // Show loading state
   if (isLoading) {
     return (
       <div className="project-form">
-        <Banner />
         <div className="project-form__container">
           <div className="project-form__loading">
             <h2>Loading project details...</h2>
@@ -237,8 +260,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
 
   return (
     <div className="project-form">
-      <Banner />
-
       <div className="project-form__container">
         <div className="project-form__header">
           <h1>
@@ -428,58 +449,132 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
               Cancel
             </button>
             <div className="form-actions__right">
-              {/* Show Save as Draft only for new projects or existing drafts */}
-              {(mode === "create" ||
-                (mode === "edit" && currentStatus === ProjectStatus.DRAFT)) && (
-                <button
-                  type="button"
-                  className="btn btn--outline"
-                  onClick={handleSubmit((data) =>
-                    onSubmit(data, ProjectStatus.DRAFT)
+              {mode === "edit" && (
+                <>
+                  {/* CLOSED project actions */}
+                  {currentStatus === ProjectStatus.CLOSED && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn--danger"
+                        onClick={handleSubmit((data) =>
+                          onSubmit(data, ProjectStatus.DRAFT)
+                        )}
+                        disabled={isSubmitting}
+                      >
+                        Move to Drafts
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn--danger"
+                        onClick={handleSubmit((data) =>
+                          onSubmit(data, ProjectStatus.CLOSED, "delete")
+                        )}
+                        disabled={isSubmitting}
+                      >
+                        Delete Forever
+                      </button>
+                    </>
                   )}
-                  disabled={isSubmitting}
-                >
-                  Save as Draft
-                </button>
-              )}
-              {/* Show Publish button only for drafts */}
-              {mode === "edit" && currentStatus === ProjectStatus.DRAFT && (
-                <button
-                  type="submit"
-                  className="btn btn--primary"
-                  onClick={handleSubmit((data) =>
-                    onSubmit(data, ProjectStatus.PUBLISHED)
+
+                  {/* PUBLISHED project actions */}
+                  {currentStatus === ProjectStatus.PUBLISHED && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn--outline"
+                        onClick={handleSubmit((data) =>
+                          onSubmit(data, ProjectStatus.PUBLISHED, "delist")
+                        )}
+                        disabled={isSubmitting}
+                      >
+                        Delist Project
+                      </button>
+                      <button
+                        type="submit"
+                        className="btn btn--primary"
+                        onClick={handleSubmit((data) =>
+                          onSubmit(data, ProjectStatus.PUBLISHED)
+                        )}
+                        disabled={isSubmitting}
+                      >
+                        Update Project
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn--danger"
+                        onClick={handleSubmit((data) =>
+                          onSubmit(data, ProjectStatus.CLOSED)
+                        )}
+                        disabled={isSubmitting}
+                      >
+                        Close Project
+                      </button>
+                    </>
                   )}
-                  disabled={isSubmitting}
-                >
-                  Publish Project
-                </button>
-              )}
-              {/* Show Update button for published projects */}
-              {mode === "edit" && currentStatus === ProjectStatus.PUBLISHED && (
-                <button
-                  type="submit"
-                  className="btn btn--primary"
-                  onClick={handleSubmit((data) =>
-                    onSubmit(data, currentStatus)
+
+                  {/* DRAFT project actions */}
+                  {currentStatus === ProjectStatus.DRAFT && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn--danger"
+                        onClick={handleSubmit((data) =>
+                          onSubmit(data, ProjectStatus.DRAFT, "delete")
+                        )}
+                        disabled={isSubmitting}
+                      >
+                        Delete Forever
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn--outline"
+                        onClick={handleSubmit((data) =>
+                          onSubmit(data, ProjectStatus.DRAFT)
+                        )}
+                        disabled={isSubmitting}
+                      >
+                        Save as Draft
+                      </button>
+                      <button
+                        type="submit"
+                        className="btn btn--primary"
+                        onClick={handleSubmit((data) =>
+                          onSubmit(data, ProjectStatus.PUBLISHED)
+                        )}
+                        disabled={isSubmitting}
+                      >
+                        Publish Project
+                      </button>
+                    </>
                   )}
-                  disabled={isSubmitting}
-                >
-                  Update Project
-                </button>
+                </>
               )}
-              {/* Show Publish button for new projects */}
+
+              {/* CREATE mode actions */}
               {mode === "create" && (
-                <button
-                  type="submit"
-                  className="btn btn--primary"
-                  onClick={handleSubmit((data) =>
-                    onSubmit(data, ProjectStatus.PUBLISHED)
-                  )}
-                  disabled={isSubmitting}
-                >
-                  Publish Project
-                </button>
+                <>
+                  <button
+                    type="button"
+                    className="btn btn--outline"
+                    onClick={handleSubmit((data) =>
+                      onSubmit(data, ProjectStatus.DRAFT)
+                    )}
+                    disabled={isSubmitting}
+                  >
+                    Save as Draft
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn--primary"
+                    onClick={handleSubmit((data) =>
+                      onSubmit(data, ProjectStatus.PUBLISHED)
+                    )}
+                    disabled={isSubmitting}
+                  >
+                    Publish Project
+                  </button>
+                </>
               )}
             </div>
           </div>

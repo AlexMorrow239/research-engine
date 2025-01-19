@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, Calendar } from "lucide-react";
+import { Calendar, Users } from "lucide-react";
 import "./ProjectCard.scss";
 
 interface ProjectCardProps {
@@ -47,16 +47,36 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     return "";
   };
 
+  const getDeadlineText = (deadline?: Date) => {
+    if (!deadline) return "";
+    if (isDeadlineExpired(deadline)) return "Deadline passed";
+    if (isDeadlineSoon(deadline)) return "Deadline soon";
+    return new Date(deadline).toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
   return (
     <div
       className={`project-card ${isSelected ? "project-card--selected" : ""}`}
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+      aria-selected={isSelected}
     >
       {project.status !== "PUBLISHED" && (
         <span
           className={`project-card__status project-card__status--${project.status.toLowerCase()}`}
         >
-          {project.status}
+          {project.status.charAt(0) + project.status.slice(1).toLowerCase()}
         </span>
       )}
 
@@ -71,8 +91,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
       </div>
 
       <div className="project-card__meta">
-        <span className="project-card__positions">
-          <Users size={16} />
+        <span className="project-card__positions" title="Available positions">
+          <Users size={16} aria-hidden="true" />
           {project.positions} position{project.positions !== 1 ? "s" : ""}
         </span>
 
@@ -81,27 +101,30 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             className={`project-card__deadline ${getDeadlineClass(
               project.applicationDeadline
             )}`}
+            title="Application deadline"
           >
-            <Calendar size={16} />
-            {isDeadlineExpired(project.applicationDeadline)
-              ? "Deadline passed"
-              : isDeadlineSoon(project.applicationDeadline)
-              ? "Deadline soon"
-              : new Date(project.applicationDeadline).toLocaleDateString()}
+            <Calendar size={16} aria-hidden="true" />
+            {getDeadlineText(project.applicationDeadline)}
           </span>
         )}
       </div>
 
       {project.researchCategories.length > 0 && (
-        <div className="project-card__categories">
+        <div
+          className="project-card__categories"
+          aria-label="Research categories"
+        >
           {project.researchCategories.slice(0, 3).map((category) => (
             <span key={category} className="project-card__category">
               {category}
             </span>
           ))}
           {project.researchCategories.length > 3 && (
-            <span className="project-card__category">
-              +{project.researchCategories.length - 3} more
+            <span
+              className="project-card__category"
+              title="Additional categories"
+            >
+              +{project.researchCategories.length - 3}
             </span>
           )}
         </div>

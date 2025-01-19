@@ -1,12 +1,13 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import {
-  LoginCredentials,
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import type {
   AuthResponse,
-  User,
   FacultyRegistrationForm,
+  LoginCredentials,
   Professor,
+  User,
 } from "@/types/api";
-import { AuthState } from "@/types/global";
+import type { AuthState } from "@/types/global";
 import { api, ApiError } from "@/utils/api";
 
 const initialState: AuthState = {

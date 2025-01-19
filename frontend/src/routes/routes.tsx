@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
 import { ProtectedLayout } from "./protected";
 import About from "../pages/about/About";
-import FacultyLogin from "../pages/facultyLogin/FacultyLogin";
-import FacultyRegistration from "../pages/facultyRegistration/FacultyRegistration";
-import Positions from "../pages/positions/Positions";
+import FacultyLogin from "../pages/auth/facultyLogin/FacultyLogin";
+import FacultyRegistration from "../pages/auth/facultyRegistration/FacultyRegistration";
+import Listings from "../pages/listings/Listings";
 import { MainLayout } from "@/components/layout/mainLayout/MainLayout";
-import ProjectDashboard from "@/pages/projectDashboard/ProjectDashboard";
+import ProjectDashboard from "@/pages/projects/projectDashboard/ProjectDashboard";
 import { ProjectForm } from "@/pages/projects/projectForm/projectForm";
 
 export const router = createBrowserRouter([
@@ -15,7 +15,7 @@ export const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Positions />,
+        element: <Listings />,
       },
       {
         path: "about",

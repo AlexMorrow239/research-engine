@@ -1,6 +1,6 @@
 import React from "react";
-import { User, Building2, Mail, FileText } from "lucide-react";
-import { ProjectStatus } from "@/common/enums";
+import { Building2, FileText, Mail, User } from "lucide-react";
+import type { ProjectStatus } from "@/common/enums";
 import "./ProjectDetails.scss";
 
 interface ProjectDetailsProps {
@@ -56,10 +56,20 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
     return "normal";
   };
 
+  const formatDeadline = (deadline: Date) => {
+    if (isDeadlineExpired(deadline)) return "Deadline passed";
+    if (isDeadlineSoon(deadline)) return "Deadline soon";
+    return new Date(deadline).toLocaleDateString(undefined, {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
   return (
-    <div className="project-details">
+    <article className="project-details">
       <div className="project-details__content">
-        <div className="project-details__header">
+        <header className="project-details__header">
           <h2 className="project-details__title">{project.title}</h2>
 
           <div className="project-details__meta-grid">
@@ -78,65 +88,70 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
                     project.applicationDeadline
                   )}`}
                 >
-                  {isDeadlineExpired(project.applicationDeadline)
-                    ? "Deadline passed"
-                    : isDeadlineSoon(project.applicationDeadline)
-                    ? "Deadline soon"
-                    : new Date(
-                        project.applicationDeadline
-                      ).toLocaleDateString()}
+                  {formatDeadline(project.applicationDeadline)}
                 </span>
               </div>
             )}
           </div>
-        </div>
+        </header>
 
-        <div className="project-details__professor">
+        <section className="project-details__professor">
           <h3>Faculty Mentor</h3>
           <div className="info">
-            <User size={18} className="icon" />
+            <User size={18} className="icon" aria-hidden="true" />
             <span className="text">
               {project.professor.name.firstName}{" "}
               {project.professor.name.lastName}
             </span>
 
-            <Building2 size={18} className="icon" />
+            <Building2 size={18} className="icon" aria-hidden="true" />
             <span className="text">{project.professor.department}</span>
 
-            <Mail size={18} className="icon" />
-            <a href={`mailto:${project.professor.email}`} className="email">
+            <Mail size={18} className="icon" aria-hidden="true" />
+            <a
+              href={`mailto:${project.professor.email}`}
+              className="email"
+              aria-label={`Email ${project.professor.name.firstName} ${project.professor.name.lastName}`}
+            >
               {project.professor.email}
             </a>
           </div>
-        </div>
+        </section>
 
-        <div className="project-details__section">
+        <section className="project-details__section">
           <h3>Project Description</h3>
           <p>{project.description}</p>
-        </div>
+        </section>
 
-        <div className="project-details__section">
+        <section className="project-details__section">
           <h3>Requirements</h3>
-          <ul className="project-details__requirements">
+          <ul
+            className="project-details__requirements"
+            aria-label="Project requirements"
+          >
             {project.requirements.map((req, index) => (
               <li key={index}>{req}</li>
             ))}
           </ul>
-        </div>
+        </section>
 
-        <div className="project-details__section">
+        <section className="project-details__section">
           <h3>Research Categories</h3>
-          <div className="project-details__categories">
+          <div
+            className="project-details__categories"
+            role="list"
+            aria-label="Research categories"
+          >
             {project.researchCategories.map((category) => (
-              <span key={category} className="category">
+              <span key={category} className="category" role="listitem">
                 {category}
               </span>
             ))}
           </div>
-        </div>
+        </section>
 
         {project.files.length > 0 && (
-          <div className="project-details__section">
+          <section className="project-details__section">
             <h3>Additional Documents</h3>
             <ul className="project-details__files">
               {project.files.map((file) => (
@@ -146,20 +161,21 @@ export const ProjectDetails: React.FC<ProjectDetailsProps> = ({ project }) => {
                     className="file-link"
                     target="_blank"
                     rel="noopener noreferrer"
+                    aria-label={`Download ${file.originalName}`}
                   >
-                    <FileText size={18} className="icon" />
-                    {file.originalName}
+                    <FileText size={18} className="icon" aria-hidden="true" />
+                    <span>{file.originalName}</span>
                   </a>
                 </li>
               ))}
             </ul>
-          </div>
+          </section>
         )}
 
-        <button className="btn btn--primary project-details__apply">
-          Apply Now
-        </button>
+        <footer className="project-details__apply">
+          <button className="btn btn--primary">Apply Now</button>
+        </footer>
       </div>
-    </div>
+    </article>
   );
 };

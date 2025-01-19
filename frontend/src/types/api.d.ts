@@ -1,4 +1,4 @@
-import { ProjectStatus, ApplicationStatus } from "@/common/enums";
+import type { ApplicationStatus, ProjectStatus } from "@/common/enums";
 
 export interface ApiResponse<T> {
   data: T;

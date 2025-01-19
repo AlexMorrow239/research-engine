@@ -3,6 +3,11 @@ import { Edit2, Trash2 } from "lucide-react";
 import { ProjectStatus } from "@/common/enums";
 import "./ProjectSection.scss";
 import { useNavigate } from "react-router-dom";
+import {
+  deleteProject,
+  delistProject,
+} from "@/store/features/projects/projectsSlice";
+import { useAppDispatch } from "@/store";
 
 interface ProjectSectionProps {
   title: string;
@@ -20,6 +25,28 @@ export const ProjectSection: React.FC<ProjectSectionProps> = ({
   projects,
 }) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const handleDelete = async (projectId: string, status: ProjectStatus) => {
+    if (status === ProjectStatus.PUBLISHED) {
+      if (!window.confirm("Are you sure you want to delist this project?")) {
+        return;
+      }
+      await dispatch(delistProject(projectId)).unwrap();
+    } else {
+      if (
+        !window.confirm("Are you sure you want to delete this project forever?")
+      ) {
+        return;
+      }
+      await dispatch(deleteProject(projectId)).unwrap();
+    }
+  };
+
+  if (!projects.length) {
+    return null;
+  }
+
   if (!projects.length) {
     return null;
   }
@@ -43,7 +70,10 @@ export const ProjectSection: React.FC<ProjectSectionProps> = ({
               >
                 <Edit2 size={18} />
               </button>
-              <button className="btn btn--icon btn--danger" onClick={() => {}}>
+              <button
+                className="btn btn--icon btn--danger"
+                onClick={() => handleDelete(project.id, project.status)}
+              >
                 <Trash2 size={18} />
               </button>
             </div>
