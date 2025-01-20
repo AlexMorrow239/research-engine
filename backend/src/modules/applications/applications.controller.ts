@@ -6,8 +6,10 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   Logger,
   MaxFileSizeValidator,
+  NotFoundException,
   Param,
   ParseFilePipe,
   Patch,
@@ -127,12 +129,23 @@ export class ApplicationsController {
     @GetProfessor() professor: Professor,
     @Res() res: Response,
   ) {
-    const fileData = await this.applicationsService.getResume(professor.id, applicationId);
+    try {
+      const fileData = await this.applicationsService.getResume(professor.id, applicationId);
 
-    return res
-      .status(HttpStatus.OK)
-      .setHeader('Content-Type', fileData.mimeType)
-      .setHeader('Content-Disposition', `attachment; filename="${fileData.fileName}"`)
-      .redirect(fileData.url);
+      // Instead of redirecting, proxy the request to S3
+      const response = await fetch(fileData.url);
+      const buffer = await response.arrayBuffer();
+
+      res
+        .status(HttpStatus.OK)
+        .setHeader('Content-Type', fileData.mimeType)
+        .setHeader('Content-Disposition', `attachment; filename="${fileData.fileName}"`)
+        .send(Buffer.from(buffer));
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error downloading resume');
+    }
   }
 }

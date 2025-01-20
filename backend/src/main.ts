@@ -29,14 +29,12 @@ async function bootstrap() {
       logger: ['error', 'warn', 'log', 'debug'],
     });
 
-    logger.log('Application created, configuring middleware...');
-
-    // Configure global middleware
-    configureGlobalMiddleware(app);
-
     logger.log(
       `Configuring CORS with frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`,
     );
+
+    // Configure global middleware
+    configureGlobalMiddleware(app);
 
     // Add request logging middleware
     app.use((req, res, next) => {
@@ -52,85 +50,19 @@ async function bootstrap() {
       next();
     });
 
-    // Add a specific handler for OPTIONS requests
-    app.use((req, res, next) => {
-      if (req.method === 'OPTIONS') {
-        logger.debug('Handling OPTIONS request');
-        res.header('Access-Control-Max-Age', '3600');
-        res.status(204).send();
-        return;
-      }
-      next();
-    });
-
-    logger.log('CORS configured with the following settings:', {
-      origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-      credentials: true,
-    });
-
     // Enable CORS with specific configuration
     app.enableCors({
       origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-      methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-      allowedHeaders: [
-        'Origin',
-        'X-Requested-With',
-        'Content-Type',
-        'Accept',
-        'Authorization',
-        'Access-Control-Allow-Origin',
-        'Access-Control-Allow-Methods',
-        'Access-Control-Allow-Headers',
-        'Access-Control-Allow-Credentials',
-      ],
-      exposedHeaders: [
-        'Content-Disposition',
-        'Content-Type',
-        'Content-Length',
-        'Location',
-        'Access-Control-Allow-Origin',
-        'Access-Control-Allow-Methods',
-        'Access-Control-Allow-Headers',
-        'Access-Control-Allow-Credentials',
-      ],
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
+      exposedHeaders: ['Content-Disposition'],
       credentials: true,
-      maxAge: 3600,
+      preflightContinue: false,
+      optionsSuccessStatus: 204,
     });
-
-    // Add middleware to handle S3 redirects
-    app.use((req, res, next) => {
-      const oldRedirect = res.redirect;
-      res.redirect = function (url) {
-        logger.debug('Handling redirect to:', url);
-        // Instead of redirecting, send the URL directly
-        if (url.includes('s3.amazonaws.com')) {
-          logger.debug('S3 URL detected, sending direct response');
-          const contentDisposition = res.getHeader('content-disposition');
-          const contentType = res.getHeader('content-type');
-
-          // Clear any existing headers that might interfere
-          res.removeHeader('location');
-          res.removeHeader('content-length');
-
-          // Send JSON response with URL and metadata
-          return res.status(200).json({
-            url: url,
-            filename: contentDisposition?.toString().split('filename=')[1]?.replace(/"/g, ''),
-            contentType: contentType,
-          });
-        }
-        return oldRedirect.call(this, url);
-      };
-      next();
-    });
-
-    logger.log('CORS configured with permissive settings for debugging');
 
     // Configure and setup Swagger documentation
     setupSwagger(app);
-
-    logger.log('Swagger configured, starting server...');
 
     // Start the server on specified port with explicit host binding
     const port = process.env.PORT ?? 3000;
@@ -139,7 +71,7 @@ async function bootstrap() {
 
     // Get the actual URL and log it
     const serverUrl = await app.getUrl();
-    logger.log(`Application is running on http://localhost:${port}`); // More user-friendly URL
+    logger.log(`Application is running on http://localhost:${port}`);
     logger.log(`Alternative URLs:`);
     logger.log(` - Local IPv6: ${serverUrl}`);
     logger.log(` - Local IPv4: http://127.0.0.1:${port}`);

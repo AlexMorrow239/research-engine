@@ -64,7 +64,7 @@ export class ApplicationsService {
       // Check if user has already applied
       const existingApplication = await this.applicationModel.findOne({
         project: createApplicationDto.projectId,
-        'studentInfo.email': createApplicationDto.studentInfo.email,
+        'studentInfo.cNumber': createApplicationDto.studentInfo.cNumber,
       });
 
       if (existingApplication) {
@@ -102,6 +102,15 @@ export class ApplicationsService {
         throw new Error('Failed to save application');
       }
 
+      // Populate the saved application with project details
+      const populatedApplication = await savedApplication.populate({
+        path: 'project',
+        populate: {
+          path: 'professor',
+          select: 'email name',
+        },
+      });
+
       // Track analytics
       await this.analyticsService.updateApplicationMetrics(
         savedApplication.project.toString(),
@@ -109,12 +118,31 @@ export class ApplicationsService {
         ApplicationStatus.PENDING,
       );
 
+      // Send confirmation emails
+      try {
+        // Send confirmation to student
+        await this.emailService.sendApplicationConfirmation(savedApplication, project.title);
+
+        // Send notification to professor
+        await this.emailService.sendProfessorNewApplication(
+          project.professor.email,
+          savedApplication,
+          project.title,
+        );
+      } catch (emailError) {
+        this.logger.error('Failed to send confirmation emails', {
+          error: emailError.message,
+          applicationId: savedApplication.id,
+        });
+        // Don't throw error here - application was still created successfully
+      }
+
       this.logger.debug('Application created successfully', {
         applicationId: savedApplication.id,
         resumePath: resumeKey,
       });
 
-      return savedApplication;
+      return populatedApplication;
     } catch (error) {
       this.logger.error('Failed to create application', {
         error: error.message,

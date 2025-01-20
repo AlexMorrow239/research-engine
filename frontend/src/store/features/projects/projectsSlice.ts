@@ -58,7 +58,10 @@ export const fetchProjects = createAsyncThunk(
 
       // Updated to match backend route
       return await api.fetch<{ projects: Project[]; total: number }>(
-        `/api/projects?${queryParams}`
+        `/api/projects?${queryParams}`,
+        {
+          requiresAuth: false,
+        }
       );
     } catch (error) {
       if (error instanceof Error) {
@@ -127,7 +130,7 @@ export const fetchProject = createAsyncThunk(
       const response = await api.fetch<ApiResponse<Project>>(
         `/api/projects/${projectId}`,
         {
-          requiresAuth: true,
+          requiresAuth: false,
         }
       );
       // If the response is wrapped in a data property, return that

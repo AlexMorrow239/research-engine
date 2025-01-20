@@ -1,16 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
 import * as nodemailer from 'nodemailer';
 
 import { ApplicationStatus } from '@common/enums';
-
 import { ErrorHandler } from '@/common/utils/error-handler.util';
-import { DownloadTokenService } from '@/modules/file-storage/download-token.service';
 import { DownloadUrlService } from '@/modules/file-storage/download-url.service';
-
 import { Application } from '../applications/schemas/applications.schema';
-
 import { EmailConfigService } from './config/email.config';
 import { EmailTemplateService } from './email-template.service';
 
@@ -24,7 +19,6 @@ export class EmailService {
     private readonly emailConfigService: EmailConfigService,
     private readonly emailTemplateService: EmailTemplateService,
     private readonly configService: ConfigService,
-    private readonly downloadTokenService: DownloadTokenService,
     private readonly downloadUrlService: DownloadUrlService,
     private readonly logger: Logger,
   ) {
@@ -59,7 +53,11 @@ export class EmailService {
         application.project.professor._id || application.project.professor,
       );
 
-      const resumeDownloadUrl = this.getResumeDownloadUrl(projectId, application.id, professorId);
+      const resumeDownloadUrl = await this.getResumeDownloadUrl(
+        projectId,
+        application.id,
+        professorId,
+      );
 
       const { subject, text, html } = this.emailTemplateService.getProfessorNotificationTemplate(
         projectTitle,
@@ -78,11 +76,11 @@ export class EmailService {
     }
   }
 
-  private getResumeDownloadUrl(
+  private async getResumeDownloadUrl(
     projectId: string,
     applicationId: string,
     professorId: string,
-  ): string {
+  ): Promise<string> {
     return this.downloadUrlService.generateDownloadUrl(projectId, applicationId, professorId);
   }
 
