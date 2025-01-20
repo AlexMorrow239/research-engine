@@ -2,7 +2,6 @@ import { Logger, Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { EmailModule } from '../email/email.module';
-import { FileStorageModule } from '../file-storage/file-storage.module';
 import { ProjectsModule } from '../projects/projects.module';
 
 import { ApplicationsController } from './applications.controller';
@@ -16,7 +15,6 @@ import { AnalyticsModule } from '@/modules/analytics/analytics.module';
   imports: [
     MongooseModule.forFeature([{ name: Application.name, schema: ApplicationSchema }]),
     forwardRef(() => ProjectsModule),
-    FileStorageModule,
     EmailModule,
     AnalyticsModule,
   ],

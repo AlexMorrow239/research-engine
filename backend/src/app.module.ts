@@ -14,8 +14,6 @@ import { MulterModule } from '@nestjs/platform-express';
 
 import { diskStorage } from 'multer';
 
-import { AnalyticsModule } from '@/modules/analytics/analytics.module';
-
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ApplicationsModule } from './modules/applications/applications.module';
@@ -23,6 +21,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { EmailModule } from './modules/email/email.module';
 import { ProfessorsModule } from './modules/professors/professors.module';
 import { ProjectsModule } from './modules/projects/projects.module';
+
+import { AnalyticsModule } from '@/modules/analytics/analytics.module';
 
 @Module({
   imports: [

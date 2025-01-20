@@ -7,6 +7,8 @@ import {
   ApiNotFoundResponse,
   ApiBadRequestResponse,
   ApiBody,
+  ApiBearerAuth,
+  ApiParam,
 } from '@nestjs/swagger';
 
 import { ApplicationDescriptions } from '../descriptions/applications.description';
@@ -71,5 +73,65 @@ export const ApiCreateApplication = () =>
           },
         },
       },
+    }),
+  );
+
+export const ApiGetResume = () =>
+  applyDecorators(
+    ApiOperation({
+      summary: 'Download application resume',
+      description: `
+          Download the resume file for a specific application.
+          
+          Authentication:
+          - Requires JWT token in Authorization header
+          - Only accessible by the professor who owns the project
+          
+          Response:
+          - Redirects to a pre-signed S3 URL for secure file download
+          - URL is temporary and expires after a short period
+          - File is served with correct content type and disposition headers
+        `,
+    }),
+    ApiBearerAuth(),
+    ApiResponse({
+      status: HttpStatus.OK,
+      description: 'Resume file download',
+      content: {
+        'application/pdf': {
+          schema: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+        'application/msword': {
+          schema: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': {
+          schema: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    }),
+    ApiUnauthorizedResponse({
+      description: 'Unauthorized - Valid JWT token required',
+    }),
+    ApiNotFoundResponse({
+      description: 'Application not found or professor does not have access',
+    }),
+    ApiParam({
+      name: 'projectId',
+      description: 'ID of the project',
+      type: 'string',
+    }),
+    ApiParam({
+      name: 'applicationId',
+      description: 'ID of the application',
+      type: 'string',
     }),
   );

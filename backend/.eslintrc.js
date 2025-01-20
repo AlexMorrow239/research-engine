@@ -47,6 +47,7 @@ module.exports = {
           { pattern: './**', group: 'sibling', position: 'after' },
           { pattern: '../**', group: 'parent', position: 'after' },
         ],
+        ignore: ['^@/'],
         pathGroupsExcludedImportTypes: ['@nestjs', '@decorators'],
         'newlines-between': 'always',
         alphabetize: {
@@ -67,7 +68,26 @@ module.exports = {
     'import/resolver': {
       typescript: {
         alwaysTryTypes: true,
-        project: 'tsconfig.json',
+        project: './tsconfig.json',
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
+      },
+      node: {
+        paths: ['.'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        moduleDirectory: ['node_modules', 'src/'],
+      },
+      alias: {
+        map: [
+          ['@', './src'],
+          ['@test', './test'],
+          ['@common', './src/common'],
+          ['@modules', './src/modules'],
+          ['@filters', './src/common/filters'],
+          ['@pipes', './src/common/pipes'],
+          ['@swagger', './src/common/docs'],
+          ['@validators', './src/common/validators'],
+        ],
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
       },
     },
   },

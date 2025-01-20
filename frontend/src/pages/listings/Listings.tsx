@@ -1,4 +1,4 @@
-import { BannerType } from "@/common/enums";
+import { BannerType, type ProjectStatus } from "@/common/enums";
 import { Banner } from "@/components/common/banner/Banner";
 import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
 import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
@@ -96,10 +96,7 @@ export default function Listings(): JSX.Element {
                     key={project.id}
                     project={{
                       ...project,
-                      status: project.status as
-                        | "DRAFT"
-                        | "PUBLISHED"
-                        | "ARCHIVED",
+                      status: project.status as ProjectStatus,
                     }}
                     isSelected={currentProject?.id === project.id}
                     onClick={() => handleProjectSelect(project)}

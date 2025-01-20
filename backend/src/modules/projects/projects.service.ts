@@ -10,16 +10,14 @@ import {
   UpdateProjectDto,
 } from '@common/dto/projects';
 
+import { Professor } from '@modules/professors/schemas/professors.schema';
+
+import { Project, ProjectStatus } from './schemas/projects.schema';
+
 import { ApplicationStatus } from '@/common/enums';
 import { ErrorHandler } from '@/common/utils/error-handler.util';
 import { ApplicationsService } from '@/modules/applications/applications.service';
 import { EmailService } from '@/modules/email/email.service';
-
-import { Professor } from '@modules/professors/schemas/professors.schema';
-
-import { FileStorageService } from '../file-storage/file-storage.service';
-
-import { Project, ProjectStatus } from './schemas/projects.schema';
 
 // Handles research project business logic and data operations
 @Injectable()
@@ -28,7 +26,6 @@ export class ProjectsService {
 
   constructor(
     @InjectModel(Project.name) private projectModel: Model<Project>,
-    private readonly fileStorageService: FileStorageService,
     @Inject(forwardRef(() => ApplicationsService))
     private readonly applicationsService: ApplicationsService,
     private readonly emailService: EmailService,
@@ -56,7 +53,7 @@ export class ProjectsService {
         },
         researchCategories: project.researchCategories,
         requirements: project.requirements,
-        files: project.files,
+        files: [],
         status: project.status,
         positions: project.positions,
         applicationDeadline: project.applicationDeadline,
@@ -227,13 +224,7 @@ export class ProjectsService {
         throw new NotFoundException("Project not found or you don't have permission to delete it");
       }
 
-      // Clean up associated files
-      if (project?.files?.length > 0) {
-        await Promise.all(
-          project.files.map((file) => this.fileStorageService.deleteFile(file.fileName, true)),
-        );
-      }
-
+      // TODO: Implement file cleanup when file storage is implemented
       this.logger.log(`Project ${projectId} deleted by professor ${professorId}`);
     } catch (error) {
       ErrorHandler.handleServiceError(
@@ -267,78 +258,25 @@ export class ProjectsService {
     }
   }
 
-  // Add file to project
+  // Placeholder for future file upload implementation
   async addProjectFile(
     professorId: string,
     projectId: string,
     file: Express.Multer.File,
   ): Promise<ProjectFileDto> {
-    try {
-      const project = await this.projectModel.findOne({
-        _id: projectId,
-        professor: professorId,
-      });
-
-      if (!project) {
-        throw new NotFoundException("Project not found or you don't have permission to modify it");
-      }
-
-      const fileName = await this.fileStorageService.saveFile(file, projectId, true);
-
-      const projectFile = {
-        fileName,
-        originalName: file.originalname,
-        mimeType: file.mimetype,
-        size: file.size,
-        uploadedAt: new Date(),
-      };
-
-      await this.projectModel.findByIdAndUpdate(projectId, {
-        $push: { files: projectFile },
-      });
-
-      this.logger.log(`File added to project ${projectId} by professor ${professorId}`);
-      return projectFile;
-    } catch (error) {
-      ErrorHandler.handleServiceError(
-        this.logger,
-        error,
-        'add project file',
-        { projectId, professorId, fileName: file.originalname },
-        [NotFoundException],
-      );
-    }
+    this.logger.log('File upload functionality is not implemented yet');
+    return {
+      fileName: 'placeholder',
+      originalName: file.originalname,
+      mimeType: file.mimetype,
+      size: file.size,
+      uploadedAt: new Date(),
+    };
   }
 
-  // Remove file from project
+  // Placeholder for future file removal implementation
   async removeProjectFile(professorId: string, projectId: string, fileName: string): Promise<void> {
-    try {
-      const project = await this.projectModel.findOne({
-        _id: projectId,
-        professor: professorId,
-        'files.fileName': fileName,
-      });
-
-      if (!project) {
-        throw new NotFoundException('Project or file not found');
-      }
-
-      await this.fileStorageService.deleteFile(fileName, true);
-
-      await this.projectModel.findByIdAndUpdate(projectId, {
-        $pull: { files: { fileName } },
-      });
-
-      this.logger.log(`File ${fileName} removed from project ${projectId}`);
-    } catch (error) {
-      ErrorHandler.handleServiceError(
-        this.logger,
-        error,
-        'remove project file',
-        { projectId, professorId, fileName },
-        [NotFoundException],
-      );
-    }
+    this.logger.log('File removal functionality is not implemented yet');
   }
 
   // Close project and notify applicants

@@ -4,7 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ApplicationsModule } from '@/modules/applications/applications.module';
 import { EmailModule } from '@/modules/email/email.module';
 
-import { FileStorageModule } from '../file-storage/file-storage.module';
 import { ProfessorsModule } from '../professors/professors.module';
 
 import { ProjectsController } from './projects.controller';
@@ -15,7 +14,6 @@ import { Project, ProjectSchema } from './schemas/projects.schema';
   imports: [
     MongooseModule.forFeature([{ name: Project.name, schema: ProjectSchema }]),
     ProfessorsModule,
-    FileStorageModule,
     EmailModule,
     forwardRef(() => ApplicationsModule),
   ],

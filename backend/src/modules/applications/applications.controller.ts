@@ -19,7 +19,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 
 import { Response } from 'express';
 import { memoryStorage } from 'multer';
@@ -30,7 +30,10 @@ import { Professor } from '../professors/schemas/professors.schema';
 
 import { ApplicationsService } from './applications.service';
 
-import { ApiCreateApplication } from '@/common/docs/decorators/applications.decorator';
+import {
+  ApiCreateApplication,
+  ApiGetResume,
+} from '@/common/docs/decorators/applications.decorator';
 import { CreateApplicationDto, UpdateApplicationStatusDto } from '@/common/dto/applications';
 import { ApplicationStatus } from '@/common/enums';
 import { ParseFormJsonPipe } from '@/common/pipes/parse-form-json.pipe';
@@ -118,6 +121,7 @@ export class ApplicationsController {
 
   @Get(':applicationId/resume')
   @UseGuards(JwtAuthGuard)
+  @ApiGetResume()
   async downloadResume(
     @Param('applicationId') applicationId: string,
     @GetProfessor() professor: Professor,
@@ -125,17 +129,10 @@ export class ApplicationsController {
   ) {
     const fileData = await this.applicationsService.getResume(professor.id, applicationId);
 
-    // Redirect to the pre-signed URL
-    return res.redirect(fileData.url);
-  }
-
-  @Delete(':applicationId')
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteApplication(
-    @Param('applicationId') applicationId: string,
-    @GetProfessor() professor: Professor,
-  ) {
-    await this.applicationsService.deleteApplication(professor.id, applicationId);
+    return res
+      .status(HttpStatus.OK)
+      .setHeader('Content-Type', fileData.mimeType)
+      .setHeader('Content-Disposition', `attachment; filename="${fileData.fileName}"`)
+      .redirect(fileData.url);
   }
 }
