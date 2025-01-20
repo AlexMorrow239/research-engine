@@ -49,6 +49,16 @@ const applicationSchema = z.object({
     isPreHealth: z.boolean(),
     preHealthTrack: z.string().optional(),
     gpa: z.number().min(0).max(4),
+    resume: z
+      .instanceof(File, { message: "Resume is required" })
+      .refine(
+        (file) => file.size <= 5 * 1024 * 1024, // 5MB limit
+        "File size must be less than 5MB"
+      )
+      .refine(
+        (file) => ["application/pdf"].includes(file.type),
+        "Only PDF files are allowed"
+      ),
   }),
   availability: z.object({
     mondayAvailability: z.string(),
@@ -101,7 +111,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
     },
   });
 
-  const handleNextStep = async () => {
+  const handleNextStep = async (): Promise<void> => {
     let fieldsToValidate: (keyof ApplicationFormData)[] = [];
 
     switch (currentStep) {
@@ -121,7 +131,6 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
     if (isStepValid) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Optionally show an error message
       alert("Please fill out all required fields correctly before proceeding.");
     }
   };
@@ -182,10 +191,8 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
       // Add the application data as a JSON string
       formData.append("application", JSON.stringify(applicationData));
 
-      // TODO: Add resume file upload later
-      // For now, add a placeholder empty file
-      const emptyBlob = new Blob([""], { type: "application/pdf" });
-      formData.append("resume", emptyBlob, "placeholder.pdf");
+      // Add the resume file
+      formData.append("resume", data.studentInfo.resume);
 
       await dispatch(
         createApplication({

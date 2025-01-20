@@ -49,7 +49,7 @@ export const createApplication = createAsyncThunk(
         formData,
         {
           isFormData: true,
-          requiresAuth: true,
+          requiresAuth: false,
         }
       );
       return response;

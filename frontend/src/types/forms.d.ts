@@ -27,6 +27,7 @@ export interface ApplicationFormData {
     major2?: string;
     isPreHealth: boolean;
     preHealthTrack?: string;
+    resume: File;
     gpa: number;
   };
   availability: {

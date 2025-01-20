@@ -5,7 +5,8 @@ import {
   RACIAL_ETHNIC_OPTIONS,
 } from "@/common/constants";
 import { type ApplicationFormData } from "@/types";
-import React from "react";
+import { Upload } from "lucide-react";
+import React, { useState } from "react";
 import { type UseFormReturn } from "react-hook-form";
 import "./PersonalInfo.scss";
 
@@ -17,9 +18,46 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
   const {
     register,
     formState: { errors, touchedFields },
+    setValue,
   } = form;
 
-  const getInputClassName = (baseClass = "form-group__input") => {
+  const [dragActive, setDragActive] = useState(false);
+  const resumeFile = form.watch("studentInfo.resume");
+
+  const handleFileChange = (file: File | null): void => {
+    if (file && file.type === "application/pdf") {
+      setValue("studentInfo.resume", file, {
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true,
+      });
+    } else if (file) {
+      alert("Please upload a PDF file");
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files?.[0]) {
+      handleFileChange(e.dataTransfer.files[0]);
+    }
+  };
+
+  // Add these handlers for drag and drop functionality
+  const handleDrag = (e: React.DragEvent): void => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const getInputClassName = (baseClass = "form-group__input"): string => {
     return `${baseClass} ${errors.studentInfo ? "form-group__input--error" : ""} ${
       touchedFields.studentInfo ? "form-group__input--valid" : ""
     }`;
@@ -34,14 +72,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             First Name <span className="required">*</span>
           </label>
           <input
-            {...register("studentInfo.name.firstName", {
-              required: "First name is required",
-              minLength: {
-                value: 2,
-                message: "First name must be at least 2 characters",
-              },
-            })}
-            className={getInputClassName("name.firstName")}
+            {...register("studentInfo.name.firstName")}
+            className={getInputClassName()}
             type="text"
             placeholder="Enter your first name"
           />
@@ -57,14 +89,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             Last Name <span className="required">*</span>
           </label>
           <input
-            {...register("studentInfo.name.lastName", {
-              required: "Last name is required",
-              minLength: {
-                value: 2,
-                message: "Last name must be at least 2 characters",
-              },
-            })}
-            className={getInputClassName("name.lastName")}
+            {...register("studentInfo.name.lastName")}
+            className={getInputClassName()}
             type="text"
             placeholder="Enter your last name"
           />
@@ -80,14 +106,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             C Number <span className="required">*</span>
           </label>
           <input
-            {...register("studentInfo.cNumber", {
-              required: "C Number is required",
-              pattern: {
-                value: /^C[0-9]{8}$/,
-                message: "Must be in format C12345678",
-              },
-            })}
-            className={getInputClassName("cNumber")}
+            {...register("studentInfo.cNumber")}
+            className={getInputClassName()}
             placeholder="C12345678"
           />
           {errors.studentInfo?.cNumber && (
@@ -102,14 +122,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             Email <span className="required">*</span>
           </label>
           <input
-            {...register("studentInfo.email", {
-              required: "Email is required",
-              pattern: {
-                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                message: "Must be a valid email address",
-              },
-            })}
-            className={getInputClassName("email")}
+            {...register("studentInfo.email")}
+            className={getInputClassName()}
             type="email"
             placeholder="your.email@miami.edu"
           />
@@ -125,14 +139,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             Phone Number <span className="required">*</span>
           </label>
           <input
-            {...register("studentInfo.phoneNumber", {
-              required: "Phone number is required",
-              pattern: {
-                value: /^[\d\-+() ]+$/,
-                message: "Please enter a valid phone number",
-              },
-            })}
-            className={getInputClassName("phoneNumber")}
+            {...register("studentInfo.phoneNumber")}
+            className={getInputClassName()}
             placeholder="305-123-4567"
           />
           {errors.studentInfo?.phoneNumber && (
@@ -147,10 +155,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             Citizenship Status <span className="required">*</span>
           </label>
           <select
-            {...register("studentInfo.citizenship", {
-              required: "Please select your citizenship status",
-            })}
-            className={getInputClassName("citizenship")}
+            {...register("studentInfo.citizenship")}
+            className={getInputClassName()}
           >
             <option value="">Select citizenship status</option>
             {CITIZENSHIP_OPTIONS.map(({ value, label }) => (
@@ -171,10 +177,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             Academic Standing <span className="required">*</span>
           </label>
           <select
-            {...register("studentInfo.academicStanding", {
-              required: "Please select your academic standing",
-            })}
-            className={getInputClassName("academicStanding")}
+            {...register("studentInfo.academicStanding")}
+            className={getInputClassName()}
           >
             <option value="">Select academic standing</option>
             {ACADEMIC_STANDING_OPTIONS.map(({ value, label }) => (
@@ -195,10 +199,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             Expected Graduation Date <span className="required">*</span>
           </label>
           <input
-            {...register("studentInfo.graduationDate", {
-              required: "Graduation date is required",
-            })}
-            className={getInputClassName("graduationDate")}
+            {...register("studentInfo.graduationDate")}
+            className={getInputClassName()}
             type="date"
             min={new Date().toISOString().split("T")[0]}
           />
@@ -214,10 +216,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             College <span className="required">*</span>
           </label>
           <select
-            {...register("studentInfo.major1College", {
-              required: "Please select your college",
-            })}
-            className={getInputClassName("major1College")}
+            {...register("studentInfo.major1College")}
+            className={getInputClassName()}
           >
             <option value="">Select college</option>
             {COLLEGE_OPTIONS.map(({ value, label }) => (
@@ -238,10 +238,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             Major <span className="required">*</span>
           </label>
           <input
-            {...register("studentInfo.major1", {
-              required: "Major is required",
-            })}
-            className={getInputClassName("major1")}
+            {...register("studentInfo.major1")}
+            className={getInputClassName()}
             type="text"
             placeholder="Enter your major"
           />
@@ -257,13 +255,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             GPA <span className="required">*</span>
           </label>
           <input
-            {...register("studentInfo.gpa", {
-              required: "GPA is required",
-              valueAsNumber: true,
-              min: { value: 0, message: "GPA must be at least 0" },
-              max: { value: 4, message: "GPA cannot exceed 4.0" },
-            })}
-            className={getInputClassName("gpa")}
+            {...register("studentInfo.gpa", { valueAsNumber: true })}
+            className={getInputClassName()}
             type="number"
             step="0.01"
             min="0"
@@ -279,13 +272,51 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
 
         <div className="form-group form-group--full">
           <label className="form-group__label">
+            Resume (PDF) <span className="required">*</span>
+          </label>
+          <div
+            className={`resume-upload ${dragActive ? "drag-active" : ""} ${
+              errors.studentInfo?.resume ? "resume-upload--error" : ""
+            }`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+          >
+            <input
+              type="file"
+              accept=".pdf"
+              className="resume-upload__input"
+              onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
+            />
+            <div className="resume-upload__content">
+              <Upload className="resume-upload__icon" />
+              {resumeFile ? (
+                <p className="resume-upload__filename">{resumeFile.name}</p>
+              ) : (
+                <>
+                  <p className="resume-upload__text">
+                    Drag and drop your resume here or click to browse
+                  </p>
+                  <p className="resume-upload__hint">PDF only, max 5MB</p>
+                </>
+              )}
+            </div>
+          </div>
+          {errors.studentInfo?.resume && (
+            <span className="form-group__error">
+              {errors.studentInfo.resume.message as string}
+            </span>
+          )}
+        </div>
+
+        <div className="form-group form-group--full">
+          <label className="form-group__label">
             Racial/Ethnic Groups <span className="required">*</span>
           </label>
           <select
-            {...register("studentInfo.racialEthnicGroups", {
-              required: "Please select at least one option",
-            })}
-            className={getInputClassName("racialEthnicGroups")}
+            {...register("studentInfo.racialEthnicGroups")}
+            className={getInputClassName()}
             multiple
           >
             {RACIAL_ETHNIC_OPTIONS.map(({ value, label }) => (
