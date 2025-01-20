@@ -17,10 +17,11 @@ import { ProjectsService } from '../projects/projects.service';
 
 import { Application } from './schemas/applications.schema';
 
-import { ApplicationStatus } from '@/common/enums';
+import { ApplicationStatus, ProjectStatus } from '@/common/enums';
 import { AwsS3Service } from '@/common/services/aws-s3.service';
 import { ErrorHandler } from '@/common/utils/error-handler.util';
 import { AnalyticsService } from '@/modules/analytics/analytics.service';
+import { ApplicationDeadlinePassedException } from '@/common/exceptions/application.exception';
 
 @Injectable()
 export class ApplicationsService {
@@ -43,14 +44,45 @@ export class ApplicationsService {
 
   async create(createApplicationDto: CreateApplicationDto, resume: Express.Multer.File) {
     try {
-      // Generate a unique key for the resume file using projectId
+      // Validate project exists and is accepting applications
+      const project = await this.projectsService.findOne(createApplicationDto.projectId);
+
+      if (!project) {
+        throw new NotFoundException('Project not found');
+      }
+
+      // Check if project is still accepting applications
+      if (project.status !== ProjectStatus.PUBLISHED) {
+        throw new BadRequestException('Project is not accepting applications');
+      }
+
+      // Check application deadline if set
+      if (project.applicationDeadline && new Date() > new Date(project.applicationDeadline)) {
+        throw new ApplicationDeadlinePassedException(new Date(project.applicationDeadline));
+      }
+
+      // Check if user has already applied
+      const existingApplication = await this.applicationModel.findOne({
+        project: createApplicationDto.projectId,
+        'studentInfo.email': createApplicationDto.studentInfo.email,
+      });
+
+      if (existingApplication) {
+        throw new BadRequestException('You have already applied to this project');
+      }
+
+      // Generate resume key and upload file
       const resumeKey = this.generateResumeKey(createApplicationDto.projectId, resume.originalname);
       this.logger.debug('Uploading resume', { key: resumeKey });
 
-      // Upload the resume file to S3
-      await this.s3Service.uploadFile(resume, resumeKey);
+      try {
+        await this.s3Service.uploadFile(resume, resumeKey);
+      } catch (error) {
+        this.logger.error('Failed to upload resume', { error });
+        throw new BadRequestException('Failed to upload resume');
+      }
 
-      // Create the application with the resume path
+      // Create the application
       const application = new this.applicationModel({
         project: createApplicationDto.projectId,
         studentInfo: createApplicationDto.studentInfo,
@@ -88,6 +120,16 @@ export class ApplicationsService {
         error: error.message,
         stack: error.stack,
       });
+
+      // Re-throw specific exceptions
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException ||
+        error instanceof ApplicationDeadlinePassedException
+      ) {
+        throw error;
+      }
+
       throw new BadRequestException(`Failed to create application: ${error.message}`);
     }
   }

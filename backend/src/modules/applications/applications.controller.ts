@@ -88,7 +88,7 @@ export class ApplicationsController {
       },
     });
 
-    return this.applicationsService.create(createApplicationDto, resume);
+    return await this.applicationsService.create(createApplicationDto, resume);
   }
 
   @Get()
