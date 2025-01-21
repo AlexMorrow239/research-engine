@@ -4,14 +4,12 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  width: 100%;
 
   &__main {
     flex: 1;
     padding: var(--spacing-xl) 0;
     background-color: var(--color-background-alt);
-  }
-
-  .container {
-    @include container;
+    width: 100%;
   }
 }

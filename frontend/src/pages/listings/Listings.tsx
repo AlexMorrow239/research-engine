@@ -1,5 +1,4 @@
-import { BannerType, type ProjectStatus } from "@/common/enums";
-import { Banner } from "@/components/common/banner/Banner";
+import { type ProjectStatus } from "@/common/enums";
 import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
 import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
 import { ProjectFilters } from "@/components/projects/project-filters/ProjectFilters";
@@ -11,7 +10,7 @@ import {
 } from "@/store/features/projects/projectsSlice";
 import type { Project } from "@/types/api";
 import { ChevronLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./Listings.scss";
 
@@ -28,132 +27,131 @@ export default function Listings(): JSX.Element {
 
   const [isMobileDetailView, setIsMobileDetailView] = useState(false);
 
+  // Fetch projects when filters change
   useEffect(() => {
     dispatch(fetchProjects());
   }, [dispatch, filters]);
 
-  const handleProjectSelect = (project: Project): void => {
-    dispatch(setCurrentProject(project));
-    if (window.innerWidth <= 768) {
-      setIsMobileDetailView(true);
-    }
-  };
+  // Optimize project selection handler
+  const handleProjectSelect = useCallback(
+    (project: Project): void => {
+      dispatch(setCurrentProject(project));
+      if (window.innerWidth <= 768) {
+        setIsMobileDetailView(true);
+      }
+    },
+    [dispatch]
+  );
 
-  const handleBackToList = (): void => {
+  // Handle back to list view
+  const handleBackToList = useCallback((): void => {
     setIsMobileDetailView(false);
-  };
+  }, []);
 
-  const handlePageChange = (page: number): void => {
-    dispatch(setFilters({ page }));
-  };
+  // Handle pagination
+  const handlePageChange = useCallback(
+    (page: number): void => {
+      dispatch(setFilters({ page }));
+    },
+    [dispatch]
+  );
 
+  // Early return for loading state
   if (isLoading && !projects.length) {
     return (
       <div className="listings-page">
-        <Banner type={BannerType.RESEARCH} />{" "}
-        <div className="listings-content">
-          <div className="loading-spinner">Loading projects...</div>
-        </div>
+        <div className="loading-spinner">Loading...</div>
       </div>
     );
   }
 
+  // Early return for error state
   if (error) {
     return (
       <div className="listings-page">
-        <Banner type={BannerType.RESEARCH} />{" "}
-        <div className="listings-content">
-          <div className="error-message">Error loading projects: {error}</div>
-        </div>
+        <div className="error-message">{error}</div>
       </div>
     );
   }
 
+  const totalPages = Math.ceil(totalProjects / filters.limit);
+
   return (
     <div className="listings-page">
-      <Banner type={BannerType.RESEARCH} />
-      <div className="listings-content">
-        <ProjectFilters />
+      <ProjectFilters />
 
-        <div className="listings-layout">
-          <div
-            className={`listings-list ${
-              isMobileDetailView ? "listings-list--hidden" : ""
-            }`}
-          >
-            <div className="listings-list__header">
-              <h2>Available Positions ({totalProjects})</h2>
-            </div>
+      <div className="listings-layout">
+        {/* Projects List */}
+        <div
+          className={`listings-list ${isMobileDetailView ? "listings-list--hidden" : ""}`}
+        >
+          <div className="listings-list__header">
+            <h2>Positions ({totalProjects})</h2>
+          </div>
 
-            <div className="listings-list__content">
-              {projects.length === 0 ? (
-                <div className="no-results">
-                  No research positions found matching your criteria
-                </div>
-              ) : (
-                projects.map((project) => (
-                  <ProjectCard
-                    key={project.id}
-                    project={{
-                      ...project,
-                      status: project.status as ProjectStatus,
-                    }}
-                    isSelected={currentProject?.id === project.id}
-                    onClick={() => handleProjectSelect(project)}
-                  />
-                ))
-              )}
-            </div>
-
-            {totalProjects > filters.limit && (
-              <div className="pagination">
-                <button
-                  disabled={filters.page === 1}
-                  onClick={() => handlePageChange(filters.page - 1)}
-                >
-                  Previous
-                </button>
-                <span>
-                  Page {filters.page} of{" "}
-                  {Math.ceil(totalProjects / filters.limit)}
-                </span>
-                <button
-                  disabled={
-                    filters.page === Math.ceil(totalProjects / filters.limit)
-                  }
-                  onClick={() => handlePageChange(filters.page + 1)}
-                >
-                  Next
-                </button>
-              </div>
+          <div className="listings-list__content">
+            {projects.length === 0 ? (
+              <div className="no-results">No matching positions found</div>
+            ) : (
+              projects.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={{
+                    ...project,
+                    status: project.status as ProjectStatus,
+                  }}
+                  isSelected={currentProject?.id === project.id}
+                  onClick={() => handleProjectSelect(project)}
+                />
+              ))
             )}
           </div>
 
-          <div
-            className={`listings-detail ${
-              isMobileDetailView ? "listings-detail--active" : ""
-            }`}
-          >
-            {isMobileDetailView && (
-              <button className="back-to-list" onClick={handleBackToList}>
-                <ChevronLeft size={20} />
-                Back to List
+          {/* Pagination - only show if needed */}
+          {totalPages > 1 && (
+            <div className="pagination">
+              <button
+                disabled={filters.page === 1}
+                onClick={() => handlePageChange(filters.page - 1)}
+              >
+                Previous
               </button>
-            )}
-            <ProjectDetails
-              project={
-                currentProject
-                  ? {
-                      ...currentProject,
-                      files: currentProject.files.map((file) => ({
-                        fileName: file,
-                        originalName: file,
-                      })),
-                    }
-                  : null
-              }
-            />
-          </div>
+              <span>
+                {filters.page} / {totalPages}
+              </span>
+              <button
+                disabled={filters.page === totalPages}
+                onClick={() => handlePageChange(filters.page + 1)}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Project Details */}
+        <div
+          className={`listings-detail ${isMobileDetailView ? "listings-detail--active" : ""}`}
+        >
+          {isMobileDetailView && (
+            <button className="back-to-list" onClick={handleBackToList}>
+              <ChevronLeft size={18} />
+              Back to List
+            </button>
+          )}
+          <ProjectDetails
+            project={
+              currentProject
+                ? {
+                    ...currentProject,
+                    files: currentProject.files.map((file) => ({
+                      fileName: file,
+                      originalName: file,
+                    })),
+                  }
+                : null
+            }
+          />
         </div>
       </div>
     </div>

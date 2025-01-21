@@ -1,7 +1,6 @@
 import {
   AcademicStanding,
   ApplicationStatus,
-  BannerType,
   Citizenship,
   College,
   ProjectLength,
@@ -130,25 +129,4 @@ export const PROJECT_LENGTH_OPTIONS = [
 export const UI_CONSTANTS = {
   MAX_VISIBLE_CATEGORIES: 3,
   MOBILE_BREAKPOINT: 767,
-} as const;
-
-// Banner Content
-export const BANNER_CONTENT: Record<
-  BannerType,
-  {
-    title: string;
-    subtitle: string;
-    image: string;
-  }
-> = {
-  [BannerType.ABOUT]: {
-    title: "About Our Research Platform",
-    subtitle: "Learn about our mission and the team behind the platform",
-    image: "/images/banners/about-banner.jpg",
-  },
-  [BannerType.RESEARCH]: {
-    title: "Research Opportunities",
-    subtitle: "Explore and apply to research positions across campus",
-    image: "/images/banners/research-banner.jpg",
-  },
 } as const;

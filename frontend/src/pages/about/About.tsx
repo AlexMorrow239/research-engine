@@ -1,5 +1,3 @@
-import { BannerType } from "@/common/enums";
-import { Banner } from "@/components/common/banner/Banner";
 import { Atom, BookOpen, Code } from "lucide-react";
 import React from "react";
 import "./About.scss";
@@ -61,8 +59,6 @@ const teamMembers: TeamMember[] = [
 const About: React.FC = () => {
   return (
     <div className="about-page">
-      <Banner type={BannerType.ABOUT} />
-
       <section className="hero-section" role="banner">
         <div className="content-wrapper">
           <div className="hero-content">

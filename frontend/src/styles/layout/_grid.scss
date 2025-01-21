@@ -6,11 +6,13 @@
   width: 100%;
   margin-left: auto;
   margin-right: auto;
-  padding-left: var(--spacing-4);
-  padding-right: var(--spacing-4);
+
+  &--padded {
+    padding-left: var(--spacing-4);
+    padding-right: var(--spacing-4);
+  }
 
   @media (min-width: 640px) {
-    max-width: var(--container-width-sm);
     padding-left: var(--spacing-6);
     padding-right: var(--spacing-6);
   }

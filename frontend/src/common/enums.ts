@@ -92,11 +92,6 @@ export enum AcademicStanding {
   GRAD = "graduate",
 }
 
-export enum BannerType {
-  ABOUT = "about",
-  RESEARCH = "research",
-}
-
 export enum UserRole {
   STUDENT = "STUDENT",
   FACULTY = "FACULTY",

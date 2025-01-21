@@ -6,7 +6,7 @@ import {
   isDeadlineSoon,
 } from "@/utils/dateUtils";
 import { Calendar, Users } from "lucide-react";
-import React from "react";
+import { memo } from "react";
 import "./ProjectCard.scss";
 
 interface ProjectCardProps {
@@ -29,42 +29,63 @@ interface ProjectCardProps {
   onClick: () => void;
 }
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({
+export const ProjectCard = memo(function ProjectCard({
   project,
   isSelected,
   onClick,
-}) => {
-  const getDeadlineClass = (deadline?: Date): string => {
-    if (!deadline) return "";
-    if (isDeadlineExpired(deadline)) return "project-card__deadline--expired";
-    if (isDeadlineSoon(deadline)) return "project-card__deadline--soon";
-    return "";
+}: ProjectCardProps): JSX.Element {
+  // Helper function to get deadline status
+  const getDeadlineInfo = (
+    deadline?: Date
+  ): { className: string; text: string } => {
+    if (!deadline) return { className: "", text: "" };
+
+    if (isDeadlineExpired(deadline)) {
+      return {
+        className: "project-card__deadline--expired",
+        text: "Deadline passed",
+      };
+    }
+
+    if (isDeadlineSoon(deadline)) {
+      return {
+        className: "project-card__deadline--soon",
+        text: "Deadline soon",
+      };
+    }
+
+    return {
+      className: "",
+      text: formatDeadline(deadline),
+    };
   };
 
-  const getDeadlineText = (deadline?: Date): string => {
-    if (!deadline) return "";
-    if (isDeadlineExpired(deadline)) return "Deadline passed";
-    if (isDeadlineSoon(deadline)) return "Deadline soon";
-    return formatDeadline(deadline);
+  const deadlineInfo = getDeadlineInfo(project.applicationDeadline);
+  const visibleCategories = project.researchCategories.slice(
+    0,
+    UI_CONSTANTS.MAX_VISIBLE_CATEGORIES
+  );
+  const remainingCategories =
+    project.researchCategories.length - UI_CONSTANTS.MAX_VISIBLE_CATEGORIES;
+
+  const handleKeyDown = (e: React.KeyboardEvent): void => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onClick();
+    }
   };
 
   return (
     <div
-      className={`card card--hoverable ${
-        isSelected ? "card--selected" : ""
-      } project-card`}
+      className={`project-card ${isSelected ? "card--selected" : ""}`}
       onClick={onClick}
       role="button"
       tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick();
-        }
-      }}
+      onKeyDown={handleKeyDown}
       aria-selected={isSelected}
     >
-      <div className="card__content">
+      <div className="project-card__header">
+        <h3 className="project-card__title">{project.title}</h3>
         {project.status !== ProjectStatus.PUBLISHED && (
           <span
             className={`project-card__status project-card__status--${project.status.toLowerCase()}`}
@@ -72,62 +93,56 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             {PROJECT_STATUS_LABELS[project.status]}
           </span>
         )}
+      </div>
 
-        <h3 className="project-card__title">{project.title}</h3>
+      <div className="project-card__professor">
+        {project.professor.name.firstName} {project.professor.name.lastName}
+      </div>
 
-        <div className="project-card__professor">
-          {project.professor.name.firstName} {project.professor.name.lastName}
-        </div>
+      <div className="project-card__department">
+        {project.professor.department}
+      </div>
 
-        <div className="project-card__department">
-          {project.professor.department}
-        </div>
+      <div className="project-card__meta">
+        <span
+          className="project-card__positions"
+          aria-label="Available positions"
+        >
+          <Users aria-hidden="true" />
+          {project.positions}
+        </span>
 
-        <div className="project-card__meta">
-          <span className="project-card__positions" title="Available positions">
-            <Users size={16} aria-hidden="true" />
-            {project.positions} position{project.positions !== 1 ? "s" : ""}
+        {project.applicationDeadline && (
+          <span
+            className={`project-card__deadline ${deadlineInfo.className}`}
+            aria-label="Application deadline"
+          >
+            <Calendar aria-hidden="true" />
+            {deadlineInfo.text}
           </span>
+        )}
+      </div>
 
-          {project.applicationDeadline && (
+      {visibleCategories.length > 0 && (
+        <div
+          className="project-card__categories"
+          aria-label="Research categories"
+        >
+          {visibleCategories.map((category) => (
+            <span key={category} className="project-card__category">
+              {category}
+            </span>
+          ))}
+          {remainingCategories > 0 && (
             <span
-              className={`project-card__deadline ${getDeadlineClass(
-                project.applicationDeadline
-              )}`}
-              title="Application deadline"
+              className="project-card__category"
+              title={`${remainingCategories} more categories`}
             >
-              <Calendar size={16} aria-hidden="true" />
-              {getDeadlineText(project.applicationDeadline)}
+              +{remainingCategories}
             </span>
           )}
         </div>
-
-        {project.researchCategories.length > 0 && (
-          <div
-            className="project-card__categories"
-            aria-label="Research categories"
-          >
-            {project.researchCategories
-              .slice(0, UI_CONSTANTS.MAX_VISIBLE_CATEGORIES)
-              .map((category) => (
-                <span key={category} className="project-card__category">
-                  {category}
-                </span>
-              ))}
-            {project.researchCategories.length >
-              UI_CONSTANTS.MAX_VISIBLE_CATEGORIES && (
-              <span
-                className="project-card__category"
-                title="Additional categories"
-              >
-                +
-                {project.researchCategories.length -
-                  UI_CONSTANTS.MAX_VISIBLE_CATEGORIES}
-              </span>
-            )}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
-};
+});

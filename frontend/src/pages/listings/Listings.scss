@@ -3,53 +3,49 @@
 .listings-page {
   min-height: 100vh;
   background-color: var(--color-background-alt);
-
-  .listings-content {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: var(--spacing-4);
-
-    @include respond-to("md") {
-      padding: var(--spacing-6);
-    }
-  }
+  padding: var(--spacing-2);
 
   .listings-layout {
     display: grid;
-    grid-template-columns: minmax(300px, 400px) 1fr;
-    gap: var(--spacing-6);
-    margin-top: var(--spacing-4);
+    // Change to 35% for list, 65% for details
+    grid-template-columns: minmax(320px, 35%) 1fr;
+    gap: var(--spacing-3);
+    margin-top: var(--spacing-2);
     position: relative;
-    min-height: calc(100vh - 200px);
+    min-height: calc(100vh - 120px); // Reduced from 200px
+    max-width: 1600px; // Add max-width for very large screens
+    margin-left: auto;
+    margin-right: auto;
 
     @include respond-to("md", "down") {
       grid-template-columns: 1fr;
-      gap: var(--spacing-4);
+      gap: var(--spacing-2);
     }
   }
 
   .listings-list {
     background-color: var(--color-background);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md); // Reduced from lg
     border: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     position: sticky;
-    top: var(--spacing-4);
-    max-height: calc(100vh - var(--spacing-4) * 2);
+    top: var(--spacing-2); // Reduced from spacing-4
+    height: calc(100vh - var(--spacing-4));
+    max-height: calc(100vh - var(--spacing-4));
 
     &__header {
-      padding: var(--spacing-4);
+      padding: var(--spacing-3); // Reduced from spacing-4
       border-bottom: 1px solid var(--color-border);
       background-color: var(--color-background);
-      border-top-left-radius: var(--radius-lg);
-      border-top-right-radius: var(--radius-lg);
+      border-top-left-radius: var(--radius-md);
+      border-top-right-radius: var(--radius-md);
       position: sticky;
       top: 0;
       z-index: 10;
 
       h2 {
-        font-size: var(--font-size-lg);
+        font-size: var(--font-size-base); // Reduced from lg
         font-weight: var(--font-weight-semibold);
         color: var(--color-text-dark);
         margin: 0;
@@ -57,13 +53,16 @@
     }
 
     &__content {
-      padding: var(--spacing-4);
+      padding: var(--spacing-2); // Reduced from spacing-4
       overflow-y: auto;
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-2); // Add gap between cards
 
-      // Styling scrollbar
+      // Optimize scrollbar for space efficiency
       &::-webkit-scrollbar {
-        width: 6px;
+        width: 4px; // Reduced from 6px
       }
 
       &::-webkit-scrollbar-track {
@@ -71,11 +70,11 @@
       }
 
       &::-webkit-scrollbar-thumb {
-        background: var(--color-border-dark);
+        background: var(--color-border);
         border-radius: var(--radius-full);
 
         &:hover {
-          background: var(--color-text-light);
+          background: var(--color-border-dark);
         }
       }
     }
@@ -91,30 +90,31 @@
 
     .no-results {
       text-align: center;
-      padding: var(--spacing-8);
+      padding: var(--spacing-4);
       color: var(--color-text-light);
       background-color: var(--color-background-alt);
-      border-radius: var(--radius-lg);
-      margin: var(--spacing-4);
+      border-radius: var(--radius-md);
+      margin: var(--spacing-2);
     }
 
     .pagination {
-      padding: var(--spacing-4);
+      padding: var(--spacing-2) var(--spacing-3);
       border-top: 1px solid var(--color-border);
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: var(--spacing-4);
+      gap: var(--spacing-3);
       background-color: var(--color-background);
-      border-bottom-left-radius: var(--radius-lg);
-      border-bottom-right-radius: var(--radius-lg);
+      border-bottom-left-radius: var(--radius-md);
+      border-bottom-right-radius: var(--radius-md);
 
       button {
         @include button-base;
-        padding: var(--spacing-2) var(--spacing-4);
+        padding: var(--spacing-1) var(--spacing-3);
         background-color: var(--color-background);
         border: 1px solid var(--color-border);
         color: var(--color-text);
+        font-size: var(--font-size-sm);
         transition: all 0.2s ease;
 
         &:disabled {
@@ -137,16 +137,16 @@
 
   .listings-detail {
     background-color: var(--color-background);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
     position: sticky;
-    top: var(--spacing-4);
-    max-height: calc(100vh - var(--spacing-4) * 2);
+    top: var(--spacing-2);
+    height: calc(100vh - var(--spacing-4));
+    max-height: calc(100vh - var(--spacing-4));
     overflow-y: auto;
 
-    // Styling scrollbar
     &::-webkit-scrollbar {
-      width: 6px;
+      width: 4px;
     }
 
     &::-webkit-scrollbar-track {
@@ -154,11 +154,11 @@
     }
 
     &::-webkit-scrollbar-thumb {
-      background: var(--color-border-dark);
+      background: var(--color-border);
       border-radius: var(--radius-full);
 
       &:hover {
-        background: var(--color-text-light);
+        background: var(--color-border-dark);
       }
     }
 
@@ -166,7 +166,7 @@
       position: static;
       max-height: none;
       display: none;
-      margin-top: var(--spacing-4);
+      margin-top: var(--spacing-2);
 
       &--active {
         display: block;
@@ -177,11 +177,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 400px;
+      min-height: 300px; // Reduced from 400px
       color: var(--color-text-light);
-      font-size: var(--font-size-lg);
+      font-size: var(--font-size-base);
       text-align: center;
-      padding: var(--spacing-8);
+      padding: var(--spacing-4);
     }
   }
 
@@ -189,7 +189,7 @@
     display: none;
     align-items: center;
     gap: var(--spacing-2);
-    padding: var(--spacing-4);
+    padding: var(--spacing-3);
     width: 100%;
     color: var(--color-text);
     background: none;
@@ -197,6 +197,7 @@
     border-bottom: 1px solid var(--color-border);
     cursor: pointer;
     font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
     transition: all 0.2s ease;
 
     @include respond-to("md", "down") {
@@ -220,20 +221,11 @@
   .loading-spinner,
   .error-message {
     text-align: center;
-    padding: var(--spacing-8);
-    margin: var(--spacing-8) auto;
-    max-width: 600px;
+    padding: var(--spacing-4);
+    margin: var(--spacing-4) auto;
+    max-width: 400px; // Reduced from 600px
     background-color: var(--color-background);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
-  }
-
-  .loading-spinner {
-    color: var(--color-text-light);
-  }
-
-  .error-message {
-    color: var(--color-error);
-    border: 1px solid var(--color-error-light);
   }
 }

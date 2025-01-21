@@ -7,9 +7,7 @@ export const MainLayout = (): JSX.Element => {
     <div className="layout">
       <NavBar />
       <main className="layout__main">
-        <div className="container">
-          <Outlet />
-        </div>
+        <Outlet />
       </main>
     </div>
   );
