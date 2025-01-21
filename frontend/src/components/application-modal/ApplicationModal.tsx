@@ -11,7 +11,7 @@ import { createApplication } from "@/store/features/applications/applicationsSli
 import { type ApplicationFormData } from "@/types";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,6 +19,7 @@ import { AdditionalInfoStep } from "./additional-info-step/AdditionalInfo";
 import "./ApplicationModal.scss";
 import { AvailabilityStep } from "./availability-step/AvailabilityStep";
 import { PersonalInfoStep } from "./personal-info-step/PersonalInfo";
+import { ProgressStep } from "./progress-step/ProgressStep";
 
 interface ApplicationModalProps {
   isOpen: boolean;
@@ -233,29 +234,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
             </button>
           </div>
 
-          <div className="modal__progress">
-            {[
-              { number: 1, label: "Personal Info" },
-              { number: 2, label: "Availability" },
-              { number: 3, label: "Additional Info" },
-            ].map(({ number, label }) => (
-              <div
-                key={number}
-                className={`modal__progress-step ${
-                  currentStep === number
-                    ? "active"
-                    : currentStep > number
-                      ? "completed"
-                      : ""
-                }`}
-              >
-                <div className="modal__progress-step-number">
-                  {currentStep > number ? <CheckCircle size={24} /> : number}
-                </div>
-                <div className="modal__progress-step-label">{label}</div>
-              </div>
-            ))}
-          </div>
+          <ProgressStep currentStep={currentStep} />
 
           <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
             {currentStep === 1 && <PersonalInfoStep form={form} />}

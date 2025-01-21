@@ -21,6 +21,8 @@
   // Horizontal layout styles
   &--horizontal {
     display: grid;
+    cursor: default;
+    display: grid;
     grid-template-columns: 1fr auto;
     gap: var(--spacing-4);
     padding: var(--spacing-4);
@@ -164,26 +166,36 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: var(--radius-md);
-    color: var(--color-text-light);
+    color: var(--color-text);
     transition: all 0.2s ease;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-background);
 
     &:hover {
       background-color: var(--color-background-alt);
-      color: var(--color-text);
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    &:active {
+      transform: translateY(0);
     }
 
     svg {
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
     }
 
     &.delete-btn {
       &:hover {
         background-color: var(--color-error-light);
         color: var(--color-error);
+        border-color: var(--color-error);
       }
     }
   }

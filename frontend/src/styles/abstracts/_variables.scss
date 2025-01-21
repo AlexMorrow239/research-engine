@@ -57,6 +57,7 @@ $text-color-light: $color-gray-500;
   --color-success-light: #{color.adjust(#10b981, $lightness: 42%)};
   --color-error: #ef4444;
   --color-error-light: #{color.adjust(#ef4444, $lightness: 42%)};
+  --color-error-dark: #{color.adjust(#ef4444, $lightness: -10%)};
   --color-warning: #f59e0b;
   --color-warning-light: #{color.adjust(#f59e0b, $lightness: 42%)};
   --color-info: #3b82f6;

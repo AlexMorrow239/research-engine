@@ -1,11 +1,18 @@
-import { PROJECT_STATUS_LABELS, UI_CONSTANTS } from "@/common/constants";
+import { UI_CONSTANTS } from "@/common/constants";
 import { type Campus, ProjectStatus } from "@/common/enums";
 import {
   formatDeadline,
   isDeadlineExpired,
   isDeadlineSoon,
 } from "@/utils/dateUtils";
-import { Building2, Calendar, Pencil, Trash2, Users } from "lucide-react";
+import {
+  Archive,
+  Building2,
+  Calendar,
+  Pencil,
+  Trash2,
+  Users,
+} from "lucide-react";
 import { memo } from "react";
 import "./ProjectCard.scss";
 
@@ -76,6 +83,7 @@ export const ProjectCard = memo(function ProjectCard({
     project.researchCategories.length - UI_CONSTANTS.MAX_VISIBLE_CATEGORIES;
 
   const handleKeyDown = (e: React.KeyboardEvent): void => {
+    if (layout === "horizontal") return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       onClick?.();
@@ -89,24 +97,21 @@ export const ProjectCard = memo(function ProjectCard({
   return (
     <div
       className={cardClassName}
-      onClick={onClick}
-      role={onClick ? "button" : "article"}
-      tabIndex={onClick ? 0 : undefined}
-      onKeyDown={onClick ? handleKeyDown : undefined}
+      onClick={layout === "horizontal" ? undefined : onClick}
+      role={
+        layout === "horizontal" ? "article" : onClick ? "button" : "article"
+      }
+      tabIndex={layout === "horizontal" ? undefined : onClick ? 0 : undefined}
+      onKeyDown={
+        layout === "horizontal"
+          ? undefined
+          : onClick
+            ? handleKeyDown
+            : undefined
+      }
       aria-selected={isSelected}
     >
       <div className="project-card__content">
-        <div className="project-card__header">
-          <h3 className="project-card__title">{project.title}</h3>
-          {project.status !== ProjectStatus.PUBLISHED && (
-            <span
-              className={`project-card__status project-card__status--${project.status.toLowerCase()}`}
-            >
-              {PROJECT_STATUS_LABELS[project.status]}
-            </span>
-          )}
-        </div>
-
         <div className="project-card__professor">
           {project.professor.name.firstName} {project.professor.name.lastName}
         </div>
@@ -185,10 +190,22 @@ export const ProjectCard = memo(function ProjectCard({
                 onDelete();
               }}
               className="project-card__action-btn delete-btn"
-              title="Delete project"
+              title={
+                project.status === ProjectStatus.PUBLISHED
+                  ? "Close project"
+                  : "Delete project"
+              }
             >
-              <Trash2 aria-hidden="true" />
-              <span className="sr-only">Delete project</span>
+              {project.status === ProjectStatus.PUBLISHED ? (
+                <Archive aria-hidden="true" />
+              ) : (
+                <Trash2 aria-hidden="true" />
+              )}
+              <span className="sr-only">
+                {project.status === ProjectStatus.PUBLISHED
+                  ? "Close project"
+                  : "Delete project"}
+              </span>
             </button>
           )}
         </div>

@@ -1,4 +1,5 @@
 @use "@styles/abstracts" as *;
+@use "sass:color";
 
 .project-form {
   @include card-base;
@@ -28,17 +29,52 @@
   }
 
   &__header {
-    padding: var(--spacing-8) var(--spacing-6);
-    background: var(--color-background-alt);
+    padding: var(--spacing-8) var(--spacing-8);
+    background: linear-gradient(
+      to right,
+      var(--color-background-alt),
+      var(--color-background-elevated)
+    );
     border-bottom: 1px solid var(--color-border);
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(
+        to right,
+        var(--color-primary),
+        var(--color-primary-transparent)
+      );
+      opacity: 0.7;
+    }
   }
 
-  &__title h1 {
-    @include heading("3xl");
-    margin-bottom: var(--spacing-2);
-    color: var(--color-text-dark);
+  &__title {
+    position: relative;
+
+    h1 {
+      @include heading("3xl");
+      margin-bottom: var(--spacing-3);
+      color: var(--color-text-dark);
+      font-weight: var(--font-weight-bold);
+      letter-spacing: -0.02em;
+    }
+  }
+
+  &__subtitle {
+    @include font-style("regular");
+    color: var(--color-text-light);
+    max-width: 600px;
+    line-height: var(--line-height-relaxed);
+    font-size: var(--font-size-base);
   }
 
   &__subtitle {
@@ -63,11 +99,6 @@
 
     &:last-child {
       margin-bottom: 0;
-    }
-
-    &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
 
     &__title {
@@ -138,7 +169,29 @@
   .form-input {
     @include input-base;
     width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-relaxed);
+    color: var(--color-text-dark);
+
+    &[type="select"],
+    &:not([type]) {
+      padding-top: var(--spacing-2);
+      padding-bottom: var(--spacing-2);
+      height: 42px;
+    }
+
+    option {
+      padding: var(--spacing-2) var(--spacing-4);
+      min-height: 40px;
+      line-height: var(--line-height-relaxed);
+    }
+
+    &::placeholder {
+      color: var(--color-text-lighter);
+      opacity: 0.7;
+    }
 
     &:hover:not(:disabled) {
       border-color: var(--color-border-dark);
@@ -163,6 +216,7 @@
       min-height: 120px;
       line-height: var(--line-height-relaxed);
       resize: vertical;
+      padding: var(--spacing-4);
     }
   }
 
@@ -210,33 +264,144 @@
   }
 
   .form-actions {
-    @include flex(row, space-between, center);
+    display: flex;
+    align-items: center;
     padding: var(--spacing-6);
-    background: var(--color-background-alt);
+    margin-top: var(--spacing-8);
     border-top: 1px solid var(--color-border);
-    gap: var(--spacing-4);
-    position: sticky;
-    bottom: 0;
-    backdrop-filter: blur(8px);
-    z-index: 10;
+    background-color: var(--color-background-alt);
+    border-bottom-left-radius: var(--radius-lg);
+    border-bottom-right-radius: var(--radius-lg);
 
-    @include respond-to("sm", "down") {
-      flex-direction: column-reverse;
-    }
+    &__left {
+      flex: 1;
 
-    &__left,
-    &__right {
-      @include respond-to("sm", "down") {
-        width: 100%;
+      .btn {
+        color: var(--color-text);
+        background: transparent;
+        border: 1px solid var(--color-border-dark);
+        padding: var(--spacing-2) var(--spacing-4);
+        border-radius: var(--radius-base);
+        font-weight: var(--font-weight-medium);
+
+        &:hover {
+          background-color: var(--color-background);
+          border-color: var(--color-border-dark);
+        }
       }
     }
 
     &__right {
-      @include flex(row, flex-end, center);
+      display: flex;
       gap: var(--spacing-3);
+      align-items: center;
 
-      @include respond-to("sm", "down") {
+      .btn {
+        height: var(--button-height-base);
+        padding: 0 var(--spacing-6);
+        border-radius: var(--radius-base);
+        font-weight: var(--font-weight-medium);
+        transition: var(--transition-all);
+
+        &--secondary {
+          color: var(--color-text);
+          background: var(--color-background);
+          border: 1px solid var(--color-border-dark);
+
+          &:hover {
+            background: var(--color-background-alt);
+            border-color: var(--color-text);
+          }
+        }
+
+        &--primary {
+          color: white;
+          background: var(--color-primary);
+          border: 1px solid var(--color-primary);
+          min-width: 140px;
+
+          &:hover {
+            background: var(--color-primary-dark);
+            border-color: var(--color-primary-dark);
+          }
+        }
+
+        &--danger {
+          color: white;
+          background: var(--color-error);
+          border: 1px solid var(--color-error);
+
+          &:hover {
+            background: var(--color-error-dark);
+            border-color: var(--color-error-dark);
+          }
+        }
+
+        &[disabled] {
+          opacity: 0.6;
+          cursor: not-allowed;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .form-actions {
+      flex-direction: column;
+      gap: var(--spacing-4);
+      padding: var(--spacing-4);
+
+      &__left {
+        width: 100%;
+        order: 2; // Move cancel button to bottom on mobile
+
+        .btn {
+          width: 100%;
+        }
+      }
+
+      &__right {
+        width: 100%;
         flex-direction: column;
+        order: 1; // Show action buttons first on mobile
+
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .form-actions {
+      flex-direction: column;
+      gap: var(--spacing-4);
+      padding: var(--spacing-4);
+
+      &__left {
+        width: 100%;
+
+        .btn {
+          width: 100%;
+        }
+      }
+
+      &__right {
+        width: 100%;
+        flex-direction: column;
+
+        .btn-group {
+          width: 100%;
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+        }
       }
     }
   }

@@ -27,20 +27,38 @@ import "./ProjectForm.scss";
 
 // Zod schema for project creation/editing
 const projectSchema = z.object({
-  // Mandatory Fields
-  title: z.string().min(1, "Project title is required"),
-  description: z.string().min(1, "Project description is required"),
-  positions: z.number().min(1, "Must have at least 1 position"),
-  applicationDeadline: z
-    .date()
-    .min(new Date(), "Application deadline must be in the future"),
+  title: z.string().min(1, "Please enter a project title"),
+  description: z.string().min(1, "Please provide a project description"),
+  positions: z.preprocess(
+    (val) => (val === "" || isNaN(Number(val)) ? undefined : Number(val)),
+    z
+      .number({
+        required_error: "Please enter the number of positions",
+        invalid_type_error: "Please enter a valid number of positions",
+      })
+      .min(1, "Please specify at least 1 position")
+  ),
+  applicationDeadline: z.preprocess(
+    (val) => (val ? new Date(val as string) : undefined),
+    z
+      .date({
+        required_error: "Please select an application deadline",
+        invalid_type_error: "Please enter a valid date",
+      })
+      .min(
+        new Date(),
+        "Please select a future date for the application deadline"
+      )
+  ),
   researchCategories: z
     .array(z.string())
-    .min(1, "At least one research category is required")
+    .min(1, "Please add at least one research category")
     .refine((cats) => cats.every((cat) => cat.trim() !== ""), {
       message: "Research categories cannot be empty",
     }),
-  campus: z.nativeEnum(Campus),
+  campus: z.nativeEnum(Campus, {
+    errorMap: () => ({ message: "Please select a campus location" }),
+  }),
 
   // Optional Fields
   requirements: z
@@ -48,7 +66,11 @@ const projectSchema = z.object({
     .optional()
     .default([])
     .transform((reqs) => reqs.filter((req) => req.trim() !== "")),
-  status: z.nativeEnum(ProjectStatus).default(ProjectStatus.DRAFT),
+  status: z
+    .nativeEnum(ProjectStatus, {
+      errorMap: () => ({ message: "Please select a valid project status" }),
+    })
+    .default(ProjectStatus.DRAFT),
 });
 
 type ProjectFormData = z.infer<typeof projectSchema>;
@@ -534,16 +556,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
 
                 {currentStatus === ProjectStatus.PUBLISHED && (
                   <>
-                    <button
-                      type="button"
-                      className="btn btn--secondary"
-                      onClick={handleSubmit((data) =>
-                        onSubmit(data, ProjectStatus.PUBLISHED, "delist")
-                      )}
-                      disabled={isSubmitting}
-                    >
-                      Delist Project
-                    </button>
                     <button
                       type="submit"
                       className="btn btn--primary"

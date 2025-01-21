@@ -80,74 +80,6 @@
     }
   }
 
-  /* Progress Indicator */
-  &__progress {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-4);
-    margin-bottom: var(--spacing-8);
-    position: relative;
-
-    &::before {
-      content: "";
-      position: absolute;
-      top: 24px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background-color: var(--color-gray-200);
-      z-index: 0;
-    }
-
-    &-step {
-      position: relative;
-      text-align: center;
-      z-index: 1;
-
-      &-number {
-        width: 48px;
-        height: 48px;
-        margin: 0 auto var(--spacing-3);
-        background-color: var(--color-background);
-        border: 2px solid var(--color-gray-300);
-        border-radius: var(--radius-full);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: var(--font-weight-medium);
-        color: var(--color-text-light);
-        transition: all 0.3s ease;
-      }
-
-      &-label {
-        font-size: var(--font-size-sm);
-        color: var(--color-text-light);
-        font-weight: var(--font-weight-medium);
-        transition: color 0.3s ease;
-      }
-
-      &.active {
-        .modal__progress-step-number {
-          background-color: var(--color-primary);
-          border-color: var(--color-primary);
-          color: white;
-        }
-
-        .modal__progress-step-label {
-          color: var(--color-text-dark);
-        }
-      }
-
-      &.completed {
-        .modal__progress-step-number {
-          background-color: var(--color-success);
-          border-color: var(--color-success);
-          color: white;
-        }
-      }
-    }
-  }
-
   /* Content Area */
   &__step {
     h3 {
@@ -242,21 +174,6 @@
 
     &__content {
       padding: var(--spacing-6);
-    }
-
-    &__progress {
-      gap: var(--spacing-2);
-
-      &-step {
-        &-number {
-          width: 40px;
-          height: 40px;
-        }
-
-        &-label {
-          font-size: var(--font-size-xs);
-        }
-      }
     }
   }
 }

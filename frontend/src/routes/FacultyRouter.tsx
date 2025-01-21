@@ -18,10 +18,11 @@ export const FacultyRouter = (): JSX.Element => {
           isAuthenticated ? (
             <Navigate to="/faculty/dashboard" replace />
           ) : (
-            <FacultyLogin />
+            <Navigate to="/faculty/login" replace />
           )
         }
       />
+      <Route path="login" element={<FacultyLogin />} />
       <Route path="register" element={<FacultyRegistration />} />
 
       {/* Protected Routes */}
