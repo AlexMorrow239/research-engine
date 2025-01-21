@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import { IsString, IsDate, IsNumber, IsArray, IsOptional, Min, IsEnum } from 'class-validator';
 
 import { ProjectStatus } from '../../../modules/projects/schemas/projects.schema';
+import { Campus } from '@/common/enums';
 
 export class UpdateProjectDto {
   @ApiPropertyOptional()
@@ -14,6 +15,16 @@ export class UpdateProjectDto {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @ApiPropertyOptional({
+    enum: Campus,
+    example: Campus.CORAL_GABLES,
+    description: 'Campus where the research project is located',
+    required: false,
+  })
+  @IsEnum(Campus, { message: 'Invalid campus selection' })
+  @IsOptional()
+  campus?: Campus;
 
   @ApiPropertyOptional({ type: [String] })
   @IsArray()

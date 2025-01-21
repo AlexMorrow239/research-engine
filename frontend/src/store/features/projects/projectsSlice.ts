@@ -15,6 +15,7 @@ interface ProjectsState {
     page: number;
     limit: number;
     department?: string;
+    campus?: string;
     status?: ProjectStatus;
     search?: string;
     researchCategories?: string[];
@@ -35,6 +36,8 @@ const initialState: ProjectsState = {
     status: ProjectStatus.PUBLISHED,
     sortBy: "createdAt",
     sortOrder: "desc",
+    campus: undefined,
+    researchCategories: [],
   },
 };
 
@@ -225,11 +228,25 @@ const projectsSlice = createSlice({
       state,
       action: PayloadAction<Partial<ProjectsState["filters"]>>
     ) => {
-      state.filters = { ...state.filters, ...action.payload };
-      // Reset page to 1 when filters change
-      if (Object.keys(action.payload).some((key) => key !== "page")) {
-        state.filters.page = 1;
+      // Create a new object for filters to ensure proper state updates
+      const newFilters = { ...state.filters };
+
+      // Handle each filter type appropriately
+      Object.entries(action.payload).forEach(([key, value]) => {
+        if (key === "researchCategories" && Array.isArray(value)) {
+          newFilters.researchCategories = [...value];
+        } else {
+          (newFilters[key as keyof ProjectsState["filters"]] as typeof value) =
+            value;
+        }
+      });
+
+      // Reset page to 1 when filters change (except for page updates)
+      if (!action.payload.page) {
+        newFilters.page = 1;
       }
+
+      state.filters = newFilters;
     },
     setCurrentProject: (state, action: PayloadAction<Project>) => {
       state.currentProject = action.payload;
@@ -244,7 +261,10 @@ const projectsSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchProjects.pending, (state) => {
-        state.isLoading = true;
+        // Only show loading on initial load, not during filter updates
+        if (state.items.length === 0) {
+          state.isLoading = true;
+        }
         state.error = null;
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {

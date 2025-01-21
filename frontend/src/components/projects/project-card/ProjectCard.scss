@@ -79,7 +79,8 @@
   }
 
   &__positions,
-  &__deadline {
+  &__deadline,
+  &__campus {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-1);

@@ -84,11 +84,11 @@ export const AvailabilityStep: React.FC<AvailabilityStepProps> = ({ form }) => {
 
         <div className="form-group">
           <label className="form-group__label">
-            Desired Project Length <span className="required">*</span>
+            Desired Project Commitment <span className="required">*</span>
           </label>
           <select
             {...register("availability.desiredProjectLength", {
-              required: "Please select desired project length",
+              required: "Please select desired project commitment",
             })}
             className={getInputClassName()}
           >

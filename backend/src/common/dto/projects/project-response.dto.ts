@@ -3,6 +3,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ProjectFileDto } from './project-file.dto';
 import { ProjectStatus } from '../../../modules/projects/schemas/projects.schema';
 import { NameDto } from '../base/name.dto';
+import { Campus } from '@/common/enums';
 
 export class ProjectResponseDto {
   @ApiProperty({
@@ -22,6 +23,13 @@ export class ProjectResponseDto {
     example: 'Looking for students interested in ML and computer vision research...',
   })
   description: string;
+
+  @ApiProperty({
+    enum: Campus,
+    example: Campus.CORAL_GABLES,
+    description: 'Campus where the research project is located',
+  })
+  campus: Campus;
 
   @ApiProperty({
     description: 'Professor information',

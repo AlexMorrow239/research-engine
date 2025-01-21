@@ -1,8 +1,10 @@
 import {
   AcademicStanding,
   ApplicationStatus,
+  Campus,
   Citizenship,
   College,
+  Department,
   ProjectLength,
   ProjectStatus,
   RacialEthnicGroup,
@@ -113,6 +115,20 @@ export const WEEKLY_AVAILABILITY_OPTIONS = [
     value: WeeklyAvailability.TWELVE_PLUS,
     label: WeeklyAvailability.TWELVE_PLUS,
   },
+] as const;
+
+export const CAMPUS_OPTIONS = [
+  { value: Campus.CORAL_GABLES, label: Campus.CORAL_GABLES },
+  { value: Campus.MEDICAL, label: Campus.MEDICAL },
+  { value: Campus.MARINE, label: Campus.MARINE },
+] as const;
+
+export const DEPARTMENT_OPTIONS = [
+  { value: Department.BIOLOGY, label: Department.BIOLOGY },
+  { value: Department.CHEMISTRY, label: Department.CHEMISTRY },
+  { value: Department.COMPUTER_SCIENCE, label: Department.COMPUTER_SCIENCE },
+  { value: Department.PHYSICS, label: Department.PHYSICS },
+  { value: Department.PSYCHOLOGY, label: Department.PSYCHOLOGY },
 ] as const;
 
 export const PROJECT_LENGTH_OPTIONS = [

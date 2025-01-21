@@ -74,6 +74,7 @@ export interface Project {
   id: string;
   title: string;
   description: string;
+  campus: string;
   professor: {
     id: string;
     name: {

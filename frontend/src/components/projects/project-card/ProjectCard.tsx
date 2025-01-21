@@ -1,11 +1,11 @@
 import { PROJECT_STATUS_LABELS, UI_CONSTANTS } from "@/common/constants";
-import { ProjectStatus } from "@/common/enums";
+import { type Campus, ProjectStatus } from "@/common/enums";
 import {
   formatDeadline,
   isDeadlineExpired,
   isDeadlineSoon,
 } from "@/utils/dateUtils";
-import { Calendar, Users } from "lucide-react";
+import { Building2, Calendar, Users } from "lucide-react";
 import { memo } from "react";
 import "./ProjectCard.scss";
 
@@ -20,6 +20,7 @@ interface ProjectCardProps {
       };
       department: string;
     };
+    campus: Campus;
     researchCategories: string[];
     positions: number;
     applicationDeadline?: Date;
@@ -104,6 +105,11 @@ export const ProjectCard = memo(function ProjectCard({
       </div>
 
       <div className="project-card__meta">
+        <span className="project-card__campus">
+          <Building2 aria-hidden="true" />
+          {project.campus?.toString().replace("_", " ")}
+        </span>
+
         <span
           className="project-card__positions"
           aria-label="Available positions"

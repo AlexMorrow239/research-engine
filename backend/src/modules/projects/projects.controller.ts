@@ -78,6 +78,7 @@ export class ProjectsController {
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('department') department?: string,
+    @Query('campus') campus?: string,
     @Query('status') status: ProjectStatus = ProjectStatus.PUBLISHED,
     @Query('search') search?: string,
     @Query('researchCategories') researchCategories?: string[],
@@ -86,6 +87,7 @@ export class ProjectsController {
       page,
       limit,
       department,
+      campus,
       status,
       search,
       researchCategories: Array.isArray(researchCategories)

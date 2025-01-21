@@ -1,4 +1,4 @@
-import { type ProjectStatus } from "@/common/enums";
+import { type Campus, type ProjectStatus } from "@/common/enums";
 import { ApplicationModal } from "@/components/application-modal/ApplicationModal";
 import { isDeadlineExpired, isDeadlineSoon } from "@/utils/dateUtils";
 import { Building2, FileText, Mail, User } from "lucide-react";
@@ -10,6 +10,7 @@ interface ProjectDetailsProps {
     id: string;
     title: string;
     description: string;
+    campus: Campus;
     professor: {
       name: {
         firstName: string;
@@ -76,6 +77,12 @@ export const ProjectDetails = memo(function ProjectDetails({
         <h2 className="project-details__title">{project.title}</h2>
 
         <div className="project-details__meta-grid">
+          <div className="project-details__meta-item">
+            <span className="label">Campus</span>
+            <span className="value">
+              {project.campus?.toString().replace("_", " ")}
+            </span>
+          </div>
           <div className="project-details__meta-item">
             <span className="label">Positions</span>
             <span className="value">

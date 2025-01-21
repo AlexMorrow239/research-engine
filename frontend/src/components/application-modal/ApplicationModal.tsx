@@ -78,9 +78,7 @@ const applicationSchema = z.object({
     speaksOtherLanguages: z.boolean(),
     comfortableWithAnimals: z.boolean(),
     prevResearchExperience: z.string().optional(),
-    researchInterestDescription: z
-      .string()
-      .min(10, "Please provide a detailed description"),
+    researchInterestDescription: z.string(),
     additionalLanguages: z.array(z.string()).optional().default([]),
   }),
 }) satisfies z.ZodType<ApplicationFormData>;

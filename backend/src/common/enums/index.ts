@@ -5,3 +5,4 @@
 
 export * from './application.enums';
 export * from './status.enums';
+export * from './campus.enum';

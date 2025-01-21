@@ -1,4 +1,4 @@
-import { type ProjectStatus } from "@/common/enums";
+import { type Campus, type ProjectStatus } from "@/common/enums";
 import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
 import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
 import { ProjectFilters } from "@/components/projects/project-filters/ProjectFilters";
@@ -31,6 +31,13 @@ export default function Listings(): JSX.Element {
   useEffect(() => {
     dispatch(fetchProjects());
   }, [dispatch, filters]);
+
+  // Auto-select first project when projects are loaded
+  useEffect(() => {
+    if (projects.length > 0 && !currentProject) {
+      dispatch(setCurrentProject(projects[0]));
+    }
+  }, [projects, currentProject, dispatch]);
 
   // Optimize project selection handler
   const handleProjectSelect = useCallback(
@@ -99,6 +106,7 @@ export default function Listings(): JSX.Element {
                   project={{
                     ...project,
                     status: project.status as ProjectStatus,
+                    campus: project.campus as Campus,
                   }}
                   isSelected={currentProject?.id === project.id}
                   onClick={() => handleProjectSelect(project)}
@@ -144,6 +152,7 @@ export default function Listings(): JSX.Element {
               currentProject
                 ? {
                     ...currentProject,
+                    campus: currentProject.campus as Campus,
                     files: currentProject.files.map((file) => ({
                       fileName: file,
                       originalName: file,

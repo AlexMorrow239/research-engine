@@ -3,6 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
 import { Professor } from '../../professors/schemas/professors.schema';
+import { Campus } from '@/common/enums/campus.enum';
 
 export enum ProjectStatus {
   DRAFT = 'DRAFT',
@@ -38,6 +39,9 @@ export class Project extends Document {
 
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Professor', required: true })
   professor: Professor;
+
+  @Prop({ required: true, type: String, enum: Campus })
+  campus: Campus;
 
   @Prop({ required: true, type: [String] })
   researchCategories: string[];

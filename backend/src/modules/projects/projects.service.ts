@@ -42,6 +42,7 @@ export class ProjectsService {
         id: project._id.toString(),
         title: project.title,
         description: project.description,
+        campus: project.campus,
         professor: {
           id: project.professor._id.toString(),
           name: {
@@ -96,6 +97,7 @@ export class ProjectsService {
     page?: number;
     limit?: number;
     department?: string;
+    campus?: string;
     status?: ProjectStatus;
     search?: string;
     researchCategories?: string[];
@@ -107,6 +109,7 @@ export class ProjectsService {
         page = 1,
         limit = 10,
         department,
+        campus,
         status,
         search,
         researchCategories,
@@ -117,6 +120,7 @@ export class ProjectsService {
       // Build filter conditions
       const filter: any = {};
       if (status) filter.status = status;
+      if (campus) filter.campus = campus;
       if (department) {
         const professors = await this.projectModel.db
           .collection('professors')

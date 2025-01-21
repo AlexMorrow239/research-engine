@@ -19,7 +19,7 @@ export const AdditionalInfoStep: React.FC<AdditionalInfoStepProps> = ({
 
   const [languages, setLanguages] = useState<string[]>([""]);
 
-  const getInputClassName = (baseClass = "form-group__input") => {
+  const getInputClassName = (baseClass = "form-group__input"): string => {
     return `${baseClass} ${errors.additionalInfo ? "form-group__input--error" : ""}`;
   };
 
@@ -32,10 +32,10 @@ export const AdditionalInfoStep: React.FC<AdditionalInfoStepProps> = ({
     name: keyof ApplicationFormData["additionalInfo"];
     label: string;
     required?: boolean;
-  }) => {
+  }): JSX.Element => {
     const value = watch(`additionalInfo.${name}`) as boolean;
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
       const newValue = e.target.value === "true";
       setValue(`additionalInfo.${name}`, newValue, {
         shouldValidate: true,
@@ -118,10 +118,6 @@ export const AdditionalInfoStep: React.FC<AdditionalInfoStepProps> = ({
             <textarea
               {...register("additionalInfo.prevResearchExperience", {
                 required: "Please describe your previous research experience",
-                minLength: {
-                  value: 10,
-                  message: "Please provide a detailed description",
-                },
               })}
               className={getInputClassName()}
               placeholder="Enter your previous research experience"
@@ -142,11 +138,6 @@ export const AdditionalInfoStep: React.FC<AdditionalInfoStepProps> = ({
           <textarea
             {...register("additionalInfo.researchInterestDescription", {
               required: "Please provide a detailed description",
-              minLength: {
-                value: 10,
-                message:
-                  "Please provide a detailed description (minimum 10 characters)",
-              },
             })}
             className={getInputClassName()}
             placeholder="Enter your research interests"

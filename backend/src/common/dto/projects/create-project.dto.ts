@@ -13,6 +13,7 @@ import {
 
 import { ProjectStatus } from '../../../modules/projects/schemas/projects.schema';
 import { IsFutureDate } from '../../validators/date.validator';
+import { Campus } from '@/common/enums';
 
 const getDefaultDeadlineExample = () => {
   const date = new Date();
@@ -72,10 +73,18 @@ export class CreateProjectDto {
   status: ProjectStatus;
 
   @ApiProperty({
+    enum: Campus,
+    example: Campus.CORAL_GABLES,
+    description: 'Campus where the research project is located',
+  })
+  @IsEnum(Campus, { message: 'Invalid campus selection' })
+  @IsNotEmpty({ message: 'Campus is required' })
+  campus: Campus;
+
+  @ApiProperty({
     description: 'Application deadline',
     example: getDefaultDeadlineExample(),
   })
-  @IsOptional()
   @IsDate()
   @IsFutureDate()
   applicationDeadline?: Date;

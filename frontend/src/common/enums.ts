@@ -61,6 +61,15 @@ export enum College {
   GRAD = "The Graduate School",
 }
 
+export enum Department {
+  BIOLOGY = "Biology",
+  CHEMISTRY = "Chemistry",
+  COMPUTER_SCIENCE = "Computer Science",
+  PHYSICS = "Physics",
+  PSYCHOLOGY = "Psychology",
+  // Add other departments as needed
+}
+
 /**
  * Weekly time commitment ranges in hours
  */
@@ -79,6 +88,12 @@ export enum ProjectLength {
   TWO = "2",
   THREE = "3",
   FOUR_PLUS = "4+",
+}
+
+export enum Campus {
+  CORAL_GABLES = "Coral Gables Campus",
+  MEDICAL = "Miller Med Campus",
+  MARINE = "Rosenstiel Marine Campus",
 }
 
 /**

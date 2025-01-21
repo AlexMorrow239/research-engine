@@ -1,3 +1,5 @@
+import { Campus } from '@/common/enums';
+
 // Helper function to generate dates
 const getFutureDate = (months: number) => {
   const date = new Date();
@@ -25,6 +27,7 @@ export const createProjectExamples = {
         'Healthcare',
         'Deep Learning',
       ],
+      campus: Campus.CORAL_GABLES,
       requirements: [
         'Strong programming skills in Python',
         'Experience with PyTorch or TensorFlow',
@@ -47,6 +50,7 @@ export const createProjectExamples = {
       description: 'Seeking assistance for ongoing research project in computer science.',
       researchCategories: ['Computer Science'],
       requirements: ['Programming experience'],
+      campus: Campus.CORAL_GABLES,
       status: 'DRAFT',
       positions: 1,
     },
@@ -104,6 +108,7 @@ export const updateProjectExamples = {
         'Strong mathematical background',
       ],
       status: 'PUBLISHED',
+      campus: Campus.CORAL_GABLES,
       positions: 3,
       applicationDeadline: getFutureDate(4),
       isVisible: true,

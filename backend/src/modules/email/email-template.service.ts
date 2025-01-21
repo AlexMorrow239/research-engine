@@ -149,7 +149,7 @@ Availability:
 - Thursday: ${application.availability.thursdayAvailability}
 - Friday: ${application.availability.fridayAvailability}
 - Weekly Hours: ${application.availability.weeklyHours}
-- Desired Project Length: ${application.availability.desiredProjectLength}
+- Desired Project Commitment: ${application.availability.desiredProjectLength}
 
 Additional Information:
 - Previous Research Experience: ${application.additionalInfo.hasPrevResearchExperience ? 'Yes' : 'No'}
