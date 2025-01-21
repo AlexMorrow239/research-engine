@@ -5,7 +5,7 @@ import {
   isDeadlineExpired,
   isDeadlineSoon,
 } from "@/utils/dateUtils";
-import { Building2, Calendar, Users } from "lucide-react";
+import { Building2, Calendar, Pencil, Trash2, Users } from "lucide-react";
 import { memo } from "react";
 import "./ProjectCard.scss";
 
@@ -26,14 +26,20 @@ interface ProjectCardProps {
     applicationDeadline?: Date;
     status: ProjectStatus;
   };
-  isSelected: boolean;
-  onClick: () => void;
+  isSelected?: boolean;
+  onClick?: () => void;
+  layout?: "vertical" | "horizontal";
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
 export const ProjectCard = memo(function ProjectCard({
   project,
-  isSelected,
+  isSelected = false,
   onClick,
+  layout = "vertical",
+  onEdit,
+  onDelete,
 }: ProjectCardProps): JSX.Element {
   // Helper function to get deadline status
   const getDeadlineInfo = (
@@ -72,80 +78,118 @@ export const ProjectCard = memo(function ProjectCard({
   const handleKeyDown = (e: React.KeyboardEvent): void => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
-      onClick();
+      onClick?.();
     }
   };
 
+  const cardClassName = `project-card ${isSelected ? "card--selected" : ""} ${
+    layout === "horizontal" ? "project-card--horizontal" : ""
+  }`;
+
   return (
     <div
-      className={`project-card ${isSelected ? "card--selected" : ""}`}
+      className={cardClassName}
       onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
+      role={onClick ? "button" : "article"}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? handleKeyDown : undefined}
       aria-selected={isSelected}
     >
-      <div className="project-card__header">
-        <h3 className="project-card__title">{project.title}</h3>
-        {project.status !== ProjectStatus.PUBLISHED && (
-          <span
-            className={`project-card__status project-card__status--${project.status.toLowerCase()}`}
-          >
-            {PROJECT_STATUS_LABELS[project.status]}
-          </span>
-        )}
-      </div>
-
-      <div className="project-card__professor">
-        {project.professor.name.firstName} {project.professor.name.lastName}
-      </div>
-
-      <div className="project-card__department">
-        {project.professor.department}
-      </div>
-
-      <div className="project-card__meta">
-        <span className="project-card__campus">
-          <Building2 aria-hidden="true" />
-          {project.campus?.toString().replace("_", " ")}
-        </span>
-
-        <span
-          className="project-card__positions"
-          aria-label="Available positions"
-        >
-          <Users aria-hidden="true" />
-          {project.positions}
-        </span>
-
-        {project.applicationDeadline && (
-          <span
-            className={`project-card__deadline ${deadlineInfo.className}`}
-            aria-label="Application deadline"
-          >
-            <Calendar aria-hidden="true" />
-            {deadlineInfo.text}
-          </span>
-        )}
-      </div>
-
-      {visibleCategories.length > 0 && (
-        <div
-          className="project-card__categories"
-          aria-label="Research categories"
-        >
-          {visibleCategories.map((category) => (
-            <span key={category} className="project-card__category">
-              {category}
-            </span>
-          ))}
-          {remainingCategories > 0 && (
+      <div className="project-card__content">
+        <div className="project-card__header">
+          <h3 className="project-card__title">{project.title}</h3>
+          {project.status !== ProjectStatus.PUBLISHED && (
             <span
-              className="project-card__category"
-              title={`${remainingCategories} more categories`}
+              className={`project-card__status project-card__status--${project.status.toLowerCase()}`}
             >
-              +{remainingCategories}
+              {PROJECT_STATUS_LABELS[project.status]}
             </span>
+          )}
+        </div>
+
+        <div className="project-card__professor">
+          {project.professor.name.firstName} {project.professor.name.lastName}
+        </div>
+
+        <div className="project-card__department">
+          {project.professor.department}
+        </div>
+
+        <div className="project-card__meta">
+          <span className="project-card__campus">
+            <Building2 aria-hidden="true" />
+            {project.campus?.toString().replace("_", " ")}
+          </span>
+
+          <span
+            className="project-card__positions"
+            aria-label="Available positions"
+          >
+            <Users aria-hidden="true" />
+            {project.positions}
+          </span>
+
+          {project.applicationDeadline && (
+            <span
+              className={`project-card__deadline ${deadlineInfo.className}`}
+              aria-label="Application deadline"
+            >
+              <Calendar aria-hidden="true" />
+              {deadlineInfo.text}
+            </span>
+          )}
+        </div>
+
+        {visibleCategories.length > 0 && (
+          <div
+            className="project-card__categories"
+            aria-label="Research categories"
+          >
+            {visibleCategories.map((category) => (
+              <span key={category} className="project-card__category">
+                {category}
+              </span>
+            ))}
+            {remainingCategories > 0 && (
+              <span
+                className="project-card__category"
+                title={`${remainingCategories} more categories`}
+              >
+                +{remainingCategories}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Management actions for horizontal layout */}
+      {layout === "horizontal" && (onEdit || onDelete) && (
+        <div className="project-card__actions">
+          {onEdit && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              title="Edit project"
+              className="project-card__action-btn"
+            >
+              <Pencil aria-hidden="true" />
+              <span className="sr-only">Edit project</span>
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              className="project-card__action-btn delete-btn"
+              title="Delete project"
+            >
+              <Trash2 aria-hidden="true" />
+              <span className="sr-only">Delete project</span>
+            </button>
           )}
         </div>
       )}

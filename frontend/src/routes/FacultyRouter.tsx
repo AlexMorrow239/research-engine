@@ -1,6 +1,7 @@
 import FacultyLogin from "@/pages/auth/facultyLogin/FacultyLogin";
-import ProjectDashboard from "@/pages/projects/projectDashboard/ProjectDashboard";
-import { ProjectForm } from "@/pages/projects/projectForm/ProjectForm";
+import FacultyRegistration from "@/pages/auth/facultyRegistration/FacultyRegistration";
+import ProjectDashboard from "@/pages/projects/project-dashboard/ProjectDashboard";
+import { ProjectForm } from "@/pages/projects/project-form/ProjectForm";
 import { useAppSelector } from "@/store";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedLayout } from "./ProtectedLayout";
@@ -21,6 +22,7 @@ export const FacultyRouter = (): JSX.Element => {
           )
         }
       />
+      <Route path="register" element={<FacultyRegistration />} />
 
       {/* Protected Routes */}
       <Route element={<ProtectedLayout />}>

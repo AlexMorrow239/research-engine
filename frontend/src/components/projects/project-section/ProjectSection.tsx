@@ -1,36 +1,33 @@
 import { ProjectStatus } from "@/common/enums";
+import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
 import { useAppDispatch } from "@/store";
 import {
   deleteProject,
   delistProject,
 } from "@/store/features/projects/projectsSlice";
-import { Edit2, Trash2 } from "lucide-react";
-import React from "react";
+import { type Project } from "@/types";
 import { useNavigate } from "react-router-dom";
 import "./ProjectSection.scss";
 
 interface ProjectSectionProps {
   title: string;
-  projects: Array<{
-    id: string;
-    title: string;
-    status: ProjectStatus;
-    createdAt: Date;
-  }>;
+  projects: Project[];
   status: ProjectStatus;
 }
 
-export const ProjectSection: React.FC<ProjectSectionProps> = ({
+export function ProjectSection({
   title,
   projects,
-}) => {
+  status,
+}: ProjectSectionProps): JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const handleDelete = async (
-    projectId: string,
-    status: ProjectStatus
-  ): Promise<void> => {
+  const handleEdit = (projectId: string) => {
+    navigate(`/faculty/projects/${projectId}/edit`);
+  };
+
+  const handleDelete = async (projectId: string) => {
     if (status === ProjectStatus.PUBLISHED) {
       if (!window.confirm("Are you sure you want to delist this project?")) {
         return;
@@ -46,43 +43,32 @@ export const ProjectSection: React.FC<ProjectSectionProps> = ({
     }
   };
 
-  if (!projects.length) {
-    return null;
-  }
-
-  if (!projects.length) {
-    return null;
-  }
+  const handleCardClick = (projectId: string) => {
+    navigate(`/faculty/projects/${projectId}`);
+  };
 
   return (
-    <div className="project-section">
-      <h2 className="project-section__title">{title}</h2>
-      <div className="project-section__list">
+    <section className="project-section">
+      <h2 className="project-section__title">
+        {title} ({projects.length})
+      </h2>
+      <div className="project-section__content">
         {projects.map((project) => (
-          <div key={project.id} className="project-card">
-            <div className="project-card__content">
-              <h3>{project.title}</h3>
-              <span className="project-card__date">
-                Created: {new Date(project.createdAt).toLocaleDateString()}
-              </span>
-            </div>
-            <div className="project-card__actions">
-              <button
-                className="btn btn--icon"
-                onClick={() => navigate(`/faculty/projects/${project.id}/edit`)}
-              >
-                <Edit2 size={18} />
-              </button>
-              <button
-                className="btn btn--icon btn--danger"
-                onClick={() => handleDelete(project.id, project.status)}
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
-          </div>
+          <ProjectCard
+            key={project.id}
+            project={project}
+            layout="horizontal"
+            onClick={() => handleCardClick(project.id)}
+            onEdit={() => handleEdit(project.id)}
+            onDelete={() => handleDelete(project.id)}
+          />
         ))}
+        {projects.length === 0 && (
+          <p className="project-section__empty">
+            No {status.toLowerCase()} projects
+          </p>
+        )}
       </div>
-    </div>
+    </section>
   );
-};
+}

@@ -1,4 +1,4 @@
-import type { ApplicationStatus, ProjectStatus } from "@/common/enums";
+import type { ApplicationStatus, Campus, ProjectStatus } from "@/common/enums";
 
 export interface ApiResponse<T> {
   data: T;
@@ -74,7 +74,7 @@ export interface Project {
   id: string;
   title: string;
   description: string;
-  campus: string;
+  campus: Campus;
   professor: {
     id: string;
     name: {

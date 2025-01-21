@@ -27,32 +27,40 @@ export default function ProjectDashboard(): JSX.Element {
     [];
 
   useEffect(() => {
-    // Redirect if not logged in
     if (!user) {
       navigate("/faculty/login");
       return;
     }
 
-    // Fetch projects on component mount
     dispatch(fetchProfessorProjects({}));
   }, [dispatch, user, navigate]);
 
   if (isLoading) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <div className="project-dashboard project-dashboard--loading">
+        <div className="loading">Loading projects...</div>
+      </div>
+    );
   }
 
   return (
     <div className="project-dashboard">
       <div className="project-dashboard__header">
-        <h1>My Projects</h1>
+        <div className="project-dashboard__title-group">
+          <h1>My Projects</h1>
+          <p className="project-dashboard__subtitle">
+            Manage and create research opportunities for students
+          </p>
+        </div>
         <button
-          className="btn btn--primary"
+          className="btn btn--primary btn--large"
           onClick={() => navigate("/faculty/projects/new")}
         >
-          <Plus size={20} />
-          Create Project
+          <Plus size={24} />
+          <span>Create New Project</span>
         </button>
       </div>
+
       <div className="project-dashboard__content">
         <ProjectSection
           title="Draft Projects"

@@ -1,42 +1,25 @@
 @use "@/styles/abstracts" as *;
 
 .project-section {
-  margin-bottom: var(--spacing-8);
-
   &__title {
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
-    margin-bottom: var(--spacing-4);
-    color: var(--color-text-light);
+    color: var(--color-text-dark);
+    margin-bottom: var(--spacing-3);
   }
 
-  &__list {
-    display: grid;
-    gap: var(--spacing-4);
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
   }
 
-  .project-card {
-    @include flex(row, space-between, center);
+  &__empty {
+    text-align: center;
     padding: var(--spacing-4);
     background-color: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-
-    &__content {
-      h3 {
-        font-weight: var(--font-weight-semibold);
-        margin-bottom: var(--spacing-1);
-      }
-    }
-
-    &__date {
-      font-size: var(--font-size-sm);
-      color: var(--color-text-light);
-    }
-
-    &__actions {
-      @include flex(row, flex-end, center);
-      gap: var(--spacing-2);
-    }
+    border-radius: var(--radius-md);
+    color: var(--color-text-light);
+    border: 1px dashed var(--color-border);
   }
 }

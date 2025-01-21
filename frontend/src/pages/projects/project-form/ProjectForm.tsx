@@ -1,4 +1,5 @@
-import { ProjectStatus } from "@/common/enums";
+import { CAMPUS_OPTIONS } from "@/common/constants";
+import { Campus, ProjectStatus } from "@/common/enums";
 import { useAppDispatch } from "@/store";
 import {
   createProject,
@@ -10,7 +11,14 @@ import { addToast } from "@/store/features/ui/uiSlice";
 import type { Project } from "@/types/api";
 import { ApiError } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Book, Briefcase, Calendar, FileText, Users } from "lucide-react";
+import {
+  Book,
+  Briefcase,
+  Calendar,
+  FileText,
+  MapPin,
+  Users,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -32,6 +40,8 @@ const projectSchema = z.object({
     .refine((cats) => cats.every((cat) => cat.trim() !== ""), {
       message: "Research categories cannot be empty",
     }),
+  campus: z.nativeEnum(Campus),
+
   // Optional Fields
   requirements: z
     .array(z.string())
@@ -51,6 +61,7 @@ const initialFormData: ProjectFormData = {
   positions: 1,
   applicationDeadline: new Date(),
   status: ProjectStatus.DRAFT,
+  campus: "" as Campus,
 };
 
 interface ProjectFormProps {
@@ -105,6 +116,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
             shouldDirty: true,
             shouldTouch: true,
           });
+          setValue("campus", project.campus);
 
           // Set the formatted string value directly on the input element
           const dateInput = document.getElementById(
@@ -162,9 +174,12 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
   ): Promise<void> => {
     setIsSubmitting(true);
     try {
-      const formattedData = {
+      const formattedData: Omit<
+        Project,
+        "id" | "professor" | "files" | "isVisible" | "createdAt" | "updatedAt"
+      > = {
         ...data,
-        status: status,
+        status,
         applicationDeadline: new Date(data.applicationDeadline),
       };
 
@@ -309,6 +324,28 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
               <span className="form-group__error">
                 {errors.description.message}
               </span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="campus" className="form-group__label">
+              <MapPin className="form-group__icon" size={16} />
+              Campus
+            </label>
+            <select
+              id="campus"
+              {...register("campus")}
+              className={`form-input ${errors.campus ? "form-input--error" : ""}`}
+            >
+              <option value="">Select a campus</option>
+              {CAMPUS_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            {errors.campus && (
+              <span className="form-group__error">{errors.campus.message}</span>
             )}
           </div>
         </section>

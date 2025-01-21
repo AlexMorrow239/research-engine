@@ -124,8 +124,7 @@ export default function FacultyLogin(): JSX.Element {
           </button>
 
           <p className="faculty-login__footer">
-            Don't have an account?{" "}
-            <a href="/faculty-registration">Register here</a>
+            Don't have an account? <a href="/faculty/register">Register here</a>
           </p>
         </form>
       </div>

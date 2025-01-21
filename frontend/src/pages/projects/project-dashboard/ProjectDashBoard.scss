@@ -1,0 +1,135 @@
+@use "@/styles/abstracts" as *;
+
+.project-dashboard {
+  padding: var(--spacing-6);
+  max-width: var(--max-width-xl);
+  margin: 0 auto;
+  width: 100%;
+
+  &--loading {
+    @include flex(column, center, center);
+    min-height: 50vh;
+
+    .loading {
+      color: var(--color-text-light);
+      font-size: var(--font-size-lg);
+    }
+  }
+
+  &__header {
+    @include flex(row, space-between, center);
+    margin-bottom: var(--spacing-8);
+    padding: var(--spacing-6);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-background-alt);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &__title-group {
+    h1 {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-text-dark);
+      margin-bottom: var(--spacing-2);
+      line-height: 1.2;
+    }
+  }
+
+  &__subtitle {
+    font-size: var(--font-size-base);
+    color: var(--color-text-light);
+    max-width: 400px;
+  }
+
+  .btn--primary {
+    @include flex(row, center, center);
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-6);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    border-radius: var(--radius-md);
+    transition: all 0.2s ease;
+    border: 2px solid var(--color-primary);
+
+    &:hover {
+      background-color: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-sm);
+    }
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+    padding-bottom: var(--spacing-8);
+  }
+
+  // Responsive adjustments
+  @include respond-to("md", "down") {
+    padding: var(--spacing-4);
+
+    &__header {
+      flex-direction: column;
+      gap: var(--spacing-6);
+      align-items: stretch;
+      text-align: center;
+      padding: var(--spacing-4);
+      margin-bottom: var(--spacing-6);
+    }
+
+    &__title-group {
+      h1 {
+        font-size: var(--font-size-2xl);
+      }
+    }
+
+    &__subtitle {
+      max-width: none;
+    }
+
+    .btn--primary {
+      width: 100%;
+      padding: var(--spacing-4);
+      font-size: var(--font-size-lg);
+
+      svg {
+        width: 24px;
+        height: 24px;
+      }
+    }
+
+    &__content {
+      gap: var(--spacing-6);
+    }
+  }
+
+  // Dark mode adjustments
+  @media (prefers-color-scheme: dark) {
+    &__header {
+      background-color: var(--color-background-dark);
+      border-color: var(--color-border-dark);
+    }
+
+    .btn--primary {
+      &:hover {
+        background-color: var(--color-primary-light);
+        border-color: var(--color-primary-light);
+      }
+    }
+  }
+}
