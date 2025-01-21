@@ -23,7 +23,6 @@ export const AdditionalInfoStep: React.FC<AdditionalInfoStepProps> = ({
     return `${baseClass} ${errors.additionalInfo ? "form-group__input--error" : ""}`;
   };
 
-  // radio input component to reduce repetition
   const RadioGroup = ({
     name,
     label,

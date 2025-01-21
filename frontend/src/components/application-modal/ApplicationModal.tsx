@@ -12,7 +12,7 @@ import { type ApplicationFormData } from "@/types";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { AdditionalInfoStep } from "./additional-info-step/AdditionalInfo";
@@ -132,6 +132,11 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
     setCurrentStep((prev) => prev - 1);
   };
 
+  const handleReset = useCallback(() => {
+    setCurrentStep(1);
+    form.reset();
+  }, [form]);
+
   const onSubmit = async (data: ApplicationFormData): Promise<void> => {
     if (!projectId) {
       console.error("Project ID is missing");
@@ -198,6 +203,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
         })
       ).unwrap();
 
+      handleReset();
       onClose();
       alert("Application submitted successfully");
     } catch (error) {
@@ -236,7 +242,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
 
           <ProgressStep currentStep={currentStep} />
 
-          <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
+          <form onSubmit={(e) => e.preventDefault()} noValidate>
             {currentStep === 1 && <PersonalInfoStep form={form} />}
             {currentStep === 2 && <AvailabilityStep form={form} />}
             {currentStep === 3 && <AdditionalInfoStep form={form} />}
@@ -266,7 +272,8 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
                   </button>
                 ) : (
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={form.handleSubmit(onSubmit)}
                     className="button button--primary"
                     disabled={isSubmitting}
                   >

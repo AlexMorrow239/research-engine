@@ -144,7 +144,7 @@ const About: React.FC = () => {
           <p>
             Developed by{" "}
             <a
-              href="https://bonsai.io"
+              href="https://bonsaiacg.com/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Visit Bonsai Applied Computations Group website"
@@ -153,7 +153,7 @@ const About: React.FC = () => {
             </a>{" "}
             in collaboration with the{" "}
             <a
-              href="#"
+              href="https://ugr.miami.edu/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Visit Office of Undergraduate Research website"

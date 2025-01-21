@@ -4,6 +4,7 @@ import {
   COLLEGE_OPTIONS,
   RACIAL_ETHNIC_OPTIONS,
 } from "@/common/constants";
+import { type RacialEthnicGroup } from "@/common/enums";
 import { type ApplicationFormData } from "@/types";
 import { FileText, Upload, X } from "lucide-react";
 import React, { useState } from "react";
@@ -142,16 +143,18 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
       <section className="personal-info__section">
         <h4 className="personal-info__section-title">Basic Information</h4>
         <div className="personal-info__grid">
-          <FormField
-            label="First Name"
-            name="name.firstName"
-            placeholder="Enter your first name"
-          />
-          <FormField
-            label="Last Name"
-            name="name.lastName"
-            placeholder="Enter your last name"
-          />
+          <div className="personal-info__grid--paired">
+            <FormField
+              label="First Name"
+              name="name.firstName"
+              placeholder="Enter your first name"
+            />
+            <FormField
+              label="Last Name"
+              name="name.lastName"
+              placeholder="Enter your last name"
+            />
+          </div>
           <FormField
             label="C Number"
             name="cNumber"
@@ -180,26 +183,30 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
       <section className="personal-info__section">
         <h4 className="personal-info__section-title">Academic Information</h4>
         <div className="personal-info__grid">
-          <FormField
-            label="Academic Standing"
-            name="academicStanding"
-            options={ACADEMIC_STANDING_OPTIONS}
-          />
-          <FormField
-            label="Expected Graduation Date"
-            name="graduationDate"
-            type="date"
-          />
-          <FormField
-            label="College"
-            name="major1College"
-            options={COLLEGE_OPTIONS}
-          />
-          <FormField
-            label="Major"
-            name="major1"
-            placeholder="Enter your major"
-          />
+          <div className="personal-info__grid--paired">
+            <FormField
+              label="Academic Standing"
+              name="academicStanding"
+              options={ACADEMIC_STANDING_OPTIONS}
+            />
+            <FormField
+              label="Expected Graduation Date"
+              name="graduationDate"
+              type="date"
+            />
+          </div>
+          <div className="personal-info__grid--paired">
+            <FormField
+              label="College"
+              name="major1College"
+              options={COLLEGE_OPTIONS}
+            />
+            <FormField
+              label="Major"
+              name="major1"
+              placeholder="Enter your major"
+            />
+          </div>
           <FormField
             label="GPA"
             name="gpa"
@@ -207,7 +214,6 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             placeholder="Enter your GPA (0-4.0)"
             help="Current cumulative GPA"
           />
-
           <div className="form-field">
             <label className="form-field__label">
               Racial/Ethnic Groups
@@ -215,23 +221,31 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             </label>
             <div className="ethnic-select">
               <select
-                {...register("studentInfo.racialEthnicGroups")}
                 className={`form-field__input ${
                   errors.studentInfo?.racialEthnicGroups
                     ? "form-field__input--error"
                     : ""
                 }`}
-                multiple
+                value="" // Always reset to empty after selection
+                onChange={(e) => {
+                  const value = e.target.value as RacialEthnicGroup;
+                  if (!value) return;
+
+                  // Only add if not already selected
+                  if (!selectedEthnicGroups.includes(value)) {
+                    const newGroups = [...selectedEthnicGroups, value];
+                    setValue("studentInfo.racialEthnicGroups", newGroups, {
+                      shouldValidate: true,
+                    });
+                  }
+                }}
               >
+                <option value="">Select racial/ethnic groups</option>
                 {RACIAL_ETHNIC_OPTIONS.map(({ value, label }) => (
                   <option
                     key={value}
                     value={value}
-                    className={`ethnic-select__option ${
-                      selectedEthnicGroups.includes(value)
-                        ? "ethnic-select__option--selected"
-                        : ""
-                    }`}
+                    disabled={selectedEthnicGroups.includes(value)}
                   >
                     {label}
                   </option>
@@ -266,9 +280,6 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
                   ))}
                 </div>
               )}
-              <span className="form-field__help">
-                Hold Ctrl (Windows) or Cmd (Mac) to select multiple options
-              </span>
               {errors.studentInfo?.racialEthnicGroups && (
                 <span className="form-field__error">
                   {errors.studentInfo.racialEthnicGroups.message}
@@ -289,6 +300,18 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
+          onClick={(e) => {
+            // Prevent click from reaching the div when clicking the remove button
+            if ((e.target as HTMLElement).closest(".resume-upload__remove")) {
+              return;
+            }
+            // Trigger file input click
+            (
+              e.currentTarget.querySelector(
+                'input[type="file"]'
+              ) as HTMLInputElement
+            )?.click();
+          }}
         >
           <input
             type="file"

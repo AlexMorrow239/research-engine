@@ -44,6 +44,7 @@ export const AvailabilityStep: React.FC<AvailabilityStepProps> = ({ form }) => {
               {day} Availability <span className="required">*</span>
             </label>
             <input
+              type="text"
               {...register(`availability.${getDayAvailabilityField(day)}`, {
                 required: `${day} availability is required`,
               })}
