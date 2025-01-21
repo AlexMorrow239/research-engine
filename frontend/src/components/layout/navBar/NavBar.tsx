@@ -41,8 +41,7 @@ export const NavBar = (): JSX.Element => {
         <div
           className={`nav__menu ${isMobileMenuOpen ? "nav__menu--open" : ""}`}
         >
-          {/* Public navigation items */}
-          {navigationItems.public.map((item) => (
+          {navigationItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
@@ -55,35 +54,10 @@ export const NavBar = (): JSX.Element => {
             </NavLink>
           ))}
 
-          {isAuthenticated ? (
-            // Authenticated navigation items
-            <>
-              {navigationItems.authenticated.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `nav__link ${isActive ? "nav__link--active" : ""}`
-                  }
-                  onClick={handleNavLinkClick}
-                >
-                  {item.label}
-                </NavLink>
-              ))}
-              <button className="nav__link" onClick={handleLogout}>
-                Logout
-              </button>
-            </>
-          ) : (
-            <NavLink
-              to="/faculty/login"
-              className={({ isActive }) =>
-                `nav__link ${isActive ? "nav__link--active" : ""}`
-              }
-              onClick={handleNavLinkClick}
-            >
-              Faculty Login/Register
-            </NavLink>
+          {isAuthenticated && (
+            <button className="nav__link" onClick={handleLogout}>
+              Logout
+            </button>
           )}
         </div>
 

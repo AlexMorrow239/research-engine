@@ -10,6 +10,7 @@ import { addToast } from "@/store/features/ui/uiSlice";
 import type { Project } from "@/types/api";
 import { ApiError } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Book, Briefcase, Calendar, FileText, Users } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -21,21 +22,17 @@ const projectSchema = z.object({
   // Mandatory Fields
   title: z.string().min(1, "Project title is required"),
   description: z.string().min(1, "Project description is required"),
-  positions: z
-    .number()
-    .min(1, "Must have at least 1 position")
-    .max(10, "Cannot exceed 10 positions"),
+  positions: z.number().min(1, "Must have at least 1 position"),
   applicationDeadline: z
     .date()
     .min(new Date(), "Application deadline must be in the future"),
-
-  // Optional Fields
   researchCategories: z
     .array(z.string())
     .min(1, "At least one research category is required")
     .refine((cats) => cats.every((cat) => cat.trim() !== ""), {
       message: "Research categories cannot be empty",
     }),
+  // Optional Fields
   requirements: z
     .array(z.string())
     .optional()
@@ -245,107 +242,123 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
     }
   };
 
-  // Show loading state
   if (isLoading) {
     return (
-      <div className="project-form">
-        <div className="project-form__container">
-          <div className="project-form__loading">
-            <h2>Loading project details...</h2>
-          </div>
-        </div>
+      <div className="project-form project-form--loading">
+        <div className="loading-spinner" />
+        <h2>Loading project details...</h2>
       </div>
     );
   }
 
   return (
     <div className="project-form">
-      <div className="project-form__container">
-        <div className="project-form__header">
+      <header className="project-form__header">
+        <div className="project-form__title">
           <h1>
             {mode === "edit"
               ? "Edit Research Project"
               : "Create New Research Project"}
           </h1>
-          <p>
+          <p className="project-form__subtitle">
             {mode === "edit"
-              ? "Update your research opportunity details"
+              ? "Update your research opportunity details below"
               : "Fill out the form below to create a new research opportunity"}
           </p>
         </div>
+      </header>
 
-        <form className="project-form__form">
-          <div className="form-section">
-            <h2 className="form-section__title">Required Information</h2>
+      <form
+        onSubmit={handleSubmit((data) => onSubmit(data, currentStatus))}
+        className="project-form__content"
+      >
+        <section className="form-section">
+          <h2 className="form-section__title">Basic Information</h2>
 
-            <div className="form-group">
-              <label htmlFor="title">Project Title *</label>
-              <input
-                type="text"
-                id="title"
-                {...register("title")}
-                className={errors.title ? "error" : ""}
-                placeholder="Enter a descriptive title for your research project"
-              />
-              {errors.title && (
-                <span className="error-message">{errors.title.message}</span>
-              )}
-            </div>
+          <div className="form-group">
+            <label htmlFor="title" className="form-group__label">
+              <FileText className="form-group__icon" size={16} />
+              Project Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              {...register("title")}
+              className={`form-input ${errors.title ? "form-input--error" : ""}`}
+              placeholder="Enter a descriptive title for your research project"
+            />
+            {errors.title && (
+              <span className="form-group__error">{errors.title.message}</span>
+            )}
+          </div>
 
-            <div className="form-group">
-              <label htmlFor="description">Project Description *</label>
-              <textarea
-                id="description"
-                {...register("description")}
-                className={errors.description ? "error" : ""}
-                rows={6}
-                placeholder="Describe your research project, its goals, and what students will be doing"
-              />
-              {errors.description && (
-                <span className="error-message">
-                  {errors.description.message}
-                </span>
-              )}
-            </div>
+          <div className="form-group">
+            <label htmlFor="description" className="form-group__label">
+              <Book className="form-group__icon" size={16} />
+              Project Description
+            </label>
+            <textarea
+              id="description"
+              {...register("description")}
+              className={`form-input form-input--textarea ${
+                errors.description ? "form-input--error" : ""
+              }`}
+              placeholder="Describe your research project, its goals, and what students will be doing"
+            />
+            {errors.description && (
+              <span className="form-group__error">
+                {errors.description.message}
+              </span>
+            )}
+          </div>
+        </section>
 
-            <div className="form-group">
-              <label htmlFor="positions">Number of Positions *</label>
-              <input
-                type="number"
-                id="positions"
-                {...register("positions", { valueAsNumber: true })}
-                className={errors.positions ? "error" : ""}
-                min={1}
-                max={10}
-              />
-              {errors.positions && (
-                <span className="error-message">
-                  {errors.positions.message}
-                </span>
-              )}
-            </div>
+        <section className="form-section">
+          <h2 className="form-section__title">Project Details</h2>
 
-            <div className="form-group">
-              <label htmlFor="applicationDeadline">
-                Application Deadline *
-              </label>
-              <input
-                type="date"
-                id="applicationDeadline"
-                {...register("applicationDeadline", {
-                  setValueAs: (value) => (value ? new Date(value) : null),
-                })}
-                className={errors.applicationDeadline ? "error" : ""}
-              />
-              {errors.applicationDeadline && (
-                <span className="error-message">
-                  {errors.applicationDeadline.message}
-                </span>
-              )}
-            </div>
+          <div className="form-group">
+            <label htmlFor="positions" className="form-group__label">
+              <Users className="form-group__icon" size={16} />
+              Number of Positions
+            </label>
+            <input
+              type="number"
+              id="positions"
+              {...register("positions", { valueAsNumber: true })}
+              className={`form-input ${errors.positions ? "form-input--error" : ""}`}
+              min={1}
+              max={10}
+            />
+            {errors.positions && (
+              <span className="form-group__error">
+                {errors.positions.message}
+              </span>
+            )}
+          </div>
 
-            <div className="form-group">
-              <label>Research Categories *</label>
+          <div className="form-group">
+            <label htmlFor="applicationDeadline" className="form-group__label">
+              <Calendar className="form-group__icon" size={16} />
+              Application Deadline
+            </label>
+            <input
+              type="date"
+              id="applicationDeadline"
+              {...register("applicationDeadline")}
+              className={`form-input ${
+                errors.applicationDeadline ? "form-input--error" : ""
+              }`}
+            />
+            {errors.applicationDeadline && (
+              <span className="form-group__error">
+                {errors.applicationDeadline.message}
+              </span>
+            )}
+          </div>
+
+          <div className="form-group">
+            <label className="form-group__label">Research Categories</label>
+            <div className="form-group__array">
               {researchCategories.map((category, index) => (
                 <div key={index} className="array-input">
                   <input
@@ -357,44 +370,47 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                       setResearchCategories(newCategories);
                       setValue("researchCategories", newCategories);
                     }}
+                    className="form-input"
                     placeholder="e.g., Machine Learning"
                   />
                   <button
                     type="button"
-                    className="btn btn--secondary btn--sm"
+                    className="btn btn--icon"
                     onClick={() => {
                       const newCategories = [...researchCategories];
                       newCategories.splice(index, 1);
                       setResearchCategories(newCategories);
                       setValue("researchCategories", newCategories);
                     }}
+                    disabled={researchCategories.length === 1}
                   >
-                    Remove
+                    <span className="btn__icon">×</span>
                   </button>
                 </div>
               ))}
               <button
                 type="button"
-                onClick={() => {
-                  setResearchCategories([...researchCategories, ""]);
-                }}
+                onClick={() =>
+                  setResearchCategories([...researchCategories, ""])
+                }
                 className="btn btn--secondary btn--sm"
               >
                 Add Category
               </button>
-              {errors.researchCategories && (
-                <span className="error-message">
-                  {errors.researchCategories.message}
-                </span>
-              )}
             </div>
+            {errors.researchCategories && (
+              <span className="form-group__error">
+                {errors.researchCategories.message}
+              </span>
+            )}
           </div>
 
-          <div className="form-section">
-            <h2 className="form-section__title">Additional Information</h2>
-
-            <div className="form-group">
-              <label>Requirements (Optional)</label>
+          <div className="form-group">
+            <label className="form-group__label">
+              <Briefcase className="form-group__icon" size={16} />
+              Requirements (Optional)
+            </label>
+            <div className="form-group__array">
               {requirements.map((requirement, index) => (
                 <div key={index} className="array-input">
                   <input
@@ -406,11 +422,12 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                       setRequirements(newRequirements);
                       setValue("requirements", newRequirements);
                     }}
+                    className="form-input"
                     placeholder="e.g., Programming experience in Python"
                   />
                   <button
                     type="button"
-                    className="btn btn--secondary"
+                    className="btn btn--icon"
                     onClick={() => {
                       const newRequirements = [...requirements];
                       newRequirements.splice(index, 1);
@@ -418,168 +435,163 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
                       setValue("requirements", newRequirements);
                     }}
                   >
-                    Remove
+                    <span className="btn__icon">×</span>
                   </button>
                 </div>
               ))}
               <button
                 type="button"
-                onClick={() => {
-                  setRequirements([...requirements, ""]);
-                }}
-                className="btn btn--secondary"
+                onClick={() => setRequirements([...requirements, ""])}
+                className="btn btn--secondary btn--sm"
               >
                 Add Requirement
               </button>
-              {errors.requirements && (
-                <span className="error-message">
-                  {errors.requirements.message}
-                </span>
-              )}
             </div>
+            {errors.requirements && (
+              <span className="form-group__error">
+                {errors.requirements.message}
+              </span>
+            )}
           </div>
+        </section>
 
-          <div className="form-actions">
+        <footer className="form-actions">
+          <div className="form-actions__left">
             <button
               type="button"
-              className="btn btn--outline btn--md"
+              className="btn btn--secondary"
               onClick={() => navigate(-1)}
               disabled={isSubmitting}
             >
               Cancel
             </button>
-            <div className="form-actions__right">
-              {mode === "edit" && (
-                <>
-                  {/* CLOSED project actions */}
-                  {currentStatus === ProjectStatus.CLOSED && (
-                    <>
-                      <button
-                        type="button"
-                        className="btn btn--danger btn--md"
-                        onClick={handleSubmit((data) =>
-                          onSubmit(data, ProjectStatus.DRAFT)
-                        )}
-                        disabled={isSubmitting}
-                      >
-                        Move to Drafts
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn--danger btn--md"
-                        onClick={handleSubmit((data) =>
-                          onSubmit(data, ProjectStatus.CLOSED, "delete")
-                        )}
-                        disabled={isSubmitting}
-                      >
-                        Delete Forever
-                      </button>
-                    </>
-                  )}
-
-                  {/* PUBLISHED project actions */}
-                  {currentStatus === ProjectStatus.PUBLISHED && (
-                    <>
-                      <button
-                        type="button"
-                        className="btn btn--outline btn--md"
-                        onClick={handleSubmit((data) =>
-                          onSubmit(data, ProjectStatus.PUBLISHED, "delist")
-                        )}
-                        disabled={isSubmitting}
-                      >
-                        Delist Project
-                      </button>
-                      <button
-                        type="submit"
-                        className="btn btn--primary btn--md"
-                        onClick={handleSubmit((data) =>
-                          onSubmit(data, ProjectStatus.PUBLISHED)
-                        )}
-                        disabled={isSubmitting}
-                      >
-                        Update Project
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn--danger btn--md"
-                        onClick={handleSubmit((data) =>
-                          onSubmit(data, ProjectStatus.CLOSED)
-                        )}
-                        disabled={isSubmitting}
-                      >
-                        Close Project
-                      </button>
-                    </>
-                  )}
-
-                  {/* DRAFT project actions */}
-                  {currentStatus === ProjectStatus.DRAFT && (
-                    <>
-                      <button
-                        type="button"
-                        className="btn btn--danger btn--md"
-                        onClick={handleSubmit((data) =>
-                          onSubmit(data, ProjectStatus.DRAFT, "delete")
-                        )}
-                        disabled={isSubmitting}
-                      >
-                        Delete Forever
-                      </button>
-                      <button
-                        type="button"
-                        className="btn btn--outline btn--md"
-                        onClick={handleSubmit((data) =>
-                          onSubmit(data, ProjectStatus.DRAFT)
-                        )}
-                        disabled={isSubmitting}
-                      >
-                        Save as Draft
-                      </button>
-                      <button
-                        type="submit"
-                        className="btn btn--primary btn--md"
-                        onClick={handleSubmit((data) =>
-                          onSubmit(data, ProjectStatus.PUBLISHED)
-                        )}
-                        disabled={isSubmitting}
-                      >
-                        Publish Project
-                      </button>
-                    </>
-                  )}
-                </>
-              )}
-
-              {/* CREATE mode actions */}
-              {mode === "create" && (
-                <>
-                  <button
-                    type="button"
-                    className="btn btn--outline btn--md"
-                    onClick={handleSubmit((data) =>
-                      onSubmit(data, ProjectStatus.DRAFT)
-                    )}
-                    disabled={isSubmitting}
-                  >
-                    Save as Draft
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn--primary btn--md"
-                    onClick={handleSubmit((data) =>
-                      onSubmit(data, ProjectStatus.PUBLISHED)
-                    )}
-                    disabled={isSubmitting}
-                  >
-                    Publish Project
-                  </button>
-                </>
-              )}
-            </div>
           </div>
-        </form>
-      </div>
+
+          <div className="form-actions__right">
+            {mode === "edit" ? (
+              <>
+                {currentStatus === ProjectStatus.CLOSED && (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn--secondary"
+                      onClick={handleSubmit((data) =>
+                        onSubmit(data, ProjectStatus.DRAFT)
+                      )}
+                      disabled={isSubmitting}
+                    >
+                      Move to Drafts
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn--danger"
+                      onClick={handleSubmit((data) =>
+                        onSubmit(data, ProjectStatus.CLOSED, "delete")
+                      )}
+                      disabled={isSubmitting}
+                    >
+                      Delete Forever
+                    </button>
+                  </>
+                )}
+
+                {currentStatus === ProjectStatus.PUBLISHED && (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn--secondary"
+                      onClick={handleSubmit((data) =>
+                        onSubmit(data, ProjectStatus.PUBLISHED, "delist")
+                      )}
+                      disabled={isSubmitting}
+                    >
+                      Delist Project
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn--primary"
+                      onClick={handleSubmit((data) =>
+                        onSubmit(data, ProjectStatus.PUBLISHED)
+                      )}
+                      disabled={isSubmitting}
+                    >
+                      Update Project
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn--danger"
+                      onClick={handleSubmit((data) =>
+                        onSubmit(data, ProjectStatus.CLOSED)
+                      )}
+                      disabled={isSubmitting}
+                    >
+                      Close Project
+                    </button>
+                  </>
+                )}
+
+                {currentStatus === ProjectStatus.DRAFT && (
+                  <>
+                    <button
+                      type="button"
+                      className="btn btn--danger"
+                      onClick={handleSubmit((data) =>
+                        onSubmit(data, ProjectStatus.DRAFT, "delete")
+                      )}
+                      disabled={isSubmitting}
+                    >
+                      Delete Forever
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn--secondary"
+                      onClick={handleSubmit((data) =>
+                        onSubmit(data, ProjectStatus.DRAFT)
+                      )}
+                      disabled={isSubmitting}
+                    >
+                      Save as Draft
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn btn--primary"
+                      onClick={handleSubmit((data) =>
+                        onSubmit(data, ProjectStatus.PUBLISHED)
+                      )}
+                      disabled={isSubmitting}
+                    >
+                      Publish Project
+                    </button>
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="btn btn--secondary"
+                  onClick={handleSubmit((data) =>
+                    onSubmit(data, ProjectStatus.DRAFT)
+                  )}
+                  disabled={isSubmitting}
+                >
+                  Save as Draft
+                </button>
+                <button
+                  type="submit"
+                  className="btn btn--primary"
+                  onClick={handleSubmit((data) =>
+                    onSubmit(data, ProjectStatus.PUBLISHED)
+                  )}
+                  disabled={isSubmitting}
+                >
+                  Publish Project
+                </button>
+              </>
+            )}
+          </div>
+        </footer>
+      </form>
     </div>
   );
 };

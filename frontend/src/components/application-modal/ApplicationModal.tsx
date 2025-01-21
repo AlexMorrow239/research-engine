@@ -11,7 +11,7 @@ import { createApplication } from "@/store/features/applications/applicationsSli
 import { type ApplicationFormData } from "@/types";
 import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
+import { CheckCircle, X } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -48,7 +48,10 @@ const applicationSchema = z.object({
     major2: z.string().optional(),
     isPreHealth: z.boolean(),
     preHealthTrack: z.string().optional(),
-    gpa: z.number().min(0).max(4),
+    gpa: z.coerce
+      .number()
+      .min(0, "GPA must be at least 0")
+      .max(4, "GPA must be no more than 4"),
     resume: z
       .instanceof(File, { message: "Resume is required" })
       .refine(
@@ -112,27 +115,22 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
   });
 
   const handleNextStep = async (): Promise<void> => {
-    let fieldsToValidate: (keyof ApplicationFormData)[] = [];
-
-    switch (currentStep) {
-      case 1:
-        fieldsToValidate = ["studentInfo"];
-        break;
-      case 2:
-        fieldsToValidate = ["availability"];
-        break;
-      case 3:
-        fieldsToValidate = ["additionalInfo"];
-        break;
-    }
+    const fieldsToValidate: (keyof ApplicationFormData)[] =
+      currentStep === 1
+        ? ["studentInfo"]
+        : currentStep === 2
+          ? ["availability"]
+          : ["additionalInfo"];
 
     const isStepValid = await form.trigger(fieldsToValidate);
 
     if (isStepValid) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      alert("Please fill out all required fields correctly before proceeding.");
+      setCurrentStep((prev) => prev + 1);
     }
+  };
+
+  const handlePreviousStep = (): void => {
+    setCurrentStep((prev) => prev - 1);
   };
 
   const onSubmit = async (data: ApplicationFormData): Promise<void> => {
@@ -221,9 +219,12 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
       <div className="modal__container">
         <DialogPanel className="modal__content">
           <div className="modal__header">
-            <DialogTitle className="modal__title">
-              Apply for {projectTitle}
-            </DialogTitle>
+            <div>
+              <DialogTitle className="modal__title">
+                Research Position Application
+                <span className="modal__title-project">{projectTitle}</span>
+              </DialogTitle>
+            </div>
             <button
               className="modal__close"
               onClick={onClose}
@@ -235,21 +236,27 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
           </div>
 
           <div className="modal__progress">
-            <div
-              className={`modal__progress-step ${currentStep >= 1 ? "active" : ""}`}
-            >
-              Personal Info
-            </div>
-            <div
-              className={`modal__progress-step ${currentStep >= 2 ? "active" : ""}`}
-            >
-              Availability
-            </div>
-            <div
-              className={`modal__progress-step ${currentStep >= 3 ? "active" : ""}`}
-            >
-              Additional Info
-            </div>
+            {[
+              { number: 1, label: "Personal Info" },
+              { number: 2, label: "Availability" },
+              { number: 3, label: "Additional Info" },
+            ].map(({ number, label }) => (
+              <div
+                key={number}
+                className={`modal__progress-step ${
+                  currentStep === number
+                    ? "active"
+                    : currentStep > number
+                      ? "completed"
+                      : ""
+                }`}
+              >
+                <div className="modal__progress-step-number">
+                  {currentStep > number ? <CheckCircle size={24} /> : number}
+                </div>
+                <div className="modal__progress-step-label">{label}</div>
+              </div>
+            ))}
           </div>
 
           <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
@@ -258,44 +265,45 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
             {currentStep === 3 && <AdditionalInfoStep form={form} />}
 
             <div className="modal__footer">
-              {currentStep > 1 && (
-                <button
-                  type="button"
-                  onClick={() => setCurrentStep(currentStep - 1)}
-                  className="button button--secondary"
-                  disabled={isSubmitting}
-                >
-                  Previous
-                </button>
-              )}
-
-              {currentStep < 3 && (
-                <button
-                  type="button"
-                  onClick={handleNextStep}
-                  className="button button--primary"
-                  disabled={isSubmitting}
-                >
-                  Next
-                </button>
-              )}
-
-              {currentStep === 3 && (
-                <button
-                  type="submit"
-                  className="button button--primary"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <span className="button__content">
-                      <span className="spinner" />
-                      Submitting...
-                    </span>
-                  ) : (
-                    "Submit Application"
-                  )}
-                </button>
-              )}
+              <div>
+                {currentStep > 1 && (
+                  <button
+                    type="button"
+                    onClick={handlePreviousStep}
+                    className="button button--secondary"
+                    disabled={isSubmitting}
+                  >
+                    Previous
+                  </button>
+                )}
+              </div>
+              <div>
+                {currentStep < 3 ? (
+                  <button
+                    type="button"
+                    onClick={handleNextStep}
+                    className="button button--primary"
+                    disabled={isSubmitting}
+                  >
+                    Continue
+                  </button>
+                ) : (
+                  <button
+                    type="submit"
+                    className="button button--primary"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <span className="button__content">
+                        <span className="spinner" />
+                        Submitting...
+                      </span>
+                    ) : (
+                      "Submit Application"
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
           </form>
         </DialogPanel>

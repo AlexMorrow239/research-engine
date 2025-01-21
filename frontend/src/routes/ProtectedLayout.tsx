@@ -6,6 +6,7 @@ export const ProtectedLayout = (): JSX.Element => {
   const location = useLocation();
 
   if (!isAuthenticated) {
+    // Save the attempted location for post-login redirect
     return <Navigate to="/faculty" state={{ from: location }} replace />;
   }
 

@@ -5,7 +5,7 @@ import {
   RACIAL_ETHNIC_OPTIONS,
 } from "@/common/constants";
 import { type ApplicationFormData } from "@/types";
-import { Upload } from "lucide-react";
+import { FileText, Upload, X } from "lucide-react";
 import React, { useState } from "react";
 import { type UseFormReturn } from "react-hook-form";
 import "./PersonalInfo.scss";
@@ -19,24 +19,109 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
     register,
     formState: { errors, touchedFields },
     setValue,
+    watch,
   } = form;
 
   const [dragActive, setDragActive] = useState(false);
-  const resumeFile = form.watch("studentInfo.resume");
+  const resumeFile = watch("studentInfo.resume");
+  const selectedEthnicGroups = watch("studentInfo.racialEthnicGroups") || [];
 
-  const handleFileChange = (file: File | null): void => {
-    if (file && file.type === "application/pdf") {
-      setValue("studentInfo.resume", file, {
-        shouldValidate: true,
-        shouldDirty: true,
-        shouldTouch: true,
-      });
-    } else if (file) {
-      alert("Please upload a PDF file");
-    }
+  type StudentInfoFields =
+    | keyof ApplicationFormData["studentInfo"]
+    | "name.firstName"
+    | "name.lastName";
+
+  const FormField = ({
+    label,
+    name,
+    type = "text",
+    required = true,
+    placeholder,
+    options,
+    help,
+  }: {
+    label: string;
+    name: StudentInfoFields;
+    type?: string;
+    required?: boolean;
+    placeholder?: string;
+    options?: readonly { readonly value: string; readonly label: string }[];
+    help?: string;
+  }) => {
+    const error = errors.studentInfo?.[name as keyof typeof errors.studentInfo];
+    const touched =
+      touchedFields.studentInfo?.[
+        name as keyof typeof touchedFields.studentInfo
+      ];
+    const inputClassName = `form-field__input ${
+      error
+        ? "form-field__input--error"
+        : touched
+          ? "form-field__input--success"
+          : ""
+    }`;
+
+    return (
+      <div className="form-field">
+        <label className="form-field__label">
+          {label}
+          {required && <span className="form-field__required">*</span>}
+        </label>
+        {options ? (
+          <select
+            {...register(`studentInfo.${name}`)}
+            className={inputClassName}
+          >
+            <option value="">Select {label.toLowerCase()}</option>
+            {options.map(({ value, label }) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <input
+            {...register(`studentInfo.${name}`)}
+            type={type}
+            className={inputClassName}
+            placeholder={placeholder}
+          />
+        )}
+        {help && <span className="form-field__help">{help}</span>}
+        {error && (
+          <span className="form-field__error">
+            {typeof error === "string"
+              ? error
+              : "message" in error
+                ? error.message
+                : "Invalid input"}
+          </span>
+        )}
+      </div>
+    );
   };
 
-  const handleDrop = (e: React.DragEvent): void => {
+  const handleFileChange = (file: File | null) => {
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      alert("Please upload a PDF file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("File size must be less than 5MB");
+      return;
+    }
+
+    setValue("studentInfo.resume", file, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -46,295 +131,208 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
     }
   };
 
-  // Add these handlers for drag and drop functionality
-  const handleDrag = (e: React.DragEvent): void => {
+  const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
-
-  const getInputClassName = (baseClass = "form-group__input"): string => {
-    return `${baseClass} ${errors.studentInfo ? "form-group__input--error" : ""} ${
-      touchedFields.studentInfo ? "form-group__input--valid" : ""
-    }`;
+    setDragActive(e.type === "dragenter" || e.type === "dragover");
   };
 
   return (
-    <div className="modal__step">
-      <h3>Personal Information</h3>
-      <div className="form-grid">
-        <div className="form-group">
-          <label className="form-group__label">
-            First Name <span className="required">*</span>
-          </label>
-          <input
-            {...register("studentInfo.name.firstName")}
-            className={getInputClassName()}
-            type="text"
+    <div className="personal-info">
+      <section className="personal-info__section">
+        <h4 className="personal-info__section-title">Basic Information</h4>
+        <div className="personal-info__grid">
+          <FormField
+            label="First Name"
+            name="name.firstName"
             placeholder="Enter your first name"
           />
-          {errors.studentInfo?.name?.firstName && (
-            <span className="form-group__error">
-              {errors.studentInfo.name.firstName.message}
-            </span>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label className="form-group__label">
-            Last Name <span className="required">*</span>
-          </label>
-          <input
-            {...register("studentInfo.name.lastName")}
-            className={getInputClassName()}
-            type="text"
+          <FormField
+            label="Last Name"
+            name="name.lastName"
             placeholder="Enter your last name"
           />
-          {errors.studentInfo?.name?.lastName && (
-            <span className="form-group__error">
-              {errors.studentInfo.name.lastName.message}
-            </span>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label className="form-group__label">
-            C Number <span className="required">*</span>
-          </label>
-          <input
-            {...register("studentInfo.cNumber")}
-            className={getInputClassName()}
+          <FormField
+            label="C Number"
+            name="cNumber"
             placeholder="C12345678"
+            help="Enter your University ID number"
           />
-          {errors.studentInfo?.cNumber && (
-            <span className="form-group__error">
-              {errors.studentInfo.cNumber.message}
-            </span>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label className="form-group__label">
-            Email <span className="required">*</span>
-          </label>
-          <input
-            {...register("studentInfo.email")}
-            className={getInputClassName()}
+          <FormField
+            label="Email"
+            name="email"
             type="email"
             placeholder="your.email@miami.edu"
           />
-          {errors.studentInfo?.email && (
-            <span className="form-group__error">
-              {errors.studentInfo.email.message}
-            </span>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label className="form-group__label">
-            Phone Number <span className="required">*</span>
-          </label>
-          <input
-            {...register("studentInfo.phoneNumber")}
-            className={getInputClassName()}
-            placeholder="305-123-4567"
+          <FormField
+            label="Phone Number"
+            name="phoneNumber"
+            placeholder="(305) 123-4567"
           />
-          {errors.studentInfo?.phoneNumber && (
-            <span className="form-group__error">
-              {errors.studentInfo.phoneNumber.message}
-            </span>
-          )}
+          <FormField
+            label="Citizenship Status"
+            name="citizenship"
+            options={CITIZENSHIP_OPTIONS}
+          />
         </div>
+      </section>
 
-        <div className="form-group">
-          <label className="form-group__label">
-            Citizenship Status <span className="required">*</span>
-          </label>
-          <select
-            {...register("studentInfo.citizenship")}
-            className={getInputClassName()}
-          >
-            <option value="">Select citizenship status</option>
-            {CITIZENSHIP_OPTIONS.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          {errors.studentInfo?.citizenship && (
-            <span className="form-group__error">
-              {errors.studentInfo.citizenship.message}
-            </span>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label className="form-group__label">
-            Academic Standing <span className="required">*</span>
-          </label>
-          <select
-            {...register("studentInfo.academicStanding")}
-            className={getInputClassName()}
-          >
-            <option value="">Select academic standing</option>
-            {ACADEMIC_STANDING_OPTIONS.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          {errors.studentInfo?.academicStanding && (
-            <span className="form-group__error">
-              {errors.studentInfo.academicStanding.message}
-            </span>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label className="form-group__label">
-            Expected Graduation Date <span className="required">*</span>
-          </label>
-          <input
-            {...register("studentInfo.graduationDate")}
-            className={getInputClassName()}
+      <section className="personal-info__section">
+        <h4 className="personal-info__section-title">Academic Information</h4>
+        <div className="personal-info__grid">
+          <FormField
+            label="Academic Standing"
+            name="academicStanding"
+            options={ACADEMIC_STANDING_OPTIONS}
+          />
+          <FormField
+            label="Expected Graduation Date"
+            name="graduationDate"
             type="date"
-            min={new Date().toISOString().split("T")[0]}
           />
-          {errors.studentInfo?.graduationDate && (
-            <span className="form-group__error">
-              {errors.studentInfo.graduationDate.message}
-            </span>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label className="form-group__label">
-            College <span className="required">*</span>
-          </label>
-          <select
-            {...register("studentInfo.major1College")}
-            className={getInputClassName()}
-          >
-            <option value="">Select college</option>
-            {COLLEGE_OPTIONS.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          {errors.studentInfo?.major1College && (
-            <span className="form-group__error">
-              {errors.studentInfo.major1College.message}
-            </span>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label className="form-group__label">
-            Major <span className="required">*</span>
-          </label>
-          <input
-            {...register("studentInfo.major1")}
-            className={getInputClassName()}
-            type="text"
+          <FormField
+            label="College"
+            name="major1College"
+            options={COLLEGE_OPTIONS}
+          />
+          <FormField
+            label="Major"
+            name="major1"
             placeholder="Enter your major"
           />
-          {errors.studentInfo?.major1 && (
-            <span className="form-group__error">
-              {errors.studentInfo.major1.message}
-            </span>
-          )}
-        </div>
-
-        <div className="form-group">
-          <label className="form-group__label">
-            GPA <span className="required">*</span>
-          </label>
-          <input
-            {...register("studentInfo.gpa", { valueAsNumber: true })}
-            className={getInputClassName()}
-            type="number"
-            step="0.01"
-            min="0"
-            max="4"
+          <FormField
+            label="GPA"
+            name="gpa"
+            type="text"
             placeholder="Enter your GPA (0-4.0)"
+            help="Current cumulative GPA"
           />
-          {errors.studentInfo?.gpa && (
-            <span className="form-group__error">
-              {errors.studentInfo.gpa.message}
-            </span>
-          )}
-        </div>
 
-        <div className="form-group form-group--full">
-          <label className="form-group__label">
-            Resume (PDF) <span className="required">*</span>
-          </label>
-          <div
-            className={`resume-upload ${dragActive ? "drag-active" : ""} ${
-              errors.studentInfo?.resume ? "resume-upload--error" : ""
-            }`}
-            onDragEnter={handleDrag}
-            onDragLeave={handleDrag}
-            onDragOver={handleDrag}
-            onDrop={handleDrop}
-          >
-            <input
-              type="file"
-              accept=".pdf"
-              className="resume-upload__input"
-              onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
-            />
-            <div className="resume-upload__content">
-              <Upload className="resume-upload__icon" />
-              {resumeFile ? (
-                <p className="resume-upload__filename">{resumeFile.name}</p>
-              ) : (
-                <>
-                  <p className="resume-upload__text">
-                    Drag and drop your resume here or click to browse
-                  </p>
-                  <p className="resume-upload__hint">PDF only, max 5MB</p>
-                </>
+          <div className="form-field">
+            <label className="form-field__label">
+              Racial/Ethnic Groups
+              <span className="form-field__required">*</span>
+            </label>
+            <div className="ethnic-select">
+              <select
+                {...register("studentInfo.racialEthnicGroups")}
+                className={`form-field__input ${
+                  errors.studentInfo?.racialEthnicGroups
+                    ? "form-field__input--error"
+                    : ""
+                }`}
+                multiple
+              >
+                {RACIAL_ETHNIC_OPTIONS.map(({ value, label }) => (
+                  <option
+                    key={value}
+                    value={value}
+                    className={`ethnic-select__option ${
+                      selectedEthnicGroups.includes(value)
+                        ? "ethnic-select__option--selected"
+                        : ""
+                    }`}
+                  >
+                    {label}
+                  </option>
+                ))}
+              </select>
+              {selectedEthnicGroups.length > 0 && (
+                <div className="ethnic-select__tags">
+                  {selectedEthnicGroups.map((group) => (
+                    <span key={group} className="ethnic-select__tag">
+                      {
+                        RACIAL_ETHNIC_OPTIONS.find((opt) => opt.value === group)
+                          ?.label
+                      }
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const newGroups = selectedEthnicGroups.filter(
+                            (g) => g !== group
+                          );
+                          setValue(
+                            "studentInfo.racialEthnicGroups",
+                            newGroups,
+                            {
+                              shouldValidate: true,
+                            }
+                          );
+                        }}
+                      >
+                        <X size={14} />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
+              <span className="form-field__help">
+                Hold Ctrl (Windows) or Cmd (Mac) to select multiple options
+              </span>
+              {errors.studentInfo?.racialEthnicGroups && (
+                <span className="form-field__error">
+                  {errors.studentInfo.racialEthnicGroups.message}
+                </span>
               )}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="personal-info__section">
+        <h4 className="personal-info__section-title">Resume Upload</h4>
+        <div
+          className={`resume-upload ${dragActive ? "drag-active" : ""} ${
+            errors.studentInfo?.resume ? "resume-upload--error" : ""
+          }`}
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+        >
+          <input
+            type="file"
+            accept=".pdf"
+            className="resume-upload__input"
+            onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
+          />
+          <div className="resume-upload__content">
+            {resumeFile ? (
+              <div className="resume-upload__preview">
+                <FileText size={24} />
+                <span className="resume-upload__filename">
+                  {resumeFile.name}
+                </span>
+                <button
+                  type="button"
+                  className="resume-upload__remove"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setValue("studentInfo.resume", new File([], ""), {
+                      shouldValidate: true,
+                    });
+                  }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <Upload className="resume-upload__icon" />
+                <p className="resume-upload__text">
+                  Drag and drop your resume here or click to browse
+                </p>
+                <p className="resume-upload__hint">PDF only, max 5MB</p>
+              </>
+            )}
+          </div>
           {errors.studentInfo?.resume && (
-            <span className="form-group__error">
+            <span className="form-field__error">
               {errors.studentInfo.resume.message as string}
             </span>
           )}
         </div>
-
-        <div className="form-group form-group--full">
-          <label className="form-group__label">
-            Racial/Ethnic Groups <span className="required">*</span>
-          </label>
-          <select
-            {...register("studentInfo.racialEthnicGroups")}
-            className={getInputClassName()}
-            multiple
-          >
-            {RACIAL_ETHNIC_OPTIONS.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          {errors.studentInfo?.racialEthnicGroups && (
-            <span className="form-group__error">
-              {errors.studentInfo.racialEthnicGroups.message}
-            </span>
-          )}
-          <small className="form-group__help">
-            Hold Ctrl (Windows) or Cmd (Mac) to select multiple options
-          </small>
-        </div>
-      </div>
+      </section>
     </div>
   );
 };
