@@ -96,7 +96,7 @@ export class ProjectsService {
   async findAll(query: {
     page?: number;
     limit?: number;
-    department?: string;
+    departments?: string;
     campus?: string;
     status?: ProjectStatus;
     search?: string;
@@ -108,7 +108,7 @@ export class ProjectsService {
       const {
         page = 1,
         limit = 10,
-        department,
+        departments,
         campus,
         status,
         search,
@@ -121,10 +121,11 @@ export class ProjectsService {
       const filter: any = {};
       if (status) filter.status = status;
       if (campus) filter.campus = campus;
-      if (department) {
+      if (departments) {
+        const departmentsList = departments.split(',');
         const professors = await this.projectModel.db
           .collection('professors')
-          .find({ department })
+          .find({ department: { $in: departmentsList } })
           .project({ _id: 1 })
           .toArray();
         filter.professor = { $in: professors.map((prof) => prof._id) };

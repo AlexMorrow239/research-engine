@@ -1,5 +1,5 @@
 import { ProjectStatus } from "@/common/enums";
-import type { ApiResponse, Project } from "@/types/api";
+import type { ApiResponse, Project } from "@/types";
 import { api, ApiError } from "@/utils/api";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -10,12 +10,13 @@ interface ProjectsState {
   currentProject: Project | null;
   totalProjects: number;
   isLoading: boolean;
+  isInitialLoad: boolean;
   error: string | null;
   availableResearchCategories: string[];
   filters: {
     page: number;
     limit: number;
-    department?: string;
+    departments?: string[];
     campus?: string;
     status?: ProjectStatus;
     search?: string;
@@ -30,6 +31,7 @@ const initialState: ProjectsState = {
   currentProject: null,
   totalProjects: 0,
   isLoading: false,
+  isInitialLoad: true,
   error: null,
   availableResearchCategories: [],
   filters: {
@@ -49,12 +51,14 @@ export const fetchProjects = createAsyncThunk(
     try {
       const { filters } = (getState() as RootState).projects;
 
-      // Debug log the current state and filters
-
       const queryParams = new URLSearchParams({
         page: filters.page.toString(),
         limit: filters.limit.toString(),
-        ...(filters.department && { department: filters.department }),
+        ...(filters.departments?.length && {
+          departments: filters.departments.join(","),
+        }),
+        ...(filters.campus &&
+          filters.campus !== "" && { campus: filters.campus }),
         ...(filters.status && { status: filters.status }),
         ...(filters.search && { search: filters.search }),
         ...(filters.researchCategories && {
@@ -155,11 +159,11 @@ export const createProject = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await api.fetch<ApiResponse<Project>>("/api/projects", {
-        method: "POST",
-        body: JSON.stringify(projectData),
-        requiresAuth: true,
-      });
+      const response = await api.post<ApiResponse<Project>>(
+        "/api/projects",
+        projectData,
+        { requiresAuth: true }
+      );
       return response.data;
     } catch (error) {
       if (error instanceof Error) {
@@ -207,13 +211,10 @@ export const updateProject = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const response = await api.fetch<ApiResponse<Project>>(
+      const response = await api.patch<ApiResponse<Project>>(
         `/api/projects/${id}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify(project),
-          requiresAuth: true,
-        }
+        project,
+        { requiresAuth: true }
       );
       return response.data;
     } catch (error) {
@@ -247,12 +248,10 @@ export const delistProject = createAsyncThunk(
   "projects/delist",
   async (projectId: string, { rejectWithValue }) => {
     try {
-      const response = await api.fetch<ApiResponse<Project>>(
+      const response = await api.patch<ApiResponse<Project>>(
         `/api/projects/${projectId}/close`,
-        {
-          method: "PATCH",
-          requiresAuth: true,
-        }
+        {},
+        { requiresAuth: true }
       );
       return response.data;
     } catch (error) {
@@ -277,7 +276,10 @@ const projectsSlice = createSlice({
 
       // Handle each filter type appropriately
       Object.entries(action.payload).forEach(([key, value]) => {
-        if (key === "researchCategories" && Array.isArray(value)) {
+        if (value === undefined) {
+          // Remove the property if value is undefined
+          delete newFilters[key as keyof ProjectsState["filters"]];
+        } else if (key === "researchCategories" && Array.isArray(value)) {
           newFilters.researchCategories = [...value];
         } else {
           (newFilters[key as keyof ProjectsState["filters"]] as typeof value) =
@@ -313,6 +315,7 @@ const projectsSlice = createSlice({
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isInitialLoad = false;
         state.items = action.payload.projects;
         state.totalProjects = action.payload.total;
 
@@ -327,6 +330,7 @@ const projectsSlice = createSlice({
       })
       .addCase(fetchProjects.rejected, (state, action) => {
         state.isLoading = false;
+        state.isInitialLoad = false;
         state.error = action.payload as string;
       })
       .addCase(createProject.fulfilled, (state, action) => {

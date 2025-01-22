@@ -1,11 +1,11 @@
 import type {
   AuthResponse,
+  AuthState,
   FacultyRegistrationForm,
   LoginCredentials,
   Professor,
   User,
-} from "@/types/api";
-import type { AuthState } from "@/types/global";
+} from "@/types";
 import { api, ApiError } from "@/utils/api";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -32,14 +32,11 @@ export const registerFaculty = createAsyncThunk<
   { rejectValue: string }
 >("auth/registerFaculty", async (registrationData, { rejectWithValue }) => {
   try {
-    const response = await api.fetch<{
-      accessToken: string;
-      professor: Professor;
-    }>("/api/auth/register", {
-      method: "POST",
-      body: JSON.stringify(registrationData),
-      requiresAuth: false,
-    });
+    const response = await api.post<AuthResponse>(
+      "/api/auth/register",
+      registrationData,
+      { requiresAuth: false }
+    );
 
     // Store accessToken in localStorage for API utility
     if (response.accessToken) {
@@ -62,14 +59,11 @@ export const loginUser = createAsyncThunk<
   { rejectValue: string }
 >("auth/login", async (credentials, { rejectWithValue }) => {
   try {
-    const response = await api.fetch<AuthResponse>("/api/auth/login", {
-      method: "POST",
-      body: JSON.stringify(credentials),
-      requiresAuth: false,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await api.post<AuthResponse>(
+      "/api/auth/login",
+      credentials,
+      { requiresAuth: false }
+    );
 
     if (response.accessToken) {
       localStorage.setItem("accessToken", response.accessToken);

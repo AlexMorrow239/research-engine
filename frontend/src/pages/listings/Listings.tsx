@@ -1,4 +1,4 @@
-import { type Campus, type ProjectStatus } from "@/common/enums";
+import { ProjectStatus, type Campus } from "@/common/enums";
 import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
 import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
 import { ProjectFilters } from "@/components/projects/project-filters/ProjectFilters";
@@ -8,36 +8,127 @@ import {
   setCurrentProject,
   setFilters,
 } from "@/store/features/projects/projectsSlice";
-import type { Project } from "@/types/api";
+import type { Project, ProjectsState } from "@/types";
+import { isEqual } from "lodash";
 import { ChevronLeft } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./Listings.scss";
 
 export default function Listings(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
+  const location = useLocation();
+  const navigate = useNavigate();
   const {
     items: projects,
-    currentProject,
     isLoading,
-    error,
+    isInitialLoad,
     filters,
+    error,
     totalProjects,
+    currentProject,
   } = useSelector((state: RootState) => state.projects);
 
   const [isMobileDetailView, setIsMobileDetailView] = useState(false);
 
-  // Fetch projects when filters change
+  // Effect for handling URL params and fetching projects
   useEffect(() => {
-    dispatch(fetchProjects());
-  }, [dispatch, filters]);
+    const queryParams = new URLSearchParams(location.search);
+    const newFilters: Partial<ProjectsState["filters"]> = {
+      search: queryParams.get("search") || undefined,
+      status:
+        (queryParams.get("status") as ProjectStatus) || ProjectStatus.PUBLISHED,
+      page: parseInt(queryParams.get("page") || "1"),
+    };
 
-  // Auto-select first project when projects are loaded
-  useEffect(() => {
-    if (projects.length > 0 && !currentProject) {
-      dispatch(setCurrentProject(projects[0]));
+    // Add additional filter params
+    const campusParam = queryParams.get("campus");
+    if (campusParam !== null) {
+      newFilters.campus = campusParam || undefined;
     }
-  }, [projects, currentProject, dispatch]);
+    if (queryParams.get("departments")) {
+      newFilters.departments = queryParams.get("departments")?.split(",");
+    }
+    if (queryParams.get("researchCategories")) {
+      newFilters.researchCategories = queryParams
+        .get("researchCategories")
+        ?.split(",");
+    }
+    if (queryParams.get("sort")) {
+      const [sortBy, sortOrder] = (queryParams.get("sort") || "").split("-");
+      newFilters.sortBy = sortBy as "createdAt" | "applicationDeadline";
+      newFilters.sortOrder = sortOrder as "asc" | "desc";
+    }
+
+    // Only dispatch if filters have actually changed
+    if (!isEqual(newFilters, filters)) {
+      dispatch(setFilters(newFilters));
+      dispatch(fetchProjects());
+    }
+  }, [location.search]);
+
+  // Effect for updating URL when filters change
+  // Effect for updating URL when filters change
+  useEffect(() => {
+    const queryParams = new URLSearchParams();
+
+    // Helper function to add param if it exists
+    const addParamIfExists = (
+      key: string,
+      value: string | number | undefined
+    ): void => {
+      if (value !== undefined && value !== "") {
+        queryParams.set(key, value.toString());
+      }
+    };
+
+    // Add search parameter if it exists
+    if (filters.search) {
+      addParamIfExists("search", filters.search);
+    }
+
+    // Add status parameter
+    addParamIfExists("status", filters.status);
+
+    // Add sorting parameters
+    if (filters.sortBy !== "createdAt" || filters.sortOrder !== "desc") {
+      queryParams.set("sort", `${filters.sortBy}-${filters.sortOrder}`);
+    }
+
+    // Add pagination
+    if (filters.page !== 1) {
+      addParamIfExists("page", filters.page);
+    }
+
+    // Add campus only if it exists and isn't empty
+    if (filters.campus) {
+      addParamIfExists("campus", filters.campus);
+    }
+
+    // Add departments if they exist
+    if (filters.departments?.length) {
+      queryParams.set("departments", filters.departments.join(","));
+    }
+
+    // Add research categories if they exist
+    if (filters.researchCategories?.length) {
+      queryParams.set(
+        "researchCategories",
+        filters.researchCategories.join(",")
+      );
+    }
+
+    const queryString = queryParams.toString();
+    const newUrl = queryString ? `?${queryString}` : "";
+
+    // Update URL and force fetch if needed
+    if (location.search !== newUrl) {
+      navigate(newUrl, { replace: true });
+      // Force a fetch when filters change
+      dispatch(fetchProjects());
+    }
+  }, [filters, navigate, dispatch]);
 
   // Optimize project selection handler
   const handleProjectSelect = useCallback(
@@ -64,7 +155,7 @@ export default function Listings(): JSX.Element {
   );
 
   // Early return for loading state
-  if (isLoading && !projects.length) {
+  if (isInitialLoad || (isLoading && projects.length === 0)) {
     return (
       <div className="listings-page">
         <div className="loading-spinner">Loading...</div>

@@ -1,3 +1,4 @@
+import { Department } from "@/common/enums";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { registerFaculty } from "@/store/features/auth/authSlice";
 import { addToast } from "@/store/features/ui/uiSlice";
@@ -8,16 +9,24 @@ import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import "./FacultyRegistration.scss";
 
-type FormattedData = Omit<
-  FacultyRegistrationForm,
-  "confirmPassword" | "publications" | "firstName" | "lastName"
-> & {
+interface FormattedData {
+  email: string;
+  password: string;
+  adminPassword: string;
+  department: string;
+  office: string;
   name: {
     firstName: string;
     lastName: string;
   };
-  publications?: Array<{ title: string; link: string }>;
-};
+  title?: string;
+  researchAreas: string[];
+  publications?: {
+    title: string;
+    link: string;
+  }[];
+  bio?: string;
+}
 
 // Define the form validation schema
 const facultyRegistrationSchema = z
@@ -80,6 +89,20 @@ export default function FacultyRegistration(): JSX.Element {
   const { isLoading, error } = useAppSelector((state) => state.auth);
   const [publications, setPublications] = useState([{ title: "", link: "" }]);
   const [researchAreas, setResearchAreas] = useState([""]);
+  const [departmentSearch, setDepartmentSearch] = useState("");
+  const [showDepartmentDropdown, setShowDepartmentDropdown] = useState(false);
+
+  const filteredDepartments = Object.values(Department).filter(
+    (dept: Department) =>
+      dept.toLowerCase().includes(departmentSearch.toLowerCase())
+  );
+
+  // Add this function before the return statement
+  const handleDepartmentSelect = (department: string): void => {
+    setValue("department", department);
+    setDepartmentSearch(department);
+    setShowDepartmentDropdown(false);
+  };
 
   const {
     register,
@@ -95,12 +118,18 @@ export default function FacultyRegistration(): JSX.Element {
     try {
       const { confirmPassword: _paswd, firstName, lastName, ...rest } = data;
 
+      // Simplify the data structure to match what registerFaculty expects
       const formattedData: FormattedData = {
-        ...rest,
+        email: rest.email,
+        password: rest.password,
+        adminPassword: rest.adminPassword,
+        department: rest.department,
+        office: rest.office,
         name: {
           firstName,
           lastName,
         },
+        title: rest.title,
         researchAreas: researchAreas.filter((area) => area.trim() !== ""),
         publications: publications
           .filter((pub) => pub.title.trim() !== "" && pub.link.trim() !== "")
@@ -108,6 +137,7 @@ export default function FacultyRegistration(): JSX.Element {
             title: pub.title.trim(),
             link: pub.link.trim(),
           })),
+        bio: rest.bio,
       };
 
       if (formattedData.researchAreas.length === 0) {
@@ -123,6 +153,7 @@ export default function FacultyRegistration(): JSX.Element {
       if (formattedData.publications?.length === 0) {
         delete formattedData.publications;
       }
+
       await dispatch(registerFaculty(formattedData)).unwrap();
 
       dispatch(
@@ -257,15 +288,40 @@ export default function FacultyRegistration(): JSX.Element {
                 <span className="error-message">{errors.lastName.message}</span>
               )}
             </div>
-
             <div className="form-group">
               <label htmlFor="department">Department</label>
-              <input
-                type="text"
-                id="department"
-                {...register("department")}
-                className={errors.department ? "error" : ""}
-              />
+              <div className="department-select">
+                <input
+                  type="text"
+                  id="department"
+                  value={departmentSearch}
+                  onChange={(e) => {
+                    setDepartmentSearch(e.target.value);
+                    setShowDepartmentDropdown(true);
+                  }}
+                  onFocus={() => setShowDepartmentDropdown(true)}
+                  placeholder="Search for department..."
+                  className={errors.department ? "error" : ""}
+                />
+                {showDepartmentDropdown && (
+                  <div className="department-dropdown">
+                    {filteredDepartments.map((dept) => (
+                      <div
+                        key={dept as string}
+                        className="department-option"
+                        onClick={() => handleDepartmentSelect(dept as string)}
+                      >
+                        {dept as string}
+                      </div>
+                    ))}
+                    {filteredDepartments.length === 0 && (
+                      <div className="department-option no-results">
+                        No departments found
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
               {errors.department && (
                 <span className="error-message">
                   {errors.department.message}

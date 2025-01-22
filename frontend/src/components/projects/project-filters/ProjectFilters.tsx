@@ -1,7 +1,8 @@
-import { CAMPUS_OPTIONS, DEPARTMENT_OPTIONS } from "@/common/constants";
+import { CAMPUS_OPTIONS } from "@/common/constants";
+import { Department } from "@/common/enums";
 import type { AppDispatch, RootState } from "@/store";
 import { setFilters } from "@/store/features/projects/projectsSlice";
-import { ChevronDown, RotateCcw, Search } from "lucide-react";
+import { ChevronDown, RotateCcw, Search, X } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./ProjectFilters.scss";
@@ -24,6 +25,39 @@ export const ProjectFilters: React.FC = () => {
   const [categorySearch, setCategorySearch] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout>();
+  const [isDepartmentDropdownOpen, setIsDepartmentDropdownOpen] =
+    useState(false);
+  const [departmentSearch, setDepartmentSearch] = useState("");
+  const departmentDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Get departments from enum
+  const allDepartments = Object.values(Department);
+
+  // Separate selected and unselected departments
+  const selectedDepartments = allDepartments.filter((dept) =>
+    filters.departments?.includes(dept)
+  );
+  const unselectedDepartments = allDepartments.filter(
+    (dept) => !filters.departments?.includes(dept)
+  );
+
+  // Filter departments based on search
+  const filteredSelectedDepartments = selectedDepartments.filter((dept) =>
+    dept.toLowerCase().includes(departmentSearch.toLowerCase())
+  );
+  const filteredUnselectedDepartments = unselectedDepartments.filter((dept) =>
+    dept.toLowerCase().includes(departmentSearch.toLowerCase())
+  );
+
+  // Add this new handler function
+  const handleDepartmentChange = (dept: string) => {
+    const currentDepartments = filters.departments || [];
+    const updatedDepartments = currentDepartments.includes(dept)
+      ? currentDepartments.filter((d) => d !== dept)
+      : [...currentDepartments, dept];
+
+    debouncedDispatch({ departments: updatedDepartments });
+  };
 
   // Separate selected and unselected categories
   const selectedCategories = availableCategories.filter((category) =>
@@ -100,8 +134,13 @@ export const ProjectFilters: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleFilterChange = (key: string, value: string) => {
-    debouncedDispatch({ [key]: value });
+  const handleFilterChange = (key: string, value: string | string[]) => {
+    if (key === "campus" && value === "") {
+      // When "All Campuses" is selected, explicitly set campus to undefined
+      debouncedDispatch({ campus: undefined });
+    } else {
+      debouncedDispatch({ [key]: value });
+    }
   };
 
   const handleCategoryChange = (category: string) => {
@@ -126,7 +165,7 @@ export const ProjectFilters: React.FC = () => {
       setFilters({
         search: "",
         campus: "",
-        department: "",
+        departments: [],
         researchCategories: [],
         sortBy: "createdAt",
         sortOrder: "desc",
@@ -157,26 +196,98 @@ export const ProjectFilters: React.FC = () => {
           >
             <option value="">All Campuses</option>
             {CAMPUS_OPTIONS.map((campus) => (
-              <option key={campus.value} value={campus.label}>
-                {campus.label}
+              <option key={campus.value} value={campus.value}>
+                {campus.value}
               </option>
             ))}
           </select>
         </div>
 
-        <div className="project-filters__select-group">
+        <div
+          className="project-filters__select-group"
+          ref={departmentDropdownRef}
+        >
           <label>Department</label>
-          <select
-            value={filters.department || ""}
-            onChange={(e) => handleFilterChange("department", e.target.value)}
+          <div
+            className={`categories-dropdown ${isDepartmentDropdownOpen ? "categories-dropdown--open" : ""}`}
+            onClick={() =>
+              setIsDepartmentDropdownOpen(!isDepartmentDropdownOpen)
+            }
           >
-            <option value="">All Departments</option>
-            {DEPARTMENT_OPTIONS.map((department) => (
-              <option key={department.value} value={department.value}>
-                {department.label}
-              </option>
-            ))}
-          </select>
+            <div className="categories-dropdown__selected">
+              {filters.departments?.length
+                ? `${filters.departments.length} selected`
+                : "Select departments"}
+              <ChevronDown size={16} className="select-icon" />
+            </div>
+
+            {isDepartmentDropdownOpen && (
+              <div className="categories-dropdown__menu">
+                <div className="categories-dropdown__search">
+                  <Search size={14} />
+                  <input
+                    type="text"
+                    placeholder="Search departments..."
+                    value={departmentSearch}
+                    onChange={(e) => setDepartmentSearch(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </div>
+                <div className="categories-dropdown__options">
+                  {filteredSelectedDepartments.length > 0 && (
+                    <>
+                      <div className="categories-dropdown__section-label">
+                        Selected Departments
+                      </div>
+                      {filteredSelectedDepartments.map((dept) => (
+                        <label
+                          key={dept}
+                          className="categories-dropdown__option categories-dropdown__option--selected"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={true}
+                            onChange={() => handleDepartmentChange(dept)}
+                          />
+                          {dept}
+                        </label>
+                      ))}
+                    </>
+                  )}
+
+                  {filteredSelectedDepartments.length > 0 &&
+                    filteredUnselectedDepartments.length > 0 && (
+                      <div className="categories-dropdown__divider" />
+                    )}
+
+                  {filteredUnselectedDepartments.length > 0 && (
+                    <>
+                      {filteredSelectedDepartments.length > 0 && (
+                        <div className="categories-dropdown__section-label">
+                          Available Departments
+                        </div>
+                      )}
+                      {filteredUnselectedDepartments.map((dept) => (
+                        <label
+                          key={dept}
+                          className="categories-dropdown__option"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={false}
+                            onChange={() => handleDepartmentChange(dept)}
+                          />
+                          {dept}
+                        </label>
+                      ))}
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="project-filters__select-group" ref={dropdownRef}>
@@ -298,7 +409,18 @@ export const ProjectFilters: React.FC = () => {
               className="filter-tag__remove"
               onClick={() => handleCategoryChange(category)}
             >
-              ×
+              <X size={14} />
+            </button>
+          </div>
+        ))}
+        {filters.departments?.map((dept) => (
+          <div key={dept} className="filter-tag">
+            {dept}
+            <button
+              className="filter-tag__remove"
+              onClick={() => handleDepartmentChange(dept)}
+            >
+              <X size={14} />
             </button>
           </div>
         ))}

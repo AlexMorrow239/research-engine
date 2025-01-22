@@ -77,7 +77,7 @@ export class ProjectsController {
   async findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
-    @Query('department') department?: string,
+    @Query('departments') departments?: string,
     @Query('campus') campus?: string,
     @Query('status') status: ProjectStatus = ProjectStatus.PUBLISHED,
     @Query('search') search?: string,
@@ -86,7 +86,7 @@ export class ProjectsController {
     return await this.projectsService.findAll({
       page,
       limit,
-      department,
+      departments,
       campus,
       status,
       search,
