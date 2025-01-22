@@ -28,7 +28,6 @@ interface ApplicationModalProps {
   projectId: string;
 }
 
-// Form schema based on CreateApplicationDto
 const applicationSchema = z.object({
   studentInfo: z.object({
     name: z.object({
@@ -39,11 +38,11 @@ const applicationSchema = z.object({
     email: z.string().email("Must be a valid email address"),
     phoneNumber: z
       .string()
-      .min(1, "Phone number is required")
-      .regex(
-        /^\(\d{3}\) \d{3}-\d{4}$/,
-        "Phone number must be in format (XXX) XXX-XXXX"
-      ),
+      .min(10, "Phone number must have at least 10 digits")
+      .refine((val) => {
+        const digitsOnly = val.replace(/\D/g, "");
+        return digitsOnly.length >= 10 && digitsOnly.length <= 15;
+      }, "Please enter a valid phone number with at least 10 digits"),
     racialEthnicGroups: z.array(z.nativeEnum(RacialEthnicGroup)).min(1),
     citizenship: z.nativeEnum(Citizenship, {
       errorMap: () => ({ message: "Please select your citizenship status" }),
@@ -77,7 +76,7 @@ const applicationSchema = z.object({
     resume: z
       .instanceof(File, { message: "Resume is required" })
       .refine(
-        (file) => file.size <= 5 * 1024 * 1024, // 5MB limit
+        (file) => file.size <= 5 * 1024 * 1024,
         "File size must be less than 5MB"
       )
       .refine(
@@ -104,38 +103,44 @@ const applicationSchema = z.object({
       }),
     }),
   }),
-  additionalInfo: z.object({
-    hasPrevResearchExperience: z.boolean(),
-    prevResearchExperience: z
-      .string()
-      .optional()
-      .transform((val) => val?.trim())
-      .pipe(
-        z
-          .string()
-          .min(1, "Please describe your previous research experience")
-          .optional()
-          .default("")
-      ),
-    hasFederalWorkStudy: z.boolean(),
-    comfortableWithAnimals: z.boolean(),
-    researchInterestDescription: z
-      .string()
-      .min(1, "Research interests are required"),
-    speaksOtherLanguages: z.boolean(),
-    additionalLanguages: z
-      .array(z.string())
-      .optional()
-      .default([])
-      .transform((val) => val?.filter((v) => v.trim()))
-      .pipe(
-        z
-          .array(z.string())
-          .min(1, "Please list at least one language")
-          .optional()
-          .default([])
-      ),
-  }),
+  additionalInfo: z
+    .object({
+      hasPrevResearchExperience: z.boolean(),
+      prevResearchExperience: z.string().optional(),
+      hasFederalWorkStudy: z.boolean(),
+      comfortableWithAnimals: z.boolean(),
+      researchInterestDescription: z
+        .string()
+        .min(1, "Research interests are required"),
+      speaksOtherLanguages: z.boolean(),
+      additionalLanguages: z.array(z.string()).optional(),
+    })
+    .superRefine((data, ctx) => {
+      // Validate previous research experience
+      if (
+        data.hasPrevResearchExperience &&
+        (!data.prevResearchExperience ||
+          data.prevResearchExperience.trim() === "")
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Required when you have previous research experience",
+          path: ["prevResearchExperience"],
+        });
+      }
+
+      // Validate additional languages
+      if (
+        data.speaksOtherLanguages &&
+        (!data.additionalLanguages || data.additionalLanguages.length === 0)
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Required when you speak other languages",
+          path: ["additionalLanguages"],
+        });
+      }
+    }),
 }) satisfies z.ZodType<ApplicationFormData>;
 
 export const ApplicationModal: React.FC<ApplicationModalProps> = ({
@@ -156,10 +161,6 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
         isPreHealth: false,
       },
       additionalInfo: {
-        hasPrevResearchExperience: false,
-        hasFederalWorkStudy: false,
-        speaksOtherLanguages: false,
-        comfortableWithAnimals: false,
         additionalLanguages: [],
         researchInterestDescription: "",
         prevResearchExperience: "",
@@ -257,7 +258,6 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
 
   const onSubmit = async (data: ApplicationFormData): Promise<void> => {
     console.log("Starting form submission...");
-    console.log("Form data received:", data);
 
     if (!projectId) {
       console.error("Project ID is missing");
@@ -265,160 +265,77 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
     }
 
     try {
-      console.log("Setting isSubmitting to true");
       setIsSubmitting(true);
-
-      // Create FormData object
       const formData = new FormData();
-      console.log("Created FormData object");
 
-      // Add project ID
-      formData.append("projectId", projectId);
-      console.log("Project ID added:", projectId);
+      // Create the application object that matches the backend's expected structure
+      const applicationData = {
+        studentInfo: {
+          name: {
+            firstName: data.studentInfo.name.firstName,
+            lastName: data.studentInfo.name.lastName,
+          },
+          cNumber: data.studentInfo.cNumber,
+          email: data.studentInfo.email,
+          phoneNumber: data.studentInfo.phoneNumber,
+          racialEthnicGroups: data.studentInfo.racialEthnicGroups,
+          citizenship: data.studentInfo.citizenship,
+          academicStanding: data.studentInfo.academicStanding,
+          major1College: data.studentInfo.major1College,
+          major1: data.studentInfo.major1,
+          hasAdditionalMajor: data.studentInfo.hasAdditionalMajor,
+          isPreHealth: data.studentInfo.isPreHealth,
+          gpa: data.studentInfo.gpa,
+          graduationDate: data.studentInfo.graduationDate,
+          ...(data.studentInfo.major2College && {
+            major2College: data.studentInfo.major2College,
+          }),
+          ...(data.studentInfo.major2 && { major2: data.studentInfo.major2 }),
+          ...(data.studentInfo.preHealthTrack && {
+            preHealthTrack: data.studentInfo.preHealthTrack,
+          }),
+        },
+        availability: {
+          mondayAvailability: data.availability.mondayAvailability,
+          tuesdayAvailability: data.availability.tuesdayAvailability,
+          wednesdayAvailability: data.availability.wednesdayAvailability,
+          thursdayAvailability: data.availability.thursdayAvailability,
+          fridayAvailability: data.availability.fridayAvailability,
+          weeklyHours: data.availability.weeklyHours,
+          desiredProjectLength: data.availability.desiredProjectLength,
+        },
+        additionalInfo: {
+          hasPrevResearchExperience:
+            data.additionalInfo.hasPrevResearchExperience,
+          hasFederalWorkStudy: data.additionalInfo.hasFederalWorkStudy,
+          comfortableWithAnimals: data.additionalInfo.comfortableWithAnimals,
+          speaksOtherLanguages: data.additionalInfo.speaksOtherLanguages,
+          researchInterestDescription:
+            data.additionalInfo.researchInterestDescription,
+          ...(data.additionalInfo.prevResearchExperience && {
+            prevResearchExperience: data.additionalInfo.prevResearchExperience,
+          }),
+          ...(data.additionalInfo.additionalLanguages?.length && {
+            additionalLanguages: data.additionalInfo.additionalLanguages,
+          }),
+        },
+      };
 
-      // Log each section as it's being added
-      console.log("Adding student info to FormData...");
-      formData.append(
-        "studentInfo.name.firstName",
-        data.studentInfo.name.firstName
-      );
-      formData.append(
-        "studentInfo.name.lastName",
-        data.studentInfo.name.lastName
-      );
-      formData.append("studentInfo.cNumber", data.studentInfo.cNumber);
-      formData.append("studentInfo.email", data.studentInfo.email);
-      formData.append("studentInfo.phoneNumber", data.studentInfo.phoneNumber);
-      formData.append(
-        "studentInfo.racialEthnicGroups",
-        JSON.stringify(data.studentInfo.racialEthnicGroups)
-      );
-      formData.append("studentInfo.citizenship", data.studentInfo.citizenship);
-      formData.append(
-        "studentInfo.academicStanding",
-        data.studentInfo.academicStanding
-      );
-      formData.append(
-        "studentInfo.major1College",
-        data.studentInfo.major1College
-      );
-      formData.append("studentInfo.major1", data.studentInfo.major1);
-      formData.append(
-        "studentInfo.hasAdditionalMajor",
-        String(data.studentInfo.hasAdditionalMajor)
-      );
-      formData.append(
-        "studentInfo.isPreHealth",
-        String(data.studentInfo.isPreHealth)
-      );
-      formData.append("studentInfo.gpa", String(data.studentInfo.gpa));
-      formData.append(
-        "studentInfo.graduationDate",
-        data.studentInfo.graduationDate
-      );
-      formData.append("studentInfo.resume", data.studentInfo.resume);
-      console.log("Student info added");
+      // Add the application data as a single JSON string under the 'application' key
+      formData.append("application", JSON.stringify(applicationData));
 
-      // Add optional student info fields
-      console.log("Adding optional student info...");
-      if (data.studentInfo.major2College) {
-        formData.append(
-          "studentInfo.major2College",
-          data.studentInfo.major2College
-        );
-      }
-      if (data.studentInfo.major2) {
-        formData.append("studentInfo.major2", data.studentInfo.major2);
-      }
-      if (data.studentInfo.preHealthTrack) {
-        formData.append(
-          "studentInfo.preHealthTrack",
-          data.studentInfo.preHealthTrack
-        );
-      }
-      console.log("Optional student info added");
+      // Add the resume file
+      formData.append("resume", data.studentInfo.resume);
 
-      // Add availability info
-      console.log("Adding availability info...");
-      formData.append(
-        "availability.mondayAvailability",
-        data.availability.mondayAvailability
-      );
-      formData.append(
-        "availability.tuesdayAvailability",
-        data.availability.tuesdayAvailability
-      );
-      formData.append(
-        "availability.wednesdayAvailability",
-        data.availability.wednesdayAvailability
-      );
-      formData.append(
-        "availability.thursdayAvailability",
-        data.availability.thursdayAvailability
-      );
-      formData.append(
-        "availability.fridayAvailability",
-        data.availability.fridayAvailability
-      );
-      formData.append(
-        "availability.weeklyHours",
-        data.availability.weeklyHours
-      );
-      formData.append(
-        "availability.desiredProjectLength",
-        data.availability.desiredProjectLength
-      );
-      console.log("Availability info added");
-
-      // Add additional info
-      console.log("Adding additional info...");
-      formData.append(
-        "additionalInfo.hasPrevResearchExperience",
-        String(data.additionalInfo.hasPrevResearchExperience)
-      );
-      formData.append(
-        "additionalInfo.hasFederalWorkStudy",
-        String(data.additionalInfo.hasFederalWorkStudy)
-      );
-      formData.append(
-        "additionalInfo.comfortableWithAnimals",
-        String(data.additionalInfo.comfortableWithAnimals)
-      );
-      formData.append(
-        "additionalInfo.speaksOtherLanguages",
-        String(data.additionalInfo.speaksOtherLanguages)
-      );
-      formData.append(
-        "additionalInfo.researchInterestDescription",
-        data.additionalInfo.researchInterestDescription
-      );
-
-      // Add optional additional info fields
-      if (data.additionalInfo.prevResearchExperience) {
-        formData.append(
-          "additionalInfo.prevResearchExperience",
-          data.additionalInfo.prevResearchExperience
-        );
-      }
-      if (data.additionalInfo.additionalLanguages?.length) {
-        formData.append(
-          "additionalInfo.additionalLanguages",
-          JSON.stringify(data.additionalInfo.additionalLanguages)
-        );
-      }
-      console.log("Additional info added");
-
-      // Log FormData contents (for debugging)
+      // Log FormData contents for debugging
       console.log("Final FormData contents:");
       for (const pair of formData.entries()) {
         console.log(pair[0], pair[1]);
       }
 
-      console.log("Dispatching createApplication action...");
       const resultAction = await dispatch(
         createApplication({ projectId, formData })
       );
-      console.log("Action result:", resultAction);
 
       if (createApplication.fulfilled.match(resultAction)) {
         console.log("Submission successful!");
@@ -436,7 +353,6 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
           (error instanceof Error ? error.message : "An error occurred")
       );
     } finally {
-      console.log("Setting isSubmitting to false");
       setIsSubmitting(false);
     }
   };
@@ -467,11 +383,22 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
           <ProgressStep currentStep={currentStep} />
 
           <form
-            onSubmit={form.handleSubmit((data) => {
-              console.log("Form submitted", data);
-              void onSubmit(data);
-            })}
+            onSubmit={(e) => {
+              e.preventDefault();
+              console.log("Form submission triggered");
+              console.log("Form values:", form.getValues());
+
+              // Check if form is valid
+              const isValid = form.formState.isValid;
+              console.log("Form is valid:", isValid);
+
+              return form.handleSubmit((data) => {
+                console.log("HandleSubmit callback reached with data:", data);
+                return onSubmit(data);
+              })(e);
+            }}
             noValidate
+            encType="multipart/form-data"
           >
             {currentStep === 1 && <PersonalInfoStep form={form} />}
             {currentStep === 2 && <AvailabilityStep form={form} />}
@@ -504,7 +431,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
                   <button
                     type="submit"
                     className="button button--primary"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || !form.formState.isValid}
                   >
                     {isSubmitting ? (
                       <span className="button__content">

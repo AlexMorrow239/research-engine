@@ -87,7 +87,6 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
             label="Phone Number"
             name="studentInfo.phoneNumber"
             placeholder="(305) 123-4567"
-            help="Format: (XXX) XXX-XXXX"
             type="tel"
           />
           <FormField

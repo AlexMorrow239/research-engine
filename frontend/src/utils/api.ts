@@ -34,8 +34,11 @@ export const api = {
     // Initialize headers
     const headers = new Headers(fetchOptions.headers);
 
-    // Only set Content-Type if not FormData
-    if (!isFormData) {
+    // Handle Content-Type header
+    if (isFormData) {
+      // Remove Content-Type header for FormData to let browser set it with boundary
+      headers.delete("Content-Type");
+    } else {
       headers.set("Content-Type", "application/json");
     }
 
@@ -49,8 +52,15 @@ export const api = {
     }
 
     try {
+      // Prepare the request body
+      let body = fetchOptions.body;
+      if (body && !isFormData) {
+        body = JSON.stringify(body);
+      }
+
       const response = await fetch(url, {
         ...fetchOptions,
+        body,
         headers,
         credentials: "include",
         mode: "cors",
@@ -135,7 +145,7 @@ export const api = {
     return api.fetch<T>(endpoint, {
       ...rest,
       method: "POST",
-      body: isFormData ? (data as FormData) : JSON.stringify(data),
+      body: data as BodyInit,
       isFormData,
     });
   },
