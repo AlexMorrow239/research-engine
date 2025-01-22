@@ -1,19 +1,10 @@
 import { CAMPUS_OPTIONS, DEPARTMENT_OPTIONS } from "@/common/constants";
 import type { AppDispatch, RootState } from "@/store";
 import { setFilters } from "@/store/features/projects/projectsSlice";
-import { ChevronDown, RotateCcw, Search, X } from "lucide-react";
+import { ChevronDown, RotateCcw, Search } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./ProjectFilters.scss";
-
-const RESEARCH_CATEGORIES = [
-  "Data Science",
-  "Machine Learning",
-  "Artificial Intelligence",
-  "Bioinformatics",
-  "Climate Science",
-  "Neuroscience",
-];
 
 const SORT_OPTIONS = [
   { value: "createdAt-desc", label: "Newest First" },
@@ -25,11 +16,32 @@ const SORT_OPTIONS = [
 export const ProjectFilters: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const filters = useSelector((state: RootState) => state.projects.filters);
+  const availableCategories = useSelector(
+    (state: RootState) => state.projects.availableResearchCategories
+  );
   const [searchTerm, setSearchTerm] = useState(filters.search || "");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout>();
+
+  // Separate selected and unselected categories
+  const selectedCategories = availableCategories.filter((category) =>
+    filters.researchCategories?.includes(category)
+  );
+
+  const unselectedCategories = availableCategories.filter(
+    (category) => !filters.researchCategories?.includes(category)
+  );
+
+  // Filter both selected and unselected categories based on search
+  const filteredSelectedCategories = selectedCategories.filter((category) =>
+    category.toLowerCase().includes(categorySearch.toLowerCase())
+  );
+
+  const filteredUnselectedCategories = unselectedCategories.filter((category) =>
+    category.toLowerCase().includes(categorySearch.toLowerCase())
+  );
 
   // Debounced dispatch function for all filter changes
   const debouncedDispatch = useCallback(
@@ -93,7 +105,7 @@ export const ProjectFilters: React.FC = () => {
   };
 
   const handleCategoryChange = (category: string) => {
-    const currentCategories = [...(filters.researchCategories || [])];
+    const currentCategories = filters.researchCategories || [];
     const updatedCategories = currentCategories.includes(category)
       ? currentCategories.filter((c) => c !== category)
       : [...currentCategories, category];
@@ -123,10 +135,6 @@ export const ProjectFilters: React.FC = () => {
     setSearchTerm("");
     setCategorySearch("");
   };
-
-  const filteredCategories = RESEARCH_CATEGORIES.filter((category) =>
-    category.toLowerCase().includes(categorySearch.toLowerCase())
-  );
 
   return (
     <div className="project-filters">
@@ -180,11 +188,13 @@ export const ProjectFilters: React.FC = () => {
             <div className="categories-dropdown__selected">
               {filters.researchCategories?.length
                 ? `${filters.researchCategories.length} selected`
-                : "Select categories"}
+                : availableCategories.length
+                  ? "Select categories"
+                  : "No categories available"}
               <ChevronDown size={16} className="select-icon" />
             </div>
 
-            {isDropdownOpen && (
+            {isDropdownOpen && availableCategories.length > 0 && (
               <div className="categories-dropdown__menu">
                 <div className="categories-dropdown__search">
                   <Search size={14} />
@@ -197,20 +207,59 @@ export const ProjectFilters: React.FC = () => {
                   />
                 </div>
                 <div className="categories-dropdown__options">
-                  {filteredCategories.map((category) => (
-                    <label
-                      key={category}
-                      className="categories-dropdown__option"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={filters.researchCategories?.includes(category)}
-                        onChange={() => handleCategoryChange(category)}
-                      />
-                      {category}
-                    </label>
-                  ))}
+                  {/* Selected categories section */}
+                  {filteredSelectedCategories.length > 0 && (
+                    <>
+                      <div className="categories-dropdown__section-label">
+                        Selected Categories
+                      </div>
+                      {filteredSelectedCategories.map((category) => (
+                        <label
+                          key={category}
+                          className="categories-dropdown__option categories-dropdown__option--selected"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={true}
+                            onChange={() => handleCategoryChange(category)}
+                          />
+                          {category}
+                        </label>
+                      ))}
+                    </>
+                  )}
+
+                  {/* Divider if both sections have items */}
+                  {filteredSelectedCategories.length > 0 &&
+                    filteredUnselectedCategories.length > 0 && (
+                      <div className="categories-dropdown__divider" />
+                    )}
+
+                  {/* Unselected categories section */}
+                  {filteredUnselectedCategories.length > 0 && (
+                    <>
+                      {filteredSelectedCategories.length > 0 && (
+                        <div className="categories-dropdown__section-label">
+                          Available Categories
+                        </div>
+                      )}
+                      {filteredUnselectedCategories.map((category) => (
+                        <label
+                          key={category}
+                          className="categories-dropdown__option"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={false}
+                            onChange={() => handleCategoryChange(category)}
+                          />
+                          {category}
+                        </label>
+                      ))}
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -243,16 +292,15 @@ export const ProjectFilters: React.FC = () => {
 
       <div className="active-filters">
         {filters.researchCategories?.map((category) => (
-          <span key={category} className="filter-tag">
+          <div key={category} className="filter-tag">
             {category}
             <button
               className="filter-tag__remove"
               onClick={() => handleCategoryChange(category)}
-              type="button"
             >
-              <X size={14} />
+              ×
             </button>
-          </span>
+          </div>
         ))}
       </div>
     </div>

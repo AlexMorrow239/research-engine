@@ -2,6 +2,7 @@ import {
   PROJECT_LENGTH_OPTIONS,
   WEEKLY_AVAILABILITY_OPTIONS,
 } from "@/common/constants";
+import { FormField } from "@/components/common/form-field/FormField";
 import { type ApplicationFormData } from "@/types";
 import React from "react";
 import { type UseFormReturn } from "react-hook-form";
@@ -19,93 +20,42 @@ type DayAvailability =
   | "fridayAvailability";
 
 const getDayAvailabilityField = (day: string): DayAvailability => {
-  const field = `${day.toLowerCase()}Availability` as DayAvailability;
-  return field;
+  return `${day.toLowerCase()}Availability` as DayAvailability;
 };
 
 export const AvailabilityStep: React.FC<AvailabilityStepProps> = ({ form }) => {
-  const {
-    register,
-    formState: { errors },
-  } = form;
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-
-  const getInputClassName = (baseClass = "form-group__input") => {
-    return `${baseClass} ${errors.availability ? "form-group__input--error" : ""}`;
-  };
 
   return (
     <div className="modal__step">
       <h3>Availability</h3>
       <div className="form-grid">
         {days.map((day) => (
-          <div key={day} className="form-group">
-            <label className="form-group__label">
-              {day} Availability <span className="required">*</span>
-            </label>
-            <input
-              type="text"
-              {...register(`availability.${getDayAvailabilityField(day)}`, {
-                required: `${day} availability is required`,
-              })}
-              className={getInputClassName()}
-              placeholder="e.g., 9AM-5PM"
-            />
-            {errors.availability?.[getDayAvailabilityField(day)] && (
-              <span className="form-group__error">
-                {errors.availability[getDayAvailabilityField(day)]?.message}
-              </span>
-            )}
-          </div>
+          <FormField
+            key={day}
+            form={form}
+            label={`${day} Availability`}
+            name={`availability.${getDayAvailabilityField(day)}`}
+            placeholder="e.g., 9AM-5PM"
+            required
+          />
         ))}
 
-        <div className="form-group">
-          <label className="form-group__label">
-            Weekly Hours Commitment <span className="required">*</span>
-          </label>
-          <select
-            {...register("availability.weeklyHours", {
-              required: "Please select weekly hours commitment",
-            })}
-            className={getInputClassName()}
-          >
-            <option value="">Select weekly hours</option>
-            {WEEKLY_AVAILABILITY_OPTIONS.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          {errors.availability?.weeklyHours && (
-            <span className="form-group__error">
-              {errors.availability.weeklyHours.message}
-            </span>
-          )}
-        </div>
+        <FormField
+          form={form}
+          label="Weekly Hours Commitment"
+          name="availability.weeklyHours"
+          options={WEEKLY_AVAILABILITY_OPTIONS}
+          required
+        />
 
-        <div className="form-group">
-          <label className="form-group__label">
-            Desired Project Commitment <span className="required">*</span>
-          </label>
-          <select
-            {...register("availability.desiredProjectLength", {
-              required: "Please select desired project commitment",
-            })}
-            className={getInputClassName()}
-          >
-            <option value="">Select project length</option>
-            {PROJECT_LENGTH_OPTIONS.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          {errors.availability?.desiredProjectLength && (
-            <span className="form-group__error">
-              {errors.availability.desiredProjectLength.message}
-            </span>
-          )}
-        </div>
+        <FormField
+          form={form}
+          label="Desired Project Commitment"
+          name="availability.desiredProjectLength"
+          options={PROJECT_LENGTH_OPTIONS}
+          required
+        />
       </div>
     </div>
   );

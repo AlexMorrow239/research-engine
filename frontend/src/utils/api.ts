@@ -90,7 +90,8 @@ export const api = {
 
       // Handle successful responses
       if (contentType?.includes("application/json")) {
-        return await response.json();
+        const jsonResponse = await response.json();
+        return jsonResponse;
       } else if (contentType?.includes("text/")) {
         const textResponse = await response.text();
         return textResponse as unknown as T;
@@ -99,6 +100,12 @@ export const api = {
         return blobResponse as unknown as T;
       }
     } catch (error) {
+      console.error("API Error:", {
+        name: error instanceof Error ? error.name : "Unknown error",
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+
       if (error instanceof ApiError) {
         throw error;
       }

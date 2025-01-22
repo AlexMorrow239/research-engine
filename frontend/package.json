@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:network": "vite --mode network",
     "build": "tsc -b && vite build",
+    "build:network": "tsc -b && vite build --mode network",
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

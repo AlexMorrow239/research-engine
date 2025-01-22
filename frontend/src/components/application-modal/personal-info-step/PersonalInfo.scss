@@ -33,62 +33,6 @@
   }
 }
 
-.form-field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-2);
-
-  &__label {
-    font-weight: 500;
-    color: var(--color-text-primary);
-    font-size: var(--font-size-sm);
-  }
-
-  &__required {
-    color: var(--color-error);
-    margin-left: var(--spacing-1);
-  }
-
-  &__input {
-    padding: var(--spacing-3);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    font-size: var(--font-size-base);
-    transition: all 0.2s ease;
-    width: 100%;
-
-    &:focus {
-      outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 2px var(--color-primary-light);
-    }
-
-    &--error {
-      border-color: var(--color-error);
-      &:focus {
-        box-shadow: 0 0 0 2px var(--color-error-light);
-      }
-    }
-
-    &--success {
-      border-color: var(--color-success);
-      &:focus {
-        box-shadow: 0 0 0 2px var(--color-success-light);
-      }
-    }
-  }
-
-  &__help {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-secondary);
-  }
-
-  &__error {
-    font-size: var(--font-size-xs);
-    color: var(--color-error);
-  }
-}
-
 .ethnic-select {
   display: flex;
   flex-direction: column;

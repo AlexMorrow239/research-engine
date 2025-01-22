@@ -5,6 +5,7 @@ import {
   RACIAL_ETHNIC_OPTIONS,
 } from "@/common/constants";
 import { type RacialEthnicGroup } from "@/common/enums";
+import { FormField } from "@/components/common/form-field/FormField";
 import { type ApplicationFormData } from "@/types";
 import { FileText, Upload, X } from "lucide-react";
 import React, { useState } from "react";
@@ -17,8 +18,7 @@ interface PersonalInfoStepProps {
 
 export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
   const {
-    register,
-    formState: { errors, touchedFields },
+    formState: { errors },
     setValue,
     watch,
   } = form;
@@ -27,99 +27,10 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
   const resumeFile = watch("studentInfo.resume");
   const selectedEthnicGroups = watch("studentInfo.racialEthnicGroups") || [];
 
-  type StudentInfoFields =
-    | keyof ApplicationFormData["studentInfo"]
-    | "name.firstName"
-    | "name.lastName";
-
-  const FormField = ({
-    label,
-    name,
-    type = "text",
-    required = true,
-    placeholder,
-    options,
-    help,
-  }: {
-    label: string;
-    name: StudentInfoFields;
-    type?: string;
-    required?: boolean;
-    placeholder?: string;
-    options?: readonly { readonly value: string; readonly label: string }[];
-    help?: string;
-  }) => {
-    const error = errors.studentInfo?.[name as keyof typeof errors.studentInfo];
-    const touched =
-      touchedFields.studentInfo?.[
-        name as keyof typeof touchedFields.studentInfo
-      ];
-    const inputClassName = `form-field__input ${
-      error
-        ? "form-field__input--error"
-        : touched
-          ? "form-field__input--success"
-          : ""
-    }`;
-
-    return (
-      <div className="form-field">
-        <label className="form-field__label">
-          {label}
-          {required && <span className="form-field__required">*</span>}
-        </label>
-        {options ? (
-          <select
-            {...register(`studentInfo.${name}`)}
-            className={inputClassName}
-          >
-            <option value="">Select {label.toLowerCase()}</option>
-            {options.map(({ value, label }) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <input
-            {...register(`studentInfo.${name}`)}
-            type={type}
-            className={inputClassName}
-            placeholder={placeholder}
-          />
-        )}
-        {help && <span className="form-field__help">{help}</span>}
-        {error && (
-          <span className="form-field__error">
-            {typeof error === "string"
-              ? error
-              : "message" in error
-                ? error.message
-                : "Invalid input"}
-          </span>
-        )}
-      </div>
-    );
-  };
-
   const handleFileChange = (file: File | null) => {
-    if (!file) return;
-
-    if (file.type !== "application/pdf") {
-      alert("Please upload a PDF file");
-      return;
+    if (file) {
+      setValue("studentInfo.resume", file);
     }
-
-    if (file.size > 5 * 1024 * 1024) {
-      alert("File size must be less than 5MB");
-      return;
-    }
-
-    setValue("studentInfo.resume", file, {
-      shouldValidate: true,
-      shouldDirty: true,
-      shouldTouch: true,
-    });
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -145,36 +56,44 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
         <div className="personal-info__grid">
           <div className="personal-info__grid--paired">
             <FormField
+              form={form}
               label="First Name"
-              name="name.firstName"
+              name="studentInfo.name.firstName"
               placeholder="Enter your first name"
             />
             <FormField
+              form={form}
               label="Last Name"
-              name="name.lastName"
+              name="studentInfo.name.lastName"
               placeholder="Enter your last name"
             />
           </div>
           <FormField
+            form={form}
             label="C Number"
-            name="cNumber"
+            name="studentInfo.cNumber"
             placeholder="C12345678"
             help="Enter your University ID number"
           />
           <FormField
+            form={form}
             label="Email"
-            name="email"
+            name="studentInfo.email"
             type="email"
             placeholder="your.email@miami.edu"
           />
           <FormField
+            form={form}
             label="Phone Number"
-            name="phoneNumber"
+            name="studentInfo.phoneNumber"
             placeholder="(305) 123-4567"
+            help="Format: (XXX) XXX-XXXX"
+            type="tel"
           />
           <FormField
+            form={form}
             label="Citizenship Status"
-            name="citizenship"
+            name="studentInfo.citizenship"
             options={CITIZENSHIP_OPTIONS}
           />
         </div>
@@ -185,34 +104,44 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
         <div className="personal-info__grid">
           <div className="personal-info__grid--paired">
             <FormField
+              form={form}
               label="Academic Standing"
-              name="academicStanding"
+              name="studentInfo.academicStanding"
               options={ACADEMIC_STANDING_OPTIONS}
             />
             <FormField
+              form={form}
               label="Expected Graduation Date"
-              name="graduationDate"
+              name="studentInfo.graduationDate"
               type="date"
+              help="Select your expected graduation date"
+              min={new Date().toISOString().split("T")[0]} // Today's date
             />
           </div>
           <div className="personal-info__grid--paired">
             <FormField
+              form={form}
               label="College"
-              name="major1College"
+              name="studentInfo.major1College"
               options={COLLEGE_OPTIONS}
             />
             <FormField
+              form={form}
               label="Major"
-              name="major1"
+              name="studentInfo.major1"
               placeholder="Enter your major"
+              help="Enter your primary field of study"
             />
           </div>
           <FormField
+            form={form}
             label="GPA"
-            name="gpa"
-            type="text"
+            name="studentInfo.gpa"
+            type="number"
             placeholder="Enter your GPA (0-4.0)"
-            help="Current cumulative GPA"
+            help="Current cumulative GPA (e.g., 3.50)"
+            min="0"
+            max="4.0"
           />
           <div className="form-field">
             <label className="form-field__label">

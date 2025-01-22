@@ -62,12 +62,27 @@ export enum College {
 }
 
 export enum Department {
+  AEROSPACE = "Aerospace Studies",
+  ANTHROPOLOGY = "Anthropology",
+  ART_HISTORY = "Art & Art History",
   BIOLOGY = "Biology",
   CHEMISTRY = "Chemistry",
+  CLASSICS = "Classics",
   COMPUTER_SCIENCE = "Computer Science",
+  ENGLISH = "English",
+  GEOGRAPHY = "Geography and Sustainable Development",
+  HISTORY = "History",
+  INTERNATIONAL_STUDIES = "International Studies",
+  MATHEMATICS = "Mathematics",
+  MODERN_LANGUAGES = "Modern Languages & Literatures",
+  PHILOSOPHY = "Philosophy",
   PHYSICS = "Physics",
+  POLITICAL_SCIENCE = "Political Science",
   PSYCHOLOGY = "Psychology",
-  // Add other departments as needed
+  RELIGIOUS_STUDIES = "Religious Studies",
+  SOCIOLOGY = "Sociology and Criminology",
+  THEATRE = "Theatre Arts",
+  WRITING = "Writing Studies",
 }
 
 /**

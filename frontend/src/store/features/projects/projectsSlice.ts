@@ -1,6 +1,6 @@
 import { ProjectStatus } from "@/common/enums";
 import type { ApiResponse, Project } from "@/types/api";
-import { api } from "@/utils/api";
+import { api, ApiError } from "@/utils/api";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../index";
@@ -11,6 +11,7 @@ interface ProjectsState {
   totalProjects: number;
   isLoading: boolean;
   error: string | null;
+  availableResearchCategories: string[];
   filters: {
     page: number;
     limit: number;
@@ -30,6 +31,7 @@ const initialState: ProjectsState = {
   totalProjects: 0,
   isLoading: false,
   error: null,
+  availableResearchCategories: [],
   filters: {
     page: 1,
     limit: 10,
@@ -46,6 +48,9 @@ export const fetchProjects = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     try {
       const { filters } = (getState() as RootState).projects;
+
+      // Debug log the current state and filters
+
       const queryParams = new URLSearchParams({
         page: filters.page.toString(),
         limit: filters.limit.toString(),
@@ -59,19 +64,58 @@ export const fetchProjects = createAsyncThunk(
         ...(filters.sortOrder && { sortOrder: filters.sortOrder }),
       });
 
-      // Updated to match backend route
-      return await api.fetch<{ projects: Project[]; total: number }>(
-        `/api/projects?${queryParams}`,
-        {
-          requiresAuth: false,
-        }
-      );
+      const response = await api.fetch<{
+        projects: Project[];
+        total: number;
+      }>(`/api/projects?${queryParams}`, {
+        requiresAuth: false,
+      });
+
+      // Validate response structure
+      if (!response || !Array.isArray(response.projects)) {
+        console.error("Invalid response structure:", response);
+        return rejectWithValue("Invalid response format from server");
+      }
+
+      return response;
     } catch (error) {
+      // Enhanced error handling
+      console.error("Error fetching projects:", {
+        error,
+        type: error instanceof Error ? error.constructor.name : typeof error,
+        message: error instanceof Error ? error.message : String(error),
+      });
+
+      if (error instanceof ApiError) {
+        return rejectWithValue({
+          message: error.message,
+          status: error.status,
+          data: error.data,
+        });
+      }
+
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        return rejectWithValue("Network error: Unable to connect to server");
+      }
+
       if (error instanceof Error) {
         return rejectWithValue(error.message);
       }
-      return rejectWithValue("An unknown error occurred");
+
+      return rejectWithValue(
+        "An unknown error occurred while fetching projects"
+      );
     }
+  },
+  {
+    // Add condition to prevent duplicate requests
+    condition: (_, { getState }) => {
+      const { isLoading } = (getState() as RootState).projects;
+      if (isLoading) {
+        return false;
+      }
+      return true;
+    },
   }
 );
 
@@ -271,6 +315,15 @@ const projectsSlice = createSlice({
         state.isLoading = false;
         state.items = action.payload.projects;
         state.totalProjects = action.payload.total;
+
+        // Extract unique research categories from all projects
+        const categories = new Set<string>();
+        action.payload.projects.forEach((project) => {
+          project.researchCategories?.forEach((category) => {
+            if (category) categories.add(category);
+          });
+        });
+        state.availableResearchCategories = Array.from(categories).sort();
       })
       .addCase(fetchProjects.rejected, (state, action) => {
         state.isLoading = false;

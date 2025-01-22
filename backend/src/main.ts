@@ -52,7 +52,11 @@ async function bootstrap() {
 
     // Enable CORS with specific configuration
     app.enableCors({
-      origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+      origin: [
+        process.env.FRONTEND_URL || 'http://localhost:5173',
+        /^http:\/\/192\.168\.1\.\d{1,3}:\d+$/,
+        'http://100.65.62.87:5173',
+      ],
       methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
       exposedHeaders: ['Content-Disposition'],
