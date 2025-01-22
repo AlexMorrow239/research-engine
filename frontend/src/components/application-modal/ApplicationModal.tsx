@@ -225,10 +225,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
         break;
     }
 
-    console.log("Fields to validate:", fieldsToValidate);
     const isStepValid = await form.trigger(fieldsToValidate);
-    console.log("Step validation result:", isStepValid);
-    console.log("Form errors:", form.formState.errors);
 
     if (isStepValid && currentStep < 3) {
       setCurrentStep((prev) => prev + 1);
@@ -237,7 +234,6 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
         modalContent.scrollTop = 0;
       }
     } else if (!isStepValid) {
-      console.log("Validation failed, scrolling to first error");
       const firstError = document.querySelector(".form-field__error");
       if (firstError) {
         firstError.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -257,8 +253,6 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
   }, [form]);
 
   const onSubmit = async (data: ApplicationFormData): Promise<void> => {
-    console.log("Starting form submission...");
-
     if (!projectId) {
       console.error("Project ID is missing");
       return;
@@ -327,18 +321,11 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
       // Add the resume file
       formData.append("resume", data.studentInfo.resume);
 
-      // Log FormData contents for debugging
-      console.log("Final FormData contents:");
-      for (const pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
-      }
-
       const resultAction = await dispatch(
         createApplication({ projectId, formData })
       );
 
       if (createApplication.fulfilled.match(resultAction)) {
-        console.log("Submission successful!");
         alert("Application submitted successfully!");
         handleReset();
         onClose();
@@ -385,15 +372,8 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              console.log("Form submission triggered");
-              console.log("Form values:", form.getValues());
-
-              // Check if form is valid
-              const isValid = form.formState.isValid;
-              console.log("Form is valid:", isValid);
 
               return form.handleSubmit((data) => {
-                console.log("HandleSubmit callback reached with data:", data);
                 return onSubmit(data);
               })(e);
             }}
