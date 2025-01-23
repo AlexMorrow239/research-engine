@@ -1,6 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/store";
 import { loginUser } from "@/store/features/auth/authSlice";
-import { addToast } from "@/store/features/ui/uiSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -38,31 +37,15 @@ export default function FacultyLogin(): JSX.Element {
 
   const onSubmit = async (data: FacultyLoginForm): Promise<void> => {
     try {
+      // Attempt login
       const result = await dispatch(loginUser(data)).unwrap();
 
       if (result.accessToken) {
-        dispatch(
-          addToast({
-            type: "success",
-            message: "Login successful! Welcome back.",
-          })
-        );
         navigate("/faculty/dashboard");
       }
     } catch (err) {
-      console.error("Login error details:", {
-        error: err,
-        type: typeof err,
-        message: err instanceof Error ? err.message : String(err),
-      });
-
-      dispatch(
-        addToast({
-          type: "error",
-          message:
-            typeof err === "string" ? err : "Login failed. Please try again.",
-        })
-      );
+      // Just log the error - the auth slice will handle the error toast
+      console.error("Login error:", err);
     }
   };
 

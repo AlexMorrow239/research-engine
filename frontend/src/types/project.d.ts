@@ -26,22 +26,32 @@ export interface Project {
   updatedAt: Date;
 }
 
+export type SortOption = {
+  value: "createdAt" | "applicationDeadline";
+  label: string;
+  order: "asc" | "desc";
+};
+
 export interface ProjectFiltersType {
   search: string;
-  status: ProjectStatus | "all";
-  sort: SortOption;
+  campus: string;
+  departments: string[];
+  researchCategories: string[];
+  sortBy: "createdAt" | "applicationDeadline";
+  sortOrder: "asc" | "desc";
   page: number;
-  // campus: string;
-  // departments: string[];
-  // researchCategories: string[];
-  // sortBy: "createdAt" | "applicationDeadline";
-  // sortOrder: "asc" | "desc";
+  limit: number;
+  status?: ProjectStatus;
 }
 
 export type ProjectSortOption = "newest" | "oldest" | string;
 
-export interface ProjectFiltersState extends ProjectFiltersType {
-  page: number;
+export interface ProjectsState extends BaseState {
+  items: Project[];
+  currentProject: Project | null;
+  totalProjects: number;
+  filters: ProjectFilters;
+  availableResearchCategories: string[];
 }
 
 export interface ProjectsState extends BaseState {

@@ -4,6 +4,7 @@ import { api, ApiError } from "@/utils/api";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../index";
+import { addToast } from "../ui/uiSlice";
 
 interface ProjectsState {
   items: Project[];
@@ -148,30 +149,41 @@ export const fetchProfessorProjects = createAsyncThunk(
   }
 );
 
-export const createProject = createAsyncThunk(
-  "projects/create",
-  async (
-    projectData: Omit<
-      Project,
-      "id" | "professor" | "files" | "isVisible" | "createdAt" | "updatedAt"
-    >,
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await api.post<ApiResponse<Project>>(
-        "/api/projects",
-        projectData,
-        { requiresAuth: true }
-      );
-      return response.data;
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("An unknown error occurred");
+export const createProject = createAsyncThunk<
+  Project,
+  Omit<
+    Project,
+    "id" | "professor" | "files" | "isVisible" | "createdAt" | "updatedAt"
+  >,
+  { rejectValue: ApiError }
+>("projects/create", async (projectData, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await api.post<ApiResponse<Project>>(
+      "/api/projects",
+      projectData,
+      { requiresAuth: true }
+    );
+
+    dispatch(
+      addToast({
+        type: "success",
+        message: "Project created successfully!",
+      })
+    );
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return rejectWithValue(error);
     }
+    return rejectWithValue(
+      new ApiError({
+        message: "Failed to create project. Please try again.",
+        toastType: "error",
+      })
+    );
   }
-);
+});
 
 export const fetchProject = createAsyncThunk(
   "projects/fetchOne",
@@ -194,73 +206,106 @@ export const fetchProject = createAsyncThunk(
   }
 );
 
-export const updateProject = createAsyncThunk(
-  "projects/update",
-  async (
-    {
-      id,
+export const updateProject = createAsyncThunk<
+  Project,
+  {
+    id: string;
+    project: Omit<
+      Project,
+      "id" | "professor" | "files" | "isVisible" | "createdAt" | "updatedAt"
+    >;
+  },
+  { rejectValue: ApiError }
+>("projects/update", async ({ id, project }, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await api.patch<ApiResponse<Project>>(
+      `/api/projects/${id}`,
       project,
-    }: {
-      id: string;
-      project: Omit<
-        Project,
-        "id" | "professor" | "files" | "isVisible" | "createdAt" | "updatedAt"
-      >;
-    },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await api.patch<ApiResponse<Project>>(
-        `/api/projects/${id}`,
-        project,
-        { requiresAuth: true }
-      );
-      return response.data;
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("An unknown error occurred");
-    }
-  }
-);
+      { requiresAuth: true }
+    );
 
-export const deleteProject = createAsyncThunk(
-  "projects/delete",
-  async (projectId: string, { rejectWithValue }) => {
-    try {
-      await api.fetch(`/api/projects/${projectId}`, {
-        method: "DELETE",
-        requiresAuth: true,
-      });
-      return projectId;
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("An unknown error occurred");
-    }
-  }
-);
+    dispatch(
+      addToast({
+        type: "success",
+        message: "Project updated successfully!",
+      })
+    );
 
-export const delistProject = createAsyncThunk(
-  "projects/delist",
-  async (projectId: string, { rejectWithValue }) => {
-    try {
-      const response = await api.patch<ApiResponse<Project>>(
-        `/api/projects/${projectId}/close`,
-        null,
-        { requiresAuth: true }
-      );
-      return response.data;
-    } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-      return rejectWithValue("An unknown error occurred");
+    return response.data;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return rejectWithValue(error);
     }
+    return rejectWithValue(
+      new ApiError({
+        message: "Failed to update project. Please try again.",
+        toastType: "error",
+      })
+    );
   }
-);
+});
+
+export const deleteProject = createAsyncThunk<
+  string,
+  string,
+  { rejectValue: ApiError }
+>("projects/delete", async (projectId, { dispatch, rejectWithValue }) => {
+  try {
+    await api.delete(`/api/projects/${projectId}`, { requiresAuth: true });
+
+    dispatch(
+      addToast({
+        type: "success",
+        message: "Project deleted successfully.",
+      })
+    );
+
+    return projectId;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return rejectWithValue(error);
+    }
+    return rejectWithValue(
+      new ApiError({
+        message: "Failed to delete project. Please try again.",
+        toastType: "error",
+      })
+    );
+  }
+});
+
+export const delistProject = createAsyncThunk<
+  Project,
+  string,
+  { rejectValue: ApiError }
+>("projects/delist", async (projectId, { dispatch, rejectWithValue }) => {
+  try {
+    const response = await api.patch<ApiResponse<Project>>(
+      `/api/projects/${projectId}/close`,
+      null,
+      { requiresAuth: true }
+    );
+
+    dispatch(
+      addToast({
+        type: "success",
+        message: "Project closed successfully.",
+      })
+    );
+
+    return response.data;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return rejectWithValue(error);
+    }
+    return rejectWithValue(
+      new ApiError({
+        message: "Failed to close project. Please try again.",
+        toastType: "error",
+      })
+    );
+  }
+});
 
 const projectsSlice = createSlice({
   name: "projects",
@@ -397,7 +442,7 @@ const projectsSlice = createSlice({
       })
       .addCase(updateProject.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload?.message || "An error occurred";
       })
       .addCase(deleteProject.pending, (state) => {
         state.isLoading = true;
@@ -418,7 +463,7 @@ const projectsSlice = createSlice({
       })
       .addCase(deleteProject.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload?.message || "An error occurred";
       })
       .addCase(delistProject.pending, (state) => {
         state.isLoading = true;
@@ -443,7 +488,7 @@ const projectsSlice = createSlice({
       })
       .addCase(delistProject.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload?.message || "An error occurred";
       });
   },
 });

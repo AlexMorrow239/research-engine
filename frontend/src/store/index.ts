@@ -1,4 +1,4 @@
-import type { AuthState, UIState } from "@/types/global";
+import type { AuthState, UIState } from "@/types";
 import { configureStore } from "@reduxjs/toolkit";
 import type { TypedUseSelectorHook } from "react-redux";
 import { useDispatch, useSelector } from "react-redux";

@@ -36,14 +36,18 @@ export class AuthService {
         throw new UnauthorizedException('Invalid admin password');
       }
 
-      // Remove admin password before creating
-      const { adminPassword: _, ...professorData } = registerProfessorDto;
-      const professor = await this.professorsService.create(professorData);
+      // Remove admin password before creating professor
+      const { adminPassword: _, ...createProfessorDto } = registerProfessorDto;
+      const professor = await this.professorsService.create(createProfessorDto);
       return await this.generateLoginResponse(professor);
     } catch (error) {
-      ErrorHandler.handleServiceError(this.logger, error, 'register professor', {
-        email: registerProfessorDto.email,
-      });
+      ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        'register professor',
+        { email: registerProfessorDto.email },
+        [UnauthorizedException],
+      );
     }
   }
 
@@ -63,12 +67,14 @@ export class AuthService {
       const professor = await this.professorModel.findOne({ email });
 
       if (!professor) {
-        throw new UnauthorizedException('Invalid credentials');
+        throw new UnauthorizedException(
+          'No account found with this email. Please check your email or register for a new account.',
+        );
       }
 
       const isPasswordValid = await bcrypt.compare(password, professor.password);
       if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid credentials');
+        throw new UnauthorizedException('Incorrect password. Please try again.');
       }
 
       if (!professor.isActive) {

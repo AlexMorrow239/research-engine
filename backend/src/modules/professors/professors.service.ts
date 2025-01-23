@@ -17,12 +17,13 @@ import { InvalidEmailDomainException } from './exceptions/invalid-email-domain.e
 import { InvalidPasswordFormatException } from './exceptions/invalid-password-format.exception';
 import { InvalidAdminPasswordException } from './exceptions/password.exception';
 import { Professor } from './schemas/professors.schema';
-import { CreateProfessorDto } from '../../common/dto/professors/create-professor.dto';
+import {
+  CreateProfessorDto,
+  RegisterProfessorDto,
+} from '../../common/dto/professors/create-professor.dto';
 import { ProfessorResponseDto } from '../../common/dto/professors/professor-response.dto';
 import { ReactivateAccountDto } from '../../common/dto/professors/reactivate-account.dto';
 import { UpdateProfessorDto } from '../../common/dto/professors/update-professor.dto';
-
-// ... other imports stay the same ...
 
 @Injectable()
 export class ProfessorsService {
@@ -35,11 +36,6 @@ export class ProfessorsService {
 
   async create(createProfessorDto: CreateProfessorDto): Promise<ProfessorResponseDto> {
     try {
-      const correctAdminPassword = this.configService.get<string>('ADMIN_PASSWORD');
-      if (createProfessorDto.adminPassword !== correctAdminPassword) {
-        throw new InvalidAdminPasswordException();
-      }
-
       const validDomains = ['@miami.edu', '@med.miami.edu', '@cd.miami.edu'];
       if (!validDomains.some((domain) => createProfessorDto.email.endsWith(domain))) {
         throw new InvalidEmailDomainException();
@@ -59,15 +55,14 @@ export class ProfessorsService {
       }
 
       const hashedPassword = await bcrypt.hash(createProfessorDto.password, 10);
-      const { adminPassword: _, ...professorData } = createProfessorDto;
 
       const newProfessor = await this.professorModel.create({
-        ...professorData,
+        ...createProfessorDto,
         password: hashedPassword,
         isActive: true,
       });
 
-      const { password: __, ...result } = newProfessor.toObject();
+      const { password: _, ...result } = newProfessor.toObject();
       return result as ProfessorResponseDto;
     } catch (error) {
       ErrorHandler.handleServiceError(
@@ -75,12 +70,7 @@ export class ProfessorsService {
         error,
         'create professor account',
         { email: createProfessorDto.email },
-        [
-          InvalidAdminPasswordException,
-          InvalidEmailDomainException,
-          InvalidPasswordFormatException,
-          ConflictException,
-        ],
+        [InvalidEmailDomainException, InvalidPasswordFormatException, ConflictException],
       );
     }
   }

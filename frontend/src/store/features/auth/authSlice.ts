@@ -9,6 +9,7 @@ import type {
 import { api, ApiError } from "@/utils/api";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { addToast } from "../ui/uiSlice";
 
 const initialState: AuthState = {
   user: null,
@@ -29,35 +30,51 @@ const professorToUser = (professor: Professor): User => ({
 export const registerFaculty = createAsyncThunk<
   AuthResponse,
   Omit<FacultyRegistrationForm, "confirmPassword" | "firstName" | "lastName">,
-  { rejectValue: string }
->("auth/registerFaculty", async (registrationData, { rejectWithValue }) => {
-  try {
-    const response = await api.post<AuthResponse>(
-      "/api/auth/register",
-      registrationData,
-      { requiresAuth: false }
-    );
+  { rejectValue: ApiError }
+>(
+  "auth/registerFaculty",
+  async (registrationData, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await api.post<AuthResponse>(
+        "/api/auth/register",
+        registrationData,
+        { requiresAuth: false }
+      );
 
-    // Store accessToken in localStorage for API utility
-    if (response.accessToken) {
-      localStorage.setItem("accessToken", response.accessToken);
-    }
+      // Only handle success toast here
+      if (response.accessToken) {
+        localStorage.setItem("accessToken", response.accessToken);
+        dispatch(
+          addToast({
+            type: "success",
+            message:
+              "Registration successful! Welcome to the Bonsai Research Engine!",
+          })
+        );
+      }
 
-    return response;
-  } catch (error) {
-    console.error("Registration API error:", error);
-    if (error instanceof ApiError) {
-      return rejectWithValue(error.message);
+      return response;
+    } catch (error) {
+      console.error("Registration API error:", error);
+      if (error instanceof ApiError) {
+        return rejectWithValue(error);
+      }
+      return rejectWithValue(
+        new ApiError({
+          message: "Registration failed. Please try again.",
+          toastType: "error",
+          toastDuration: 5000,
+        })
+      );
     }
-    return rejectWithValue("Registration failed. Please try again.");
   }
-});
+);
 
 export const loginUser = createAsyncThunk<
   AuthResponse,
   LoginCredentials,
-  { rejectValue: string }
->("auth/login", async (credentials, { rejectWithValue }) => {
+  { rejectValue: ApiError }
+>("auth/login", async (credentials, { dispatch, rejectWithValue }) => {
   try {
     const response = await api.post<AuthResponse>(
       "/api/auth/login",
@@ -65,22 +82,29 @@ export const loginUser = createAsyncThunk<
       { requiresAuth: false }
     );
 
+    // Only handle success toast here
     if (response.accessToken) {
       localStorage.setItem("accessToken", response.accessToken);
+      dispatch(
+        addToast({
+          type: "success",
+          message: "Login successful, welcome back!",
+        })
+      );
     }
 
     return response;
   } catch (error) {
-    console.error("Login error in thunk:", {
-      error,
-      name: error instanceof Error ? error.name : "Unknown",
-      message: error instanceof Error ? error.message : String(error),
-      isApiError: error instanceof ApiError,
-    });
     if (error instanceof ApiError) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error);
     }
-    return rejectWithValue("Login failed. Please try again.");
+    return rejectWithValue(
+      new ApiError({
+        message: "An unexpected error occurred. Please try again.",
+        toastType: "error",
+        toastDuration: 5000,
+      })
+    );
   }
 });
 
@@ -115,11 +139,10 @@ const authSlice = createSlice({
         state.user = professorToUser(action.payload.professor);
         state.accessToken = action.payload.accessToken;
         state.isAuthenticated = true;
-        localStorage.setItem("accessToken", action.payload.accessToken);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload?.message || "An error occurred";
       })
       // Registration cases
       .addCase(registerFaculty.pending, (state) => {
@@ -131,11 +154,10 @@ const authSlice = createSlice({
         state.user = professorToUser(action.payload.professor);
         state.accessToken = action.payload.accessToken;
         state.isAuthenticated = true;
-        localStorage.setItem("accessToken", action.payload.accessToken);
       })
       .addCase(registerFaculty.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload as string;
+        state.error = action.payload?.message || "An error occurred";
       });
   },
 });

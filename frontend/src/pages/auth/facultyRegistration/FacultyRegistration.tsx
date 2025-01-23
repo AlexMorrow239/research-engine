@@ -1,7 +1,6 @@
 import { Department } from "@/common/enums";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { registerFaculty } from "@/store/features/auth/authSlice";
-import { addToast } from "@/store/features/ui/uiSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -140,17 +139,6 @@ export default function FacultyRegistration(): JSX.Element {
         bio: rest.bio,
       };
 
-      // Validate research areas before submission
-      if (formattedData.researchAreas.length === 0) {
-        dispatch(
-          addToast({
-            type: "error",
-            message: "At least one research area is required",
-          })
-        );
-        return;
-      }
-
       // Remove empty publications array
       if (formattedData.publications?.length === 0) {
         delete formattedData.publications;
@@ -160,32 +148,11 @@ export default function FacultyRegistration(): JSX.Element {
       const result = await dispatch(registerFaculty(formattedData)).unwrap();
 
       if (result) {
-        dispatch(
-          addToast({
-            type: "success",
-            message: "Registration successful! Welcome to the platform.",
-          })
-        );
         navigate("/faculty/dashboard");
       }
     } catch (err) {
+      // Just log the error - the auth slice will handle the error toast
       console.error("Registration error:", err);
-      const errorMessage =
-        err instanceof Error
-          ? err.message
-          : typeof err === "string"
-            ? err
-            : "Registration failed. Please try again.";
-
-      // Show specific message for invalid admin password, or general error message
-      dispatch(
-        addToast({
-          type: "error",
-          message: errorMessage.toLowerCase().includes("invalid admin password")
-            ? "Invalid administrator password. Please contact your department administrator."
-            : errorMessage,
-        })
-      );
     }
   };
 

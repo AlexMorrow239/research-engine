@@ -7,7 +7,6 @@ import {
   fetchProject,
   updateProject,
 } from "@/store/features/projects/projectsSlice";
-import { addToast } from "@/store/features/ui/uiSlice";
 import type { Project } from "@/types";
 import { ApiError } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -167,15 +166,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
           setValue("requirements", projectRequirements);
         } catch (error) {
           console.error("Error loading project:", error);
-          dispatch(
-            addToast({
-              type: "error",
-              message:
-                error instanceof Error
-                  ? error.message
-                  : "Failed to load project details",
-            })
-          );
           // Only navigate if there's an authentication error
           if (error instanceof ApiError && error.status === 401) {
             navigate("/faculty/dashboard");
@@ -206,76 +196,24 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
       };
 
       if (formattedData.researchCategories.length === 0) {
-        dispatch(
-          addToast({
-            type: "error",
-            message: "At least one research category is required",
-          })
-        );
         return;
       }
 
       if (action === "delete" && projectId) {
         await dispatch(deleteProject(projectId)).unwrap();
-        dispatch(
-          addToast({
-            type: "success",
-            message: "Project deleted successfully!",
-          })
-        );
       } else if (mode === "edit" && projectId) {
         await dispatch(
           updateProject({ id: projectId, project: formattedData })
         ).unwrap();
-        dispatch(
-          addToast({
-            type: "success",
-            message: getSuccessMessage(status, action),
-          })
-        );
       } else {
         await dispatch(createProject(formattedData)).unwrap();
-        dispatch(
-          addToast({
-            type: "success",
-            message: `Project ${
-              status === ProjectStatus.DRAFT ? "saved as draft" : "published"
-            } successfully!`,
-          })
-        );
       }
 
       navigate("/faculty/dashboard");
     } catch (error) {
       console.error("Error handling project:", error);
-      dispatch(
-        addToast({
-          type: "error",
-          message:
-            error instanceof Error
-              ? error.message
-              : "Failed to handle project. Please try again.",
-        })
-      );
     } finally {
       setIsSubmitting(false);
-    }
-  };
-
-  const getSuccessMessage = (
-    status: ProjectStatus,
-    action?: "delete" | "delist"
-  ): string => {
-    if (action === "delist") return "Project delisted successfully!";
-    switch (status) {
-      case ProjectStatus.DRAFT:
-        return "Project moved to drafts successfully!";
-      case ProjectStatus.PUBLISHED:
-        return "Project updated successfully!";
-      case ProjectStatus.CLOSED:
-        return "Project closed successfully!";
-      default:
-        return "Project updated successfully!";
     }
   };
 
