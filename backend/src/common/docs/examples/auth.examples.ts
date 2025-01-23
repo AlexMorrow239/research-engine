@@ -4,25 +4,9 @@
 export const loginExamples = {
   valid: {
     summary: 'Valid Login Credentials',
-    description: 'Example of a valid login request with miami.edu email',
+    description: 'Example of a valid login request',
     value: {
-      email: 'professor.test@miami.edu',
-      password: 'SecurePass123!',
-    },
-  },
-  invalidEmail: {
-    summary: 'Invalid Email Domain',
-    description: 'Example of an invalid login attempt with non-miami.edu email',
-    value: {
-      email: 'professor@gmail.com',
-      password: 'SecurePass123!',
-    },
-  },
-  deactivatedAccount: {
-    summary: 'Deactivated Account',
-    description: 'Example of login attempt with a deactivated account',
-    value: {
-      email: 'inactive.professor@miami.edu',
+      email: 'professor.test@example.com',
       password: 'SecurePass123!',
     },
   },
@@ -32,6 +16,45 @@ export const loginExamples = {
     value: {
       email: 'not-an-email',
       password: '',
+    },
+  },
+  deactivatedAccount: {
+    summary: 'Deactivated Account',
+    description: 'Example of login attempt with a deactivated account',
+    value: {
+      email: 'inactive.professor@example.com',
+      password: 'SecurePass123!',
+    },
+  },
+};
+
+export const registerExamples = {
+  valid: {
+    summary: 'Valid Registration',
+    description: 'Example of a valid professor registration request',
+    value: {
+      email: 'new.professor@example.com',
+      password: 'SecurePass123!',
+      name: {
+        firstName: 'John',
+        lastName: 'Doe',
+      },
+      department: 'Computer Science',
+      title: 'Associate Professor',
+    },
+  },
+  invalidFormat: {
+    summary: 'Invalid Format',
+    description: 'Example of registration attempt with invalid data format',
+    value: {
+      email: 'invalid-email',
+      password: '123', // Too short
+      name: {
+        firstName: '',
+        lastName: '',
+      },
+      department: '',
+      title: '',
     },
   },
 };

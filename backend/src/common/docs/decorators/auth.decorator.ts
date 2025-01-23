@@ -9,10 +9,10 @@ import {
 
 import { LoginResponseDto } from '@/common/dto/auth/login-response.dto';
 import { LoginDto } from '@/common/dto/auth/login.dto';
+import { CreateProfessorDto, RegisterProfessorDto } from '@/common/dto/professors';
 
 import { AuthDescriptions } from '../descriptions/auth.description';
-import { loginExamples } from '../examples/auth.examples';
-import { CreateProfessorDto } from '@/common/dto/professors';
+import { loginExamples, registerExamples } from '../examples/auth.examples';
 
 export const ApiLogin = () =>
   applyDecorators(
@@ -31,14 +31,6 @@ export const ApiLogin = () =>
       description: AuthDescriptions.responses.inactiveAccount,
     }),
     ApiResponse({
-      status: HttpStatus.BAD_REQUEST,
-      description: AuthDescriptions.responses.invalidEmailDomain,
-    }),
-    ApiResponse({
-      status: HttpStatus.TOO_MANY_REQUESTS,
-      description: AuthDescriptions.responses.tooManyAttempts,
-    }),
-    ApiResponse({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       description: AuthDescriptions.responses.serverError,
     }),
@@ -46,20 +38,18 @@ export const ApiLogin = () =>
 
 export const ApiRegister = () =>
   applyDecorators(
-    ApiOperation({
-      summary: 'Register new professor',
-      description: 'Create new professor account and return access token',
-    }),
-    ApiBody({ type: CreateProfessorDto }),
+    ApiOperation(AuthDescriptions.register),
+    ApiBody({ type: RegisterProfessorDto, examples: registerExamples }),
     ApiResponse({
       status: HttpStatus.CREATED,
-      description: 'Professor account created successfully',
+      description: AuthDescriptions.responses.registrationSuccess,
       type: LoginResponseDto,
     }),
     ApiBadRequestResponse({
-      description: 'Invalid input data (email domain, password format)',
+      description: AuthDescriptions.responses.registrationError,
     }),
-    ApiUnauthorizedResponse({
-      description: 'Invalid admin password',
+    ApiResponse({
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      description: AuthDescriptions.responses.serverError,
     }),
   );

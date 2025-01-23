@@ -1,44 +1,27 @@
 import { Campus } from '@/common/enums';
-
-// Helper function to generate dates
-const getFutureDate = (months: number) => {
-  const date = new Date();
-  date.setMonth(date.getMonth() + months); // 6 months in the future
-  return date.toISOString();
-};
-
-const getPastDate = () => {
-  const date = new Date();
-  date.setMonth(date.getMonth() - 1); // 1 month in the past
-  return date.toISOString();
-};
+import { ProjectStatus } from '@/modules/projects/schemas/projects.schema';
+import { dateUtils } from '../utils/api-docs.utils';
 
 export const createProjectExamples = {
   complete: {
     summary: 'Complete Project Creation',
-    description: 'Example of creating a project with all optional fields',
+    description: 'Example of creating a project with all available fields',
     value: {
       title: 'Machine Learning Research Assistant',
-      description: `Seeking motivated research assistants for an exciting ML project focusing on computer vision and deep learning applications in healthcare. The project involves developing novel algorithms for medical image analysis using state-of-the-art deep learning techniques.`,
-      researchCategories: [
-        'Machine Learning',
-        'Computer Vision',
-        'Artificial Intelligence',
-        'Healthcare',
-        'Deep Learning',
-      ],
+      description:
+        'Seeking motivated research assistants for an exciting ML project focusing on computer vision and deep learning applications in healthcare. The project involves developing novel algorithms for medical image analysis using state-of-the-art deep learning techniques.',
+      researchCategories: ['Machine Learning', 'Computer Vision', 'Healthcare', 'Deep Learning'],
       campus: Campus.CORAL_GABLES,
       requirements: [
         'Strong programming skills in Python',
         'Experience with PyTorch or TensorFlow',
         'Background in linear algebra and statistics',
         'Familiarity with computer vision concepts',
-        'Good understanding of deep learning architectures',
         'Ability to work 15-20 hours per week',
       ],
-      status: 'PUBLISHED',
+      status: ProjectStatus.PUBLISHED,
       positions: 2,
-      applicationDeadline: getFutureDate(6),
+      applicationDeadline: dateUtils.getFutureDate(3),
       isVisible: true,
     },
   },
@@ -49,41 +32,28 @@ export const createProjectExamples = {
       title: 'Research Assistant Needed',
       description: 'Seeking assistance for ongoing research project in computer science.',
       researchCategories: ['Computer Science'],
-      requirements: ['Programming experience'],
       campus: Campus.CORAL_GABLES,
-      status: 'DRAFT',
+      requirements: ['Programming experience'],
       positions: 1,
     },
   },
   draft: {
     summary: 'Draft Project Creation',
-    description: 'Example of creating a draft project for later publication',
+    description: 'Example of creating a project in draft status',
     value: {
       title: 'Data Science Research Project (Draft)',
-      description: `Draft description for upcoming research project in data science. Project details and requirements to be finalized.`,
-      researchCategories: ['Data Science', 'Statistics', 'Machine Learning'],
+      description:
+        'Draft description for upcoming research project in data science. Project details and requirements to be finalized.',
+      researchCategories: ['Data Science', 'Statistics'],
+      campus: Campus.CORAL_GABLES,
       requirements: [
         'Statistics background',
         'R or Python experience',
         'Data visualization skills',
       ],
-      status: 'DRAFT',
+      status: ProjectStatus.DRAFT,
       positions: 2,
-      applicationDeadline: getFutureDate(6),
       isVisible: false,
-    },
-  },
-  invalidDeadline: {
-    summary: 'Invalid Deadline',
-    description: 'Example of project creation with past deadline (will fail validation)',
-    value: {
-      title: 'Invalid Project',
-      description: 'This project has an invalid past deadline.',
-      researchCategories: ['Computer Science'],
-      requirements: ['Programming experience'],
-      status: 'DRAFT',
-      positions: 1,
-      applicationDeadline: getPastDate(), // Dynamic past date
     },
   },
 };
@@ -91,34 +61,28 @@ export const createProjectExamples = {
 export const updateProjectExamples = {
   fullUpdate: {
     summary: 'Full Project Update',
-    description: 'Example of updating all available fields',
+    description: 'Example of updating multiple project fields',
     value: {
       title: 'Updated: ML Research Position',
-      description: `Updated project description with expanded scope and new requirements. Now including natural language processing components and cloud computing aspects.`,
-      researchCategories: [
-        'Machine Learning',
-        'Deep Learning',
-        'Natural Language Processing',
-        'Cloud Computing',
-      ],
+      description: 'Updated project description with expanded scope and new requirements.',
+      researchCategories: ['Machine Learning', 'Natural Language Processing', 'Cloud Computing'],
       requirements: [
         'Advanced Python programming skills',
         'Experience with NLP libraries',
         'Knowledge of cloud platforms (AWS/GCP)',
-        'Strong mathematical background',
       ],
-      status: 'PUBLISHED',
       campus: Campus.CORAL_GABLES,
       positions: 3,
-      applicationDeadline: getFutureDate(4),
+      applicationDeadline: dateUtils.getFutureDate(2),
       isVisible: true,
     },
   },
   statusUpdate: {
     summary: 'Status Update',
-    description: 'Example of updating only the project status',
+    description: 'Example of updating project status to closed',
     value: {
-      status: 'PUBLISHED',
+      status: ProjectStatus.CLOSED,
+      isVisible: false,
     },
   },
   visibilityUpdate: {
@@ -126,14 +90,13 @@ export const updateProjectExamples = {
     description: 'Example of updating project visibility',
     value: {
       isVisible: false,
-      status: 'DRAFT',
     },
   },
-  deadlineUpdate: {
-    summary: 'Deadline Update',
-    description: 'Example of updating application deadline',
+  deadlineExtension: {
+    summary: 'Deadline Extension',
+    description: 'Example of extending the application deadline',
     value: {
-      applicationDeadline: getFutureDate(4),
+      applicationDeadline: dateUtils.getFutureDate(1),
     },
   },
   requirementsUpdate: {
@@ -141,10 +104,35 @@ export const updateProjectExamples = {
     description: 'Example of updating project requirements',
     value: {
       requirements: [
-        'Updated technical requirements',
-        'New skill prerequisites',
-        'Additional time commitments',
+        'Updated: Advanced programming skills required',
+        'Minimum GPA of 3.5',
+        'Available 10-15 hours per week',
       ],
     },
   },
+};
+
+export const projectResponseExample = {
+  id: '507f1f77bcf86cd799439011',
+  title: 'Machine Learning Research Assistant',
+  description: 'Seeking motivated research assistants for an exciting ML project...',
+  campus: Campus.CORAL_GABLES,
+  professor: {
+    id: '507f1f77bcf86cd799439012',
+    name: {
+      firstName: 'John',
+      lastName: 'Doe',
+    },
+    email: 'john.doe@miami.edu',
+    department: 'Computer Science',
+  },
+  researchCategories: ['Machine Learning', 'Computer Vision'],
+  requirements: ['Strong programming skills in Python', 'Experience with PyTorch or TensorFlow'],
+  files: [], // Currently not implemented
+  status: ProjectStatus.PUBLISHED,
+  positions: 2,
+  applicationDeadline: dateUtils.getFutureDate(3),
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  isVisible: true,
 };

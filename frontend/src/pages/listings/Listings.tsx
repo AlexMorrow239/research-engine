@@ -1,4 +1,4 @@
-import { ProjectStatus, type Campus } from "@/common/enums";
+import { type Campus } from "@/common/enums";
 import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
 import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
 import { ProjectFilters } from "@/components/projects/project-filters/ProjectFilters";
@@ -32,13 +32,11 @@ export default function Listings(): JSX.Element {
 
   const [isMobileDetailView, setIsMobileDetailView] = useState(false);
 
-  // Effect for handling URL params and fetching projects
+  // Combine URL params handling and fetching into a single effect
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const newFilters: Partial<ProjectsState["filters"]> = {
       search: queryParams.get("search") || undefined,
-      status:
-        (queryParams.get("status") as ProjectStatus) || ProjectStatus.PUBLISHED,
       page: parseInt(queryParams.get("page") || "1"),
     };
 
@@ -66,11 +64,13 @@ export default function Listings(): JSX.Element {
       dispatch(setFilters(newFilters));
       dispatch(fetchProjects());
     }
-  }, [location.search]);
+  }, [location.search]); // Remove filters from dependencies
 
   // Effect for updating URL when filters change
-  // Effect for updating URL when filters change
   useEffect(() => {
+    // Skip initial render
+    if (isInitialLoad) return;
+
     const queryParams = new URLSearchParams();
 
     // Helper function to add param if it exists
@@ -87,9 +87,6 @@ export default function Listings(): JSX.Element {
     if (filters.search) {
       addParamIfExists("search", filters.search);
     }
-
-    // Add status parameter
-    addParamIfExists("status", filters.status);
 
     // Add sorting parameters
     if (filters.sortBy !== "createdAt" || filters.sortOrder !== "desc") {
@@ -122,13 +119,11 @@ export default function Listings(): JSX.Element {
     const queryString = queryParams.toString();
     const newUrl = queryString ? `?${queryString}` : "";
 
-    // Update URL and force fetch if needed
+    // Only update URL if it's different
     if (location.search !== newUrl) {
       navigate(newUrl, { replace: true });
-      // Force a fetch when filters change
-      dispatch(fetchProjects());
     }
-  }, [filters, navigate, dispatch]);
+  }, [filters, navigate, isInitialLoad]);
 
   // Optimize project selection handler
   const handleProjectSelect = useCallback(
@@ -196,7 +191,7 @@ export default function Listings(): JSX.Element {
                   key={project.id}
                   project={{
                     ...project,
-                    status: project.status as ProjectStatus,
+                    // status: project.status as ProjectStatus,
                     campus: project.campus as Campus,
                   }}
                   isSelected={currentProject?.id === project.id}

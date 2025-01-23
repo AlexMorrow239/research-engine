@@ -1,4 +1,4 @@
-import { ProjectStatus } from "@/common/enums";
+import { type ProjectStatus } from "@/common/enums";
 import type { ApiResponse, Project } from "@/types";
 import { api, ApiError } from "@/utils/api";
 import type { PayloadAction } from "@reduxjs/toolkit";
@@ -37,7 +37,6 @@ const initialState: ProjectsState = {
   filters: {
     page: 1,
     limit: 10,
-    status: ProjectStatus.PUBLISHED,
     sortBy: "createdAt",
     sortOrder: "desc",
     campus: undefined,
@@ -59,11 +58,12 @@ export const fetchProjects = createAsyncThunk(
         }),
         ...(filters.campus &&
           filters.campus !== "" && { campus: filters.campus }),
-        ...(filters.status && { status: filters.status }),
         ...(filters.search && { search: filters.search }),
-        ...(filters.researchCategories && {
-          researchCategories: filters.researchCategories.join(","),
-        }),
+        ...(filters.search && { search: filters.search }),
+        ...(filters.researchCategories &&
+          filters.researchCategories.length > 0 && {
+            researchCategories: filters.researchCategories.join(","),
+          }),
         ...(filters.sortBy && { sortBy: filters.sortBy }),
         ...(filters.sortOrder && { sortOrder: filters.sortOrder }),
       });
@@ -112,7 +112,6 @@ export const fetchProjects = createAsyncThunk(
     }
   },
   {
-    // Add condition to prevent duplicate requests
     condition: (_, { getState }) => {
       const { isLoading } = (getState() as RootState).projects;
       if (isLoading) {
@@ -250,7 +249,7 @@ export const delistProject = createAsyncThunk(
     try {
       const response = await api.patch<ApiResponse<Project>>(
         `/api/projects/${projectId}/close`,
-        {},
+        null,
         { requiresAuth: true }
       );
       return response.data;

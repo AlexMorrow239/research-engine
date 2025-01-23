@@ -8,7 +8,7 @@ import {
   updateProject,
 } from "@/store/features/projects/projectsSlice";
 import { addToast } from "@/store/features/ui/uiSlice";
-import type { Project } from "@/types/api";
+import type { Project } from "@/types";
 import { ApiError } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {

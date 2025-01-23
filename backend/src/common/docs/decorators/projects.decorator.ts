@@ -4,13 +4,11 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
-  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOperation,
   ApiParam,
   ApiQuery,
   ApiResponse,
-  ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
   getSchemaPath,
 } from '@nestjs/swagger';
@@ -45,13 +43,6 @@ export const ApiCreateProject = () =>
     ApiBadRequestResponse({
       description: ProjectDescriptions.responses.invalidData,
     }),
-    ApiForbiddenResponse({
-      description: ProjectDescriptions.responses.ownershipRequired,
-    }),
-    ApiResponse({
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      description: ProjectDescriptions.responses.serverError,
-    }),
   );
 
 export const ApiFindAllProjects = () =>
@@ -72,18 +63,17 @@ export const ApiFindAllProjects = () =>
       example: 10,
     }),
     ApiQuery({
-      name: 'department',
+      name: 'departments',
       required: false,
       type: String,
-      description: 'Filter by professor department',
-      example: 'Computer Science',
+      description: 'Filter by professor departments (comma-separated)',
+      example: 'Computer Science,Electrical Engineering',
     }),
     ApiQuery({
-      name: 'status',
+      name: 'campus',
       required: false,
-      enum: ProjectStatus,
-      description: 'Filter by project status (default: PUBLISHED)',
-      example: ProjectStatus.PUBLISHED,
+      type: String,
+      description: 'Filter by campus',
     }),
     ApiQuery({
       name: 'search',
@@ -97,8 +87,20 @@ export const ApiFindAllProjects = () =>
       required: false,
       type: [String],
       isArray: true,
-      description: 'Filter by research categories (comma-separated)',
+      description: 'Filter by research categories',
       example: ['Machine Learning', 'Computer Vision'],
+    }),
+    ApiQuery({
+      name: 'sortBy',
+      required: false,
+      enum: ['createdAt', 'applicationDeadline'],
+      description: 'Sort field (default: createdAt)',
+    }),
+    ApiQuery({
+      name: 'sortOrder',
+      required: false,
+      enum: ['asc', 'desc'],
+      description: 'Sort order (default: desc)',
     }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -114,21 +116,8 @@ export const ApiFindAllProjects = () =>
             example: 50,
             description: 'Total number of projects matching the criteria',
           },
-          page: {
-            type: 'number',
-            example: 1,
-            description: 'Current page number',
-          },
-          limit: {
-            type: 'number',
-            example: 10,
-            description: 'Number of items per page',
-          },
         },
       },
-    }),
-    ApiBadRequestResponse({
-      description: ProjectDescriptions.responses.invalidData,
     }),
   );
 
@@ -149,38 +138,6 @@ export const ApiFindProfessorProjects = () =>
     }),
     ApiUnauthorizedResponse({
       description: ProjectDescriptions.responses.unauthorized,
-    }),
-  );
-
-export const ApiDeleteProjectFile = () =>
-  applyDecorators(
-    ApiBearerAuth(),
-    ApiOperation(ProjectDescriptions.deleteFile),
-    ApiParam({
-      name: 'id',
-      description: 'Project ID',
-      example: '507f1f77bcf86cd799439011',
-    }),
-    ApiParam({
-      name: 'fileName',
-      description: 'Name of the file to delete',
-      example: 'project-description.pdf',
-    }),
-    ApiResponse({
-      status: HttpStatus.NO_CONTENT,
-      description: ProjectDescriptions.responses.fileDeleted,
-    }),
-    ApiUnauthorizedResponse({
-      description: ProjectDescriptions.responses.unauthorized,
-    }),
-    ApiForbiddenResponse({
-      description: ProjectDescriptions.responses.ownershipRequired,
-    }),
-    ApiNotFoundResponse({
-      description: ProjectDescriptions.responses.notFound,
-    }),
-    ApiBadRequestResponse({
-      description: ProjectDescriptions.responses.invalidData,
     }),
   );
 
@@ -223,18 +180,32 @@ export const ApiUpdateProject = () =>
     ApiUnauthorizedResponse({
       description: ProjectDescriptions.responses.unauthorized,
     }),
-    ApiForbiddenResponse({
-      description: ProjectDescriptions.responses.ownershipRequired,
-    }),
     ApiNotFoundResponse({
       description: ProjectDescriptions.responses.notFound,
     }),
     ApiBadRequestResponse({
       description: ProjectDescriptions.responses.invalidData,
     }),
+  );
+
+export const ApiRemoveProject = () =>
+  applyDecorators(
+    ApiBearerAuth(),
+    ApiOperation(ProjectDescriptions.remove),
+    ApiParam({
+      name: 'id',
+      description: 'Project ID',
+      example: '507f1f77bcf86cd799439011',
+    }),
     ApiResponse({
-      status: HttpStatus.CONFLICT,
-      description: ProjectDescriptions.responses.statusTransitionError,
+      status: HttpStatus.NO_CONTENT,
+      description: ProjectDescriptions.responses.deleted,
+    }),
+    ApiUnauthorizedResponse({
+      description: ProjectDescriptions.responses.unauthorized,
+    }),
+    ApiNotFoundResponse({
+      description: ProjectDescriptions.responses.notFound,
     }),
   );
 
@@ -268,76 +239,44 @@ export const ApiUploadProjectFile = () =>
     ApiUnauthorizedResponse({
       description: ProjectDescriptions.responses.unauthorized,
     }),
-    ApiForbiddenResponse({
-      description: ProjectDescriptions.responses.ownershipRequired,
-    }),
     ApiNotFoundResponse({
       description: ProjectDescriptions.responses.notFound,
     }),
     ApiBadRequestResponse({
       description: ProjectDescriptions.responses.invalidFile,
     }),
-    ApiTooManyRequestsResponse({
-      description: ProjectDescriptions.responses.fileQuotaExceeded,
-    }),
   );
 
-export const ApiRemoveProject = () =>
+export const ApiDeleteProjectFile = () =>
   applyDecorators(
     ApiBearerAuth(),
-    ApiOperation(ProjectDescriptions.remove),
+    ApiOperation(ProjectDescriptions.deleteFile),
     ApiParam({
       name: 'id',
       description: 'Project ID',
       example: '507f1f77bcf86cd799439011',
     }),
+    ApiParam({
+      name: 'fileName',
+      description: 'Name of the file to delete',
+      example: 'project-description.pdf',
+    }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
-      description: ProjectDescriptions.responses.deleted,
+      description: ProjectDescriptions.responses.fileDeleted,
     }),
     ApiUnauthorizedResponse({
       description: ProjectDescriptions.responses.unauthorized,
     }),
-    ApiForbiddenResponse({
-      description: ProjectDescriptions.responses.ownershipRequired,
-    }),
     ApiNotFoundResponse({
       description: ProjectDescriptions.responses.notFound,
     }),
-    ApiBadRequestResponse({
-      description: ProjectDescriptions.responses.invalidData,
-    }),
-    ApiResponse({
-      status: HttpStatus.CONFLICT,
-      description: ProjectDescriptions.responses.archiveError,
-    }),
   );
-
-// ... existing imports ...
 
 export const ApiCloseProject = () =>
   applyDecorators(
     ApiBearerAuth(),
-    ApiOperation({
-      summary: 'Close project',
-      description: `
-        Close a research project and notify all applicants.
-        
-        Closing Process:
-        - Project status changes to CLOSED
-        - Project becomes hidden
-        - All pending applications are closed
-        - Email notifications sent to all applicants
-        - Project and applications remain in database
-        
-        Access Rules:
-        - Only project owner can close their project
-        - Cannot reopen a closed project
-        - All pending applications are automatically closed
-        
-        Note: This action cannot be undone.
-      `,
-    }),
+    ApiOperation(ProjectDescriptions.closeProject),
     ApiParam({
       name: 'id',
       description: 'Project ID',
@@ -345,13 +284,10 @@ export const ApiCloseProject = () =>
     }),
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Project closed successfully and notifications sent',
+      description: ProjectDescriptions.responses.closed,
     }),
     ApiUnauthorizedResponse({
       description: ProjectDescriptions.responses.unauthorized,
-    }),
-    ApiForbiddenResponse({
-      description: ProjectDescriptions.responses.ownershipRequired,
     }),
     ApiNotFoundResponse({
       description: ProjectDescriptions.responses.notFound,

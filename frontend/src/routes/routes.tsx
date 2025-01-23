@@ -1,5 +1,5 @@
 import { ErrorDisplay } from "@/components/error-boundary/ErrorBoundary";
-import { MainLayout } from "@/components/layout/mainLayout/MainLayout";
+import { MainLayout } from "@/components/layout/main-layout/MainLayout";
 import About from "@/pages/about/About";
 import Listings from "@/pages/listings/Listings";
 import NotFound from "@/pages/not-found/NotFound";

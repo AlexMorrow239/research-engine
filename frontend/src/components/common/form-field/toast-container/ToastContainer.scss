@@ -1,0 +1,102 @@
+.toast-container {
+  position: fixed;
+  top: calc(var(--navbar-height) + var(--spacing-4)); // Position below navbar
+  right: var(--spacing-4);
+  z-index: var(--z-toast); // Ensure it's above other content but below navbar
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  max-width: 400px;
+  width: calc(100% - var(--spacing-8));
+  pointer-events: none; // Allow clicking through the container
+
+  .toast {
+    pointer-events: auto; // Re-enable pointer events for individual toasts
+  }
+}
+
+.toast {
+  background-color: var(--color-background);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-3);
+  animation: slideIn 0.3s ease;
+  border: 1px solid var(--color-border);
+
+  &__icon {
+    flex-shrink: 0;
+
+    &--success {
+      color: var(--color-success);
+    }
+
+    &--error {
+      color: var(--color-error);
+    }
+
+    &--info {
+      color: var(--color-info);
+    }
+
+    &--warning {
+      color: var(--color-warning);
+    }
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__title {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-dark);
+    margin-bottom: var(--spacing-1);
+  }
+
+  &__message {
+    color: var(--color-text);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-snug);
+    word-wrap: break-word;
+  }
+
+  &__close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--color-text-light);
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--color-text);
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .toast-container {
+    right: var(--spacing-2);
+    width: calc(100% - var(--spacing-4));
+  }
+
+  .toast {
+    padding: var(--spacing-3);
+  }
+}

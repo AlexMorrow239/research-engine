@@ -98,7 +98,6 @@ export class ProjectsService {
     limit?: number;
     departments?: string;
     campus?: string;
-    status?: ProjectStatus;
     search?: string;
     researchCategories?: string[];
     sortBy?: 'createdAt' | 'applicationDeadline';
@@ -110,7 +109,6 @@ export class ProjectsService {
         limit = 10,
         departments,
         campus,
-        status,
         search,
         researchCategories,
         sortBy = 'createdAt',
@@ -118,8 +116,11 @@ export class ProjectsService {
       } = query;
 
       // Build filter conditions
-      const filter: any = {};
-      if (status) filter.status = status;
+      const filter: any = {
+        status: ProjectStatus.PUBLISHED,
+        isVisible: true,
+      };
+
       if (campus) filter.campus = campus;
       if (departments) {
         const departmentsList = departments.split(',');

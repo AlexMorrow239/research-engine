@@ -5,17 +5,17 @@ export const ProjectDescriptions = {
       Create a new research project with the following requirements:
       - Must be authenticated as a professor
       - Title and description are required
+      - Campus must be specified
       - At least one research category must be specified
-      - Project status can be DRAFT or PUBLISHED
-      - Number of positions must be at least 1
-      - Application deadline must be in the future (optional)
-      - Files can be attached after creation
+      - Project status defaults to PUBLISHED
+      - Number of positions must be specified
+      - Application deadline is optional
       
       Notes:
-      - Draft projects are only visible to the owner
       - Published projects are visible to all users
       - Research categories help students find relevant projects
       - Requirements should be specific and clear
+      - Project is automatically linked to creating professor
     `,
   },
   findAll: {
@@ -23,17 +23,18 @@ export const ProjectDescriptions = {
     description: `
       Retrieve a paginated list of research projects with optional filters:
       - Page and limit for pagination (default: page 1, limit 10)
-      - Department filter (e.g., "Computer Science")
-      - Status filter (default: PUBLISHED)
+      - Department filter (comma-separated departments)
+      - Campus filter (single campus)
       - Text search in title and description
-      - Research categories filter (comma-separated)
+      - Research categories filter (array)
+      - Sort options: createdAt or applicationDeadline
+      - Sort order: asc or desc (default: desc)
       
       Additional Features:
-      - Results are sorted by creation date (newest first)
       - Only published and visible projects are returned
       - Department filter matches professor's department
       - Search is case-insensitive and supports partial matches
-      - Multiple research categories use OR logic
+      - Returns total count for pagination
     `,
   },
   findProfessorProjects: {
@@ -42,14 +43,11 @@ export const ProjectDescriptions = {
       Retrieve all projects created by the authenticated professor.
       
       Features:
-      - Can be filtered by project status (DRAFT, PUBLISHED, or ARCHIVED)
-      - Includes both visible and hidden projects
-      - Returns full project details including files and applications
-      - Sorted by last update date (newest first)
-      - No pagination - returns all projects
-      - Includes draft and archived projects
-      - Shows application statistics
-      - Displays file attachments
+      - Optional filter by project status (DRAFT, PUBLISHED, CLOSED)
+      - Returns all projects without pagination
+      - Sorted by creation date (newest first)
+      - Includes full project details
+      - Requires professor authentication
     `,
   },
   findOne: {
@@ -57,18 +55,16 @@ export const ProjectDescriptions = {
     description: `
       Retrieve detailed information about a specific project including:
       - Project details and requirements
-      - Professor information
+      - Professor information (name, email, department)
       - Research categories
-      - Attached files
-      - Application status and deadline
-      - Current number of applications
-      - Project visibility status
+      - Project status
+      - Number of positions
+      - Application deadline
+      - Visibility status
       
-      Access Rules:
-      - Published projects are visible to all
-      - Draft projects are only visible to the owner
-      - Archived projects maintain limited visibility
-      - File access follows project visibility rules
+      Notes:
+      - Throws NotFoundException if project doesn't exist
+      - Returns transformed project response
     `,
   },
   update: {
@@ -78,18 +74,13 @@ export const ProjectDescriptions = {
       
       Update Rules:
       - All fields are optional - only provided fields will be updated
-      - Status changes trigger notifications to applicants
-      - File attachments must be managed separately
       - Cannot modify professor ownership
-      - Draft projects can be fully modified
-      - Published projects have limited modifications
-      - Archived projects cannot be modified
+      - Must be project owner to update
+      - Returns updated project details
       
-      Status Transitions:
-      - DRAFT → PUBLISHED: Project becomes visible
-      - PUBLISHED → DRAFT: Project becomes hidden
-      - PUBLISHED → ARCHIVED: Applications closed
-      - ARCHIVED: No further modifications allowed
+      Notes:
+      - Throws NotFoundException if project doesn't exist or unauthorized
+      - Updates are validated against UpdateProjectDto
     `,
   },
   remove: {
@@ -98,84 +89,73 @@ export const ProjectDescriptions = {
       Permanently delete a project. Only the project owner can delete their projects.
       
       Deletion Process:
-      - All associated files will be deleted from storage
-      - All applications will be archived
-      - Action cannot be undone
       - Requires professor authentication
-      - Notifications sent to applicants
-      - Project data completely removed
-      
-      Restrictions:
-      - Cannot delete projects with accepted applications
-      - Archived projects require admin approval
       - Must be project owner
+      - Project data completely removed
+      - Returns no content on success
+      
+      Notes:
+      - Throws NotFoundException if project doesn't exist or unauthorized
+      - File cleanup not yet implemented
     `,
   },
   uploadFile: {
     summary: 'Upload project file',
     description: `
-      Upload a file attachment for the project.
+      Upload a file attachment for the project (placeholder implementation).
       
       File Requirements:
       - Maximum file size: 5MB
       - Allowed file types: PDF, DOC, DOCX
       - Only project owner can upload files
-      - Files are stored securely and linked to the project
-      - Maximum 10 files per project
-      - Duplicate filenames are automatically handled
       
-      Storage Rules:
-      - Files are scanned for viruses
-      - Original filenames are preserved
-      - Secure access controls applied
-      - Automatic file type verification
-      - Metadata is stored with file
+      Note: File storage functionality is not yet implemented
     `,
   },
   deleteFile: {
     summary: 'Delete project file',
     description: `
-      Remove a file attachment from the project.
+      Remove a file attachment from the project (placeholder implementation).
       
-      Deletion Rules:
+      Rules:
       - Only project owner can delete files
-      - File is permanently deleted from storage
-      - Project reference is removed
-      - Filename must match exactly
-      - Action cannot be undone
-      - No impact on other project data
+      - Filename must be provided
       
-      Restrictions:
-      - Cannot delete required files
-      - Must have project write access
-      - File must exist in project
+      Note: File storage functionality is not yet implemented
+    `,
+  },
+  closeProject: {
+    summary: 'Close project',
+    description: `
+      Close a project and notify all pending applicants.
+      
+      Process:
+      - Sets project status to CLOSED
+      - Makes project invisible
+      - Updates all pending applications
+      - Sends email notifications to applicants
+      
+      Notes:
+      - Only project owner can close their project
+      - Cannot be undone
+      - Throws NotFoundException if project doesn't exist or unauthorized
     `,
   },
   responses: {
     // Success Responses
-    created: 'Project successfully created with provided details',
-    retrieved: 'Project(s) successfully retrieved with all requested data',
-    updated: 'Project successfully updated with provided changes',
-    deleted: 'Project and all associated data successfully deleted',
-    fileUploaded: 'File successfully uploaded and linked to project',
-    fileDeleted: 'File successfully deleted from project and storage',
+    created: 'Project successfully created',
+    retrieved: 'Project(s) successfully retrieved',
+    updated: 'Project successfully updated',
+    deleted: 'Project successfully deleted',
+    fileUploaded: 'File upload acknowledged (placeholder)',
+    fileDeleted: 'File deletion acknowledged (placeholder)',
+    closed: 'Project closed and applicants notified',
 
     // Error Responses
-    notFound: 'Requested project or resource not found',
-    unauthorized: 'Not authorized to perform this action on the project',
-    invalidData: 'Invalid or malformed project data provided',
-    invalidFile: 'File type not allowed or file is corrupted',
-    fileQuotaExceeded: 'Maximum number of files (10) reached for this project',
-    duplicateFile: 'A file with this name already exists in the project',
-    invalidFileType: 'File type not allowed (PDF, DOC, DOCX only)',
-    fileSizeTooLarge: 'File size exceeds maximum limit of 5MB',
-    projectLocked: 'Project cannot be modified in its current status',
-    ownershipRequired: 'Only the project owner can perform this action',
+    notFound: "Project not found or you don't have permission to access it",
+    unauthorized: "You don't have permission to perform this action",
+    invalidData: 'Invalid project data provided',
+    invalidFile: 'Invalid file type or size',
     serverError: 'An unexpected error occurred while processing the request',
-    validationError: 'One or more validation rules failed',
-    deadlinePassed: 'Application deadline has already passed',
-    maxPositionsReached: 'Maximum number of positions already filled',
-    archiveError: 'Cannot modify archived project',
-    statusTransitionError: 'Invalid project status transition',
   },
 };

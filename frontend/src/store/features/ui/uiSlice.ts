@@ -1,12 +1,13 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
 
 export type ToastType = "success" | "error" | "info" | "warning";
 
 interface Toast {
   id: string;
+  type: "success" | "error" | "warning" | "info";
   message: string;
-  type: ToastType;
   duration?: number;
 }
 
@@ -60,7 +61,7 @@ const uiSlice = createSlice({
 
     // Toast actions
     addToast: (state, action: PayloadAction<Omit<Toast, "id">>) => {
-      const id = Date.now().toString();
+      const id = uuidv4();
       state.toasts.push({ ...action.payload, id });
     },
     removeToast: (state, action: PayloadAction<string>) => {

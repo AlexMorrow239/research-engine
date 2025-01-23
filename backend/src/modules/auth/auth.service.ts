@@ -9,8 +9,13 @@ import { ErrorHandler } from '@/common/utils/error-handler.util';
 import { LoginResponseDto } from '@/common/dto/auth/login-response.dto';
 
 import { Professor } from '../professors/schemas/professors.schema';
-import { CreateProfessorDto, ProfessorResponseDto } from '@/common/dto/professors';
+import {
+  CreateProfessorDto,
+  ProfessorResponseDto,
+  RegisterProfessorDto,
+} from '@/common/dto/professors';
 import { ProfessorsService } from '../professors/professors.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -20,15 +25,24 @@ export class AuthService {
     @InjectModel(Professor.name) private professorModel: Model<Professor>,
     private readonly jwtService: JwtService,
     private readonly professorsService: ProfessorsService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async register(createProfessorDto: CreateProfessorDto): Promise<LoginResponseDto> {
+  async register(registerProfessorDto: RegisterProfessorDto): Promise<LoginResponseDto> {
     try {
-      const professor = await this.professorsService.create(createProfessorDto);
+      // Validate admin password
+      const adminPassword = this.configService.get<string>('ADMIN_PASSWORD');
+      if (registerProfessorDto.adminPassword !== adminPassword) {
+        throw new UnauthorizedException('Invalid admin password');
+      }
+
+      // Remove admin password before creating
+      const { adminPassword: _, ...professorData } = registerProfessorDto;
+      const professor = await this.professorsService.create(professorData);
       return await this.generateLoginResponse(professor);
     } catch (error) {
       ErrorHandler.handleServiceError(this.logger, error, 'register professor', {
-        email: createProfessorDto.email,
+        email: registerProfessorDto.email,
       });
     }
   }

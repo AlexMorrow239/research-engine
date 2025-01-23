@@ -140,6 +140,7 @@ export default function FacultyRegistration(): JSX.Element {
         bio: rest.bio,
       };
 
+      // Validate research areas before submission
       if (formattedData.researchAreas.length === 0) {
         dispatch(
           addToast({
@@ -150,30 +151,39 @@ export default function FacultyRegistration(): JSX.Element {
         return;
       }
 
+      // Remove empty publications array
       if (formattedData.publications?.length === 0) {
         delete formattedData.publications;
       }
 
-      await dispatch(registerFaculty(formattedData)).unwrap();
+      // Attempt registration
+      const result = await dispatch(registerFaculty(formattedData)).unwrap();
 
-      dispatch(
-        addToast({
-          type: "success",
-          message: "Registration successful! Welcome to the platform.",
-        })
-      );
-
-      navigate("/faculty/dashboard");
+      if (result) {
+        dispatch(
+          addToast({
+            type: "success",
+            message: "Registration successful! Welcome to the platform.",
+          })
+        );
+        navigate("/faculty/dashboard");
+      }
     } catch (err) {
       console.error("Registration error:", err);
       const errorMessage =
         err instanceof Error
           ? err.message
-          : error || "Registration failed. Please try again.";
+          : typeof err === "string"
+            ? err
+            : "Registration failed. Please try again.";
+
+      // Show specific message for invalid admin password, or general error message
       dispatch(
         addToast({
           type: "error",
-          message: errorMessage,
+          message: errorMessage.toLowerCase().includes("invalid admin password")
+            ? "Invalid administrator password. Please contact your department administrator."
+            : errorMessage,
         })
       );
     }
@@ -192,6 +202,7 @@ export default function FacultyRegistration(): JSX.Element {
     <div className="faculty-registration">
       <div className="faculty-registration__container">
         <h1 className="faculty-registration__title">Faculty Registration</h1>
+        {error && <p className="error-message">{error}</p>}
         <p className="faculty-registration__subtitle">
           Create your account to start posting research opportunities
         </p>

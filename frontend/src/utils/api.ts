@@ -55,7 +55,8 @@ export const api = {
       // Prepare the request body
       let body = fetchOptions.body;
       if (body && !isFormData) {
-        body = JSON.stringify(body);
+        // Check if body is already a string
+        body = typeof body === "string" ? body : JSON.stringify(body);
       }
 
       const response = await fetch(url, {
@@ -158,7 +159,7 @@ export const api = {
     return api.fetch<T>(endpoint, {
       ...options,
       method: "PUT",
-      body: JSON.stringify(data),
+      body: data as BodyInit,
     });
   },
 
@@ -170,7 +171,7 @@ export const api = {
     return api.fetch<T>(endpoint, {
       ...options,
       method: "PATCH",
-      body: JSON.stringify(data),
+      body: data as BodyInit,
     });
   },
 

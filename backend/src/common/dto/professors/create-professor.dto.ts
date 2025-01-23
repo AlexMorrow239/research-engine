@@ -44,11 +44,6 @@ export class CreateProfessorDto {
   @MinLength(8)
   password: string;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  adminPassword: string;
-
   @ApiProperty({ type: NameDto })
   @ValidateNested()
   @Type(() => NameDto)
@@ -104,4 +99,14 @@ export class CreateProfessorDto {
   @IsOptional()
   @MaxLength(1000)
   bio?: string;
+}
+
+export class RegisterProfessorDto extends CreateProfessorDto {
+  @ApiProperty({
+    description: 'Admin password required for registration',
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  adminPassword: string;
 }
