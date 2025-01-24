@@ -60,7 +60,7 @@ export class ProjectsService {
         applicationDeadline: project.applicationDeadline,
         createdAt: project.createdAt,
         updatedAt: project.updatedAt,
-        isVisible: project.isVisible ?? true,
+        isVisible: true,
       };
     } catch (error) {
       ErrorHandler.handleServiceError(this.logger, error, 'transform project response', {
@@ -118,8 +118,10 @@ export class ProjectsService {
       // Build filter conditions
       const filter: any = {
         status: ProjectStatus.PUBLISHED,
-        isVisible: true,
       };
+
+      // Add debug logging
+      this.logger.debug('Filter conditions:', filter);
 
       if (campus) filter.campus = campus;
       if (departments) {

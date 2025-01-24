@@ -3,7 +3,14 @@
  * Provides centralized error processing, logging, and transformation
  */
 
-import { InternalServerErrorException, Logger, NotFoundException, Type } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+  Type,
+} from '@nestjs/common';
+import { MongoServerError } from 'mongodb';
 
 export class ErrorHandler {
   /**
@@ -25,7 +32,7 @@ export class ErrorHandler {
    *     error,
    *     'update user',
    *     { userId, data },
-   *     [NotFoundException, ConflictException]
+   *     [NotFoundException]
    *   );
    * }
    */
@@ -36,11 +43,6 @@ export class ErrorHandler {
     details?: Record<string, any>,
     knownErrors: Type<Error>[] = [NotFoundException],
   ): never {
-    // Check if error is a known type that should be rethrown
-    if (knownErrors.some((errorType) => error instanceof errorType)) {
-      throw error;
-    }
-
     // Log the error with context and details
     logger.error(
       `Failed to ${context}`,
@@ -51,6 +53,18 @@ export class ErrorHandler {
       },
       error.constructor.name,
     );
+
+    // Check if error is a known type that should be rethrown
+    if (knownErrors.some((errorType) => error instanceof errorType)) {
+      throw error;
+    }
+
+    // Handle MongoDB specific errors
+    if (error instanceof MongoServerError) {
+      if (error.code === 11000) {
+        throw new BadRequestException('A record with this information already exists');
+      }
+    }
 
     // Transform unknown errors to InternalServerError
     throw new InternalServerErrorException(`Failed to ${context}`);

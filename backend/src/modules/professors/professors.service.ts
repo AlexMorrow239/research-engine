@@ -24,6 +24,7 @@ import {
 import { ProfessorResponseDto } from '../../common/dto/professors/professor-response.dto';
 import { ReactivateAccountDto } from '../../common/dto/professors/reactivate-account.dto';
 import { UpdateProfessorDto } from '../../common/dto/professors/update-professor.dto';
+import { PasswordValidator } from '@/common/validators/password.validator';
 
 @Injectable()
 export class ProfessorsService {
@@ -49,9 +50,8 @@ export class ProfessorsService {
         throw new ConflictException('Email already exists');
       }
 
-      const passwordRequirements = this.validatePassword(createProfessorDto.password);
-      if (passwordRequirements.length > 0) {
-        throw new InvalidPasswordFormatException(passwordRequirements);
+      if (!PasswordValidator.validate(createProfessorDto.password)) {
+        throw new InvalidPasswordFormatException(PasswordValidator.getRequirements());
       }
 
       const hashedPassword = await bcrypt.hash(createProfessorDto.password, 10);
@@ -125,9 +125,8 @@ export class ProfessorsService {
         throw new BadRequestException('New password must be different from current password');
       }
 
-      const passwordRequirements = this.validatePassword(newPassword);
-      if (passwordRequirements.length > 0) {
-        throw new InvalidPasswordFormatException(passwordRequirements);
+      if (!PasswordValidator.validate(newPassword)) {
+        throw new InvalidPasswordFormatException(PasswordValidator.getRequirements());
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -150,22 +149,6 @@ export class ProfessorsService {
     }
   }
 
-  private validatePassword(password: string): string[] {
-    const requirements = {
-      minLength: { met: password.length >= 8, message: 'at least 8 characters' },
-      upperCase: { met: /[A-Z]/.test(password), message: 'one uppercase letter' },
-      lowerCase: { met: /[a-z]/.test(password), message: 'one lowercase letter' },
-      numbers: { met: /\d/.test(password), message: 'one number' },
-      specialChar: {
-        met: /[!@#$%^&*(),.?":{}|<>]/.test(password),
-        message: 'one special character (!@#$%^&*(),.?":{}|<>)',
-      },
-    };
-
-    return Object.entries(requirements)
-      .filter(([_, { met }]) => !met)
-      .map(([_, { message }]) => message);
-  }
   async getProfile(professorId: string): Promise<ProfessorResponseDto> {
     try {
       const professor = await this.professorModel.findById(professorId);
