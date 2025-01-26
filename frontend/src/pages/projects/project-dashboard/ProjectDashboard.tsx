@@ -28,13 +28,25 @@ export default function ProjectDashboard(): JSX.Element {
       (project) => project?.status === ProjectStatus.CLOSED
     ) || [];
 
+  const refreshProjects = () => {
+    dispatch(fetchProfessorProjects({}))
+      .unwrap()
+      .catch((error) => {
+        console.error("Error fetching professor projects:", error);
+      });
+  };
+
   useEffect(() => {
     if (!user) {
       navigate("/faculty/login");
       return;
     }
 
-    dispatch(fetchProfessorProjects({})).unwrap();
+    dispatch(fetchProfessorProjects({}))
+      .unwrap()
+      .catch((error) => {
+        console.error("Error fetching professor projects:", error);
+      });
   }, [dispatch, user, navigate]);
 
   if (isLoading) {
@@ -68,16 +80,19 @@ export default function ProjectDashboard(): JSX.Element {
           title="Draft Projects"
           projects={draftProjects}
           status={ProjectStatus.DRAFT}
+          onProjectUpdate={refreshProjects}
         />
         <ProjectSection
           title="Active Projects"
           projects={activeProjects}
           status={ProjectStatus.PUBLISHED}
+          onProjectUpdate={refreshProjects}
         />
         <ProjectSection
           title="Closed Projects"
           projects={closedProjects}
           status={ProjectStatus.CLOSED}
+          onProjectUpdate={refreshProjects}
         />
       </div>
     </div>

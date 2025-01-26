@@ -62,7 +62,6 @@ export const fetchProjects = createAsyncThunk(
         ...(filters.campus &&
           filters.campus !== "" && { campus: filters.campus }),
         ...(filters.search && { search: filters.search }),
-        ...(filters.search && { search: filters.search }),
         ...(filters.researchCategories &&
           filters.researchCategories.length > 0 && {
             researchCategories: filters.researchCategories.join(","),
@@ -360,9 +359,16 @@ const projectsSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
+        console.log(
+          "Before state update - current projects:",
+          state.allProjects
+        );
+        console.log("Action payload projects:", action.payload.projects);
         state.isLoading = false;
         state.isInitialLoad = false;
         state.allProjects = action.payload.projects;
+        console.log("After state update - new projects:", state.allProjects);
+
         state.totalProjects = action.payload.total;
 
         // Extract unique research categories from all projects

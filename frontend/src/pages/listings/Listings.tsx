@@ -32,6 +32,10 @@ export default function Listings(): JSX.Element {
 
   const [isMobileDetailView, setIsMobileDetailView] = useState(false);
 
+  useEffect(() => {
+    console.log("Current projects in Listings:", projects);
+  }, [projects]);
+
   // Combine URL params handling and fetching into a single effect
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -186,18 +190,32 @@ export default function Listings(): JSX.Element {
             {projects.length === 0 ? (
               <div className="no-results">No matching positions found</div>
             ) : (
-              projects.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={{
-                    ...project,
-                    // status: project.status as ProjectStatus,
-                    campus: project.campus as Campus,
-                  }}
-                  isSelected={currentProject?.id === project.id}
-                  onClick={() => handleProjectSelect(project)}
-                />
-              ))
+              projects.map((project) => {
+                console.log("Processing project:", project); // Debug log
+
+                if (!project || !project.id) {
+                  console.warn("Invalid project object:", project);
+                  return null;
+                }
+
+                // Ensure campus exists
+                if (!project.campus) {
+                  console.warn("Project missing campus:", project);
+                  return null;
+                }
+
+                return (
+                  <ProjectCard
+                    key={project.id}
+                    project={{
+                      ...project,
+                      campus: project.campus as Campus,
+                    }}
+                    isSelected={currentProject?.id === project.id}
+                    onClick={() => handleProjectSelect(project)}
+                  />
+                );
+              })
             )}
           </div>
 

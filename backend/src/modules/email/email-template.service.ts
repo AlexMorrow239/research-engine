@@ -19,67 +19,101 @@ export class EmailTemplateService {
     return `
       <style>
         .email-container {
-          font-family: Arial, sans-serif;
+          font-family: 'Roboto', Arial, sans-serif;
           max-width: 600px;
           margin: 0 auto;
           padding: 20px;
           line-height: 1.6;
+          color: #334155;
         }
         .header {
-          color: #003366;
+          color: #005030;
           margin-bottom: 20px;
         }
         .content {
           background-color: #ffffff;
           padding: 20px;
-          border-radius: 5px;
+          border-radius: 4px;
+          box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         }
         .footer {
           margin-top: 20px;
-          color: #666666;
+          color: #64748b;
           font-size: 14px;
-          border-top: 1px solid #eeeeee;
+          border-top: 1px solid #e2e8f0;
           padding-top: 20px;
+          text-align: center;
+        }
+        .footer-logos {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 20px;
+          margin: 20px 0;
+          padding: 20px 0;
+          border-bottom: 1px solid #e2e8f0;
+        }
+        .footer-logo {
+          max-height: 40px;
+          width: auto;
         }
         .info-section {
           margin: 15px 0;
           padding: 15px;
-          background-color: #f5f5f5;
+          background-color: #f8fafc;
           border-radius: 4px;
         }
         .info-label {
-          font-weight: bold;
-          color: #003366;
+          font-weight: 500;
+          color: #005030;
           min-width: 150px;
           display: inline-block;
         }
         .button {
           display: inline-block;
           padding: 10px 20px;
-          background-color: #003366;
+          background-color: #7ec265;
           color: white !important;
           text-decoration: none;
-          border-radius: 5px;
+          border-radius: 4px;
           margin: 10px 0;
+          font-weight: 500;
         }
         .status-update {
           font-size: 18px;
-          color: #003366;
+          color: #005030;
           padding: 15px;
-          background-color: #f5f5f5;
+          background-color: #f8fafc;
           border-radius: 4px;
           text-align: center;
           margin: 20px 0;
         }
         .warning {
-          color: #721c24;
-          background-color: #f8d7da;
-          border: 1px solid #f5c6cb;
+          color: #ef4444;
+          background-color: #fef2f2;
+          border: 1px solid #ef4444;
           padding: 15px;
           border-radius: 4px;
           margin: 20px 0;
         }
+        .accent {
+          color: #f47321;
+        }
       </style>
+    `;
+  }
+
+  private getEmailFooter(): string {
+    return `
+      <div class="footer">
+        <div class="footer-logos">
+          <img src="https://placeholder-url/um-logo.png" alt="University of Miami" class="footer-logo" />
+          <img src="https://placeholder-url/research-engine-logo.png" alt="Research Engine" class="footer-logo" />
+        </div>
+        <p style="color: #005030; font-weight: 500;">University of Miami Research Engine</p>
+        <p>1320 S Dixie Hwy, Coral Gables, FL 33146</p>
+        <p style="font-size: 12px; color: #64748b;">This is an automated message. Please do not reply to this email.</p>
+      </div>
     `;
   }
 
@@ -107,12 +141,10 @@ Research Engine Team`;
             </div>
             <div class="content">
               <p>Dear ${studentName.firstName} ${studentName.lastName},</p>
-              <p>Thank you for submitting your application for <strong>"${projectTitle}"</strong>.</p>
+              <p>Thank you for submitting your application for <strong class="accent">"${projectTitle}"</strong>.</p>
               <p>Your application has been received and the professor will contact you directly if they wish to proceed with your application.</p>
             </div>
-            <div class="footer">
-              <p>Best regards,<br>Research Engine Team</p>
-            </div>
+            ${this.getEmailFooter()}
           </div>
         </body>
       </html>
@@ -160,6 +192,7 @@ ${application.additionalInfo.speaksOtherLanguages && application.additionalInfo.
 Resume: ${resumeDownloadUrl}
 
 Please contact the student directly if you wish to proceed with their application.
+If you accept a student for this position, they must complete the Self-Placement form available at: https://ugr.miami.edu/research/placement/index.html
 
 Best regards,
 Research Engine Team`;
@@ -176,19 +209,19 @@ Research Engine Team`;
               <h2>New Research Application</h2>
             </div>
             <div class="content">
-              <p>A new application has been submitted for your research opportunity <strong>"${projectTitle}"</strong>.</p>
+              <p>A new application has been submitted for your research opportunity <strong class="accent">"${projectTitle}"</strong>.</p>
               
               <div class="info-section">
-                <h3>Basic Information</h3>
+                <h3 style="color: #005030; margin-bottom: 15px;">Basic Information</h3>
                 <p><span class="info-label">Name:</span> ${application.studentInfo.name.firstName} ${application.studentInfo.name.lastName}</p>
-                <p><span class="info-label">Email:</span> ${application.studentInfo.email}</p>
+                <p><span class="info-label">Email:</span> <a href="mailto:${application.studentInfo.email}" style="color: #7ec265;">${application.studentInfo.email}</a></p>
                 <p><span class="info-label">Phone:</span> ${application.studentInfo.phoneNumber}</p>
                 <p><span class="info-label">C-Number:</span> ${application.studentInfo.cNumber}</p>
                 <p><span class="info-label">GPA:</span> ${application.studentInfo.gpa}</p>
               </div>
 
               <div class="info-section">
-                <h3>Academic Information</h3>
+                <h3 style="color: #005030; margin-bottom: 15px;">Academic Information</h3>
                 <p><span class="info-label">Major 1:</span> ${application.studentInfo.major1} (${application.studentInfo.major1College})</p>
                 ${application.studentInfo.hasAdditionalMajor ? `<p><span class="info-label">Major 2:</span> ${application.studentInfo.major2} (${application.studentInfo.major2College})</p>` : ''}
                 <p><span class="info-label">Academic Standing:</span> ${application.studentInfo.academicStanding}</p>
@@ -197,42 +230,63 @@ Research Engine Team`;
               </div>
 
               <div class="info-section">
-                <h3>Availability</h3>
+                <h3 style="color: #005030; margin-bottom: 15px;">Availability</h3>
                 <p><span class="info-label">Weekly Hours:</span> ${application.availability.weeklyHours}</p>
                 <p><span class="info-label">Project Length:</span> ${application.availability.desiredProjectLength}</p>
                 <p><span class="info-label">Schedule:</span></p>
-                <ul>
-                  <li>Monday: ${application.availability.mondayAvailability}</li>
-                  <li>Tuesday: ${application.availability.tuesdayAvailability}</li>
-                  <li>Wednesday: ${application.availability.wednesdayAvailability}</li>
-                  <li>Thursday: ${application.availability.thursdayAvailability}</li>
-                  <li>Friday: ${application.availability.fridayAvailability}</li>
+                <ul style="list-style-type: none; padding-left: 20px; margin: 10px 0;">
+                  <li style="margin: 5px 0;">• Monday: ${application.availability.mondayAvailability}</li>
+                  <li style="margin: 5px 0;">• Tuesday: ${application.availability.tuesdayAvailability}</li>
+                  <li style="margin: 5px 0;">• Wednesday: ${application.availability.wednesdayAvailability}</li>
+                  <li style="margin: 5px 0;">• Thursday: ${application.availability.thursdayAvailability}</li>
+                  <li style="margin: 5px 0;">• Friday: ${application.availability.fridayAvailability}</li>
                 </ul>
               </div>
 
               <div class="info-section">
-                <h3>Additional Information</h3>
+                <h3 style="color: #005030; margin-bottom: 15px;">Additional Information</h3>
                 <p><span class="info-label">Previous Research Experience:</span> ${application.additionalInfo.hasPrevResearchExperience ? 'Yes' : 'No'}</p>
-                ${application.additionalInfo.hasPrevResearchExperience && application.additionalInfo.prevResearchExperience ? `<p><span class="info-label">Research Experience Details:</span> ${application.additionalInfo.prevResearchExperience}</p>` : ''}
-                <p><span class="info-label">Statement of Interest:</span> ${application.additionalInfo.researchInterestDescription}</p>
+                ${
+                  application.additionalInfo.hasPrevResearchExperience &&
+                  application.additionalInfo.prevResearchExperience
+                    ? `
+                <div style="margin: 10px 0;">
+                  <span class="info-label">Research Experience Details:</span>
+                  <div style="margin-left: 150px; margin-top: -24px;">${application.additionalInfo.prevResearchExperience}</div>
+                </div>`
+                    : ''
+                }
+                <div style="margin: 10px 0;">
+                  <span class="info-label">Statement of Interest:</span>
+                  <div style="margin-left: 150px; margin-top: -24px;">${application.additionalInfo.researchInterestDescription}</div>
+                </div>
                 <p><span class="info-label">Federal Work Study:</span> ${application.additionalInfo.hasFederalWorkStudy ? 'Yes' : 'No'}</p>
                 ${application.additionalInfo.speaksOtherLanguages && application.additionalInfo.additionalLanguages?.length ? `<p><span class="info-label">Additional Languages:</span> ${application.additionalInfo.additionalLanguages.join(', ')}</p>` : ''}
                 <p><span class="info-label">Comfortable with Animals:</span> ${application.additionalInfo.comfortableWithAnimals ? 'Yes' : 'No'}</p>
               </div>
 
-              <a href="${resumeDownloadUrl}" class="button">Download Resume</a>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${resumeDownloadUrl}" class="button" style="background-color: #7ec265; color: white; text-decoration: none; padding: 12px 24px; border-radius: 4px; font-weight: 500;">Download Resume</a>
+              </div>
+
+              <div style="background-color: #f8fafc; padding: 20px; border-radius: 4px; margin-top: 20px;">
+                <p style="color: #005030; font-weight: 500; margin-bottom: 10px;">Next Steps:</p>
+                <p>1. Review the application details above</p>
+                <p>2. Contact the student directly if you wish to proceed</p>
+                <p>3. If you accept the student, ensure they complete the <a href="https://ugr.miami.edu/research/placement/index.html" target="_blank" style="color: #7ec265; text-decoration: underline;">Self-Placement form</a></p>
+              </div>
             </div>
-            <div class="footer">
-              <p>Please contact the student directly if you wish to proceed with their application.</p>
-              <p>If you accept a student for this position, they must complete the Self-Placement form available at <a href="https://ugr.miami.edu/research/placement/index.html" target="_blank">UGR Self-Placement Portal</a>.</p>
-              <p>Best regards,<br>Research Engine Team</p>
-            </div>
+            ${this.getEmailFooter()}
           </div>
         </body>
       </html>
     `;
 
-    return { subject: `New Research Application: ${projectTitle}`, text, html };
+    return {
+      subject: `New Research Application: ${projectTitle}`,
+      text,
+      html,
+    };
   }
 
   getProjectClosedTemplate(projectTitle: string): EmailTemplate {
@@ -260,9 +314,7 @@ Research Engine Team`;
               </div>
               <p>Thank you for your interest in this opportunity.</p>
             </div>
-            <div class="footer">
-              <p>Best regards,<br>Research Engine Team</p>
-            </div>
+            ${this.getEmailFooter()}
           </div>
         </body>
       </html>
@@ -289,14 +341,12 @@ Research Engine Team`;
               <h2>Application Status Update</h2>
             </div>
             <div class="content">
-              <p>Your application for <strong>"${projectTitle}"</strong> has been updated.</p>
+              <p>Your application for <strong class="accent">"${projectTitle}"</strong> has been updated.</p>
               <div class="status-update">
                 Application Status: ${status.toLowerCase()}
               </div>
             </div>
-            <div class="footer">
-              <p>Best regards,<br>Research Engine Team</p>
-            </div>
+            ${this.getEmailFooter()}
           </div>
         </body>
       </html>

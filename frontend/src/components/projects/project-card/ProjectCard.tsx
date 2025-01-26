@@ -38,6 +38,7 @@ interface ProjectCardProps {
   layout?: "vertical" | "horizontal";
   onEdit?: () => void;
   onDelete?: () => void;
+  isLoading?: boolean;
 }
 
 export const ProjectCard = memo(function ProjectCard({
@@ -47,6 +48,7 @@ export const ProjectCard = memo(function ProjectCard({
   layout = "vertical",
   onEdit,
   onDelete,
+  isLoading = false,
 }: ProjectCardProps): JSX.Element {
   // Helper function to get deadline status
   const getDeadlineInfo = (
@@ -180,6 +182,7 @@ export const ProjectCard = memo(function ProjectCard({
               }}
               title="Edit project"
               className="project-card__action-btn"
+              disabled={isLoading}
             >
               <Pencil aria-hidden="true" />
               <span className="sr-only">Edit project</span>
@@ -192,13 +195,16 @@ export const ProjectCard = memo(function ProjectCard({
                 onDelete();
               }}
               className="project-card__action-btn delete-btn"
+              disabled={isLoading}
               title={
                 project.status === ProjectStatus.PUBLISHED
                   ? "Close project"
                   : "Delete project"
               }
             >
-              {project.status === ProjectStatus.PUBLISHED ? (
+              {isLoading ? (
+                <span className="loading-spinner" aria-hidden="true" />
+              ) : project.status === ProjectStatus.PUBLISHED ? (
                 <Archive aria-hidden="true" />
               ) : (
                 <Trash2 aria-hidden="true" />

@@ -6,6 +6,7 @@ import {
   delistProject,
 } from "@/store/features/projects/projectsSlice";
 import { type Project } from "@/types";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProjectSection.scss";
 
@@ -13,33 +14,47 @@ interface ProjectSectionProps {
   title: string;
   projects: Project[];
   status: ProjectStatus;
+  onProjectUpdate?: () => void;
 }
 
 export function ProjectSection({
   title,
   projects,
   status,
+  onProjectUpdate,
 }: ProjectSectionProps): JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const [loadingProjectId, setLoadingProjectId] = useState<string | null>(null);
 
   const handleEdit = (projectId: string) => {
     navigate(`/faculty/projects/${projectId}/edit`);
   };
 
   const handleDelete = async (projectId: string) => {
-    if (status === ProjectStatus.PUBLISHED) {
-      if (!window.confirm("Are you sure you want to delist this project?")) {
-        return;
+    try {
+      setLoadingProjectId(projectId);
+
+      if (status === ProjectStatus.PUBLISHED) {
+        if (!window.confirm("Are you sure you want to delist this project?")) {
+          return;
+        }
+        await dispatch(delistProject(projectId)).unwrap();
+      } else {
+        if (
+          !window.confirm(
+            "Are you sure you want to delete this project forever?"
+          )
+        ) {
+          return;
+        }
+        await dispatch(deleteProject(projectId)).unwrap();
       }
-      await dispatch(delistProject(projectId)).unwrap();
-    } else {
-      if (
-        !window.confirm("Are you sure you want to delete this project forever?")
-      ) {
-        return;
-      }
-      await dispatch(deleteProject(projectId)).unwrap();
+
+      // Start the refresh but don't await it
+      onProjectUpdate?.();
+    } finally {
+      setLoadingProjectId(null);
     }
   };
 
@@ -61,6 +76,7 @@ export function ProjectSection({
             onClick={() => handleCardClick(project.id)}
             onEdit={() => handleEdit(project.id)}
             onDelete={() => handleDelete(project.id)}
+            isLoading={loadingProjectId === project.id}
           />
         ))}
         {projects.length === 0 && (
