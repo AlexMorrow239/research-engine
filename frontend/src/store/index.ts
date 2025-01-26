@@ -17,6 +17,7 @@ import applicationsReducer from "./features/applications/applicationsSlice";
 import authReducer from "./features/auth/authSlice";
 import projectsReducer from "./features/projects/projectsSlice";
 import uiReducer from "./features/ui/uiSlice";
+import { authMiddleware } from "./middleware/authMiddleware";
 import { errorMiddleware } from "./middleware/errorMiddleWare";
 
 const applicationsPersistConfig = {
@@ -61,7 +62,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(errorMiddleware),
+    }).concat(errorMiddleware, authMiddleware),
 });
 
 export const persistor = persistStore(store);

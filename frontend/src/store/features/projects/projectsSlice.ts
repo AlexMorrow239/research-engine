@@ -476,20 +476,28 @@ const projectsSlice = createSlice({
         const updatedProject = action.payload;
         if (!updatedProject) return;
 
-        const index = state.allProjects.findIndex(
-          (project) => project.id === updatedProject.id
-        );
-        if (index !== -1) {
-          state.allProjects[index] = updatedProject;
-        }
+        // Update both allProjects and professorProjects arrays
+        const updateProjectInArray = (projects: Project[]) => {
+          const index = projects.findIndex(
+            (project) => project.id === updatedProject.id
+          );
+          if (index !== -1) {
+            projects[index] = updatedProject;
+          }
+        };
+
+        updateProjectInArray(state.allProjects);
+        updateProjectInArray(state.professorProjects);
+
         if (state.currentProject?.id === updatedProject.id) {
           state.currentProject = updatedProject;
         }
 
         state.isLoading = false;
-        state.error = "";
+        state.error = null;
       })
       .addCase(delistProject.rejected, (state, action) => {
+        console.error("Delisting project - rejected:", action.payload);
         state.isLoading = false;
         state.error = action.payload?.message || "An error occurred";
       });

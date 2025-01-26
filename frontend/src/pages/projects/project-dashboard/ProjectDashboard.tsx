@@ -11,20 +11,22 @@ export default function ProjectDashboard(): JSX.Element {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
-  const { items: projects = [], isLoading } = useAppSelector(
+  const { professorProjects = [], isLoading } = useAppSelector(
     (state) => state.projects
   );
 
   const draftProjects =
-    projects?.filter((project) => project?.status === ProjectStatus.DRAFT) ||
-    [];
+    professorProjects?.filter(
+      (project) => project?.status === ProjectStatus.DRAFT
+    ) || [];
   const activeProjects =
-    projects?.filter(
+    professorProjects?.filter(
       (project) => project?.status === ProjectStatus.PUBLISHED
     ) || [];
   const closedProjects =
-    projects?.filter((project) => project?.status === ProjectStatus.CLOSED) ||
-    [];
+    professorProjects?.filter(
+      (project) => project?.status === ProjectStatus.CLOSED
+    ) || [];
 
   useEffect(() => {
     if (!user) {
@@ -32,7 +34,7 @@ export default function ProjectDashboard(): JSX.Element {
       return;
     }
 
-    dispatch(fetchProfessorProjects({}));
+    dispatch(fetchProfessorProjects({})).unwrap();
   }, [dispatch, user, navigate]);
 
   if (isLoading) {
