@@ -23,6 +23,7 @@ import { ProfessorsModule } from './modules/professors/professors.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 
 import { AnalyticsModule } from '@/modules/analytics/analytics.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -32,7 +33,7 @@ import { AnalyticsModule } from '@/modules/analytics/analytics.module';
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
     }),
-
+    ScheduleModule.forRoot(),
     // Database configuration
     MongooseModule.forRootAsync({
       inject: [ConfigService],

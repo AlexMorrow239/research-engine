@@ -331,4 +331,49 @@ export class ProjectsService {
       );
     }
   }
+
+  async closeExpiredProjects(): Promise<void> {
+    try {
+      const now = new Date();
+
+      // Find projects that are published, have a deadline, and the deadline has passed
+      const expiredProjects = await this.projectModel.find({
+        status: ProjectStatus.PUBLISHED,
+        applicationDeadline: { $lt: now },
+      });
+
+      // Process each expired project
+      await Promise.all(
+        expiredProjects.map(async (project) => {
+          // Update project status
+          await this.projectModel.findByIdAndUpdate(project._id, {
+            status: ProjectStatus.CLOSED,
+            isVisible: false,
+          });
+
+          // Find pending applications
+          const applications = await this.applicationsService.findProjectApplications(
+            project.professor.toString(),
+            project._id.toString(),
+            ApplicationStatus.PENDING,
+          );
+
+          // Close applications and send notifications
+          await Promise.all([
+            this.applicationsService.closeProjectApplications(project._id.toString()),
+            ...applications.map((application) =>
+              this.emailService.sendProjectClosedNotification(
+                application.studentInfo.email,
+                project.title,
+              ),
+            ),
+          ]);
+
+          this.logger.log(`Automatically closed expired project ${project._id}`);
+        }),
+      );
+    } catch (error) {
+      ErrorHandler.handleServiceError(this.logger, error, 'close expired projects');
+    }
+  }
 }
