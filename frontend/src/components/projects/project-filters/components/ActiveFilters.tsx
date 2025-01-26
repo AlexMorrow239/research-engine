@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
 interface FilterTag {
-  type: "campus" | "department" | "category" | "search";
+  type: "campus" | "department" | "category";
   value: string;
 }
 
@@ -14,10 +14,6 @@ export const ActiveFilters: React.FC = () => {
 
   const getActiveTags = (): FilterTag[] => {
     const tags: FilterTag[] = [];
-
-    if (filters.search) {
-      tags.push({ type: "search", value: filters.search });
-    }
     if (filters.campus) {
       tags.push({ type: "campus", value: filters.campus });
     }
@@ -33,9 +29,6 @@ export const ActiveFilters: React.FC = () => {
 
   const handleRemoveTag = (tag: FilterTag) => {
     switch (tag.type) {
-      case "search":
-        dispatch(setFilters({ ...filters, search: "" }));
-        break;
       case "campus":
         dispatch(setFilters({ ...filters, campus: "" }));
         break;
