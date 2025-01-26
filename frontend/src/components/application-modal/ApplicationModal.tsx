@@ -94,13 +94,13 @@ const applicationSchema = z.object({
       .string()
       .min(1, "Thursday availability is required"),
     fridayAvailability: z.string().min(1, "Friday availability is required"),
-    weeklyHours: z.nativeEnum(WeeklyAvailability, {
-      errorMap: () => ({ message: "Please select your weekly availability" }),
-    }),
     saturdayAvailability: z
       .string()
       .min(1, "Saturday availability is required"),
     sundayAvailability: z.string().min(1, "Sunday availability is required"),
+    weeklyHours: z.nativeEnum(WeeklyAvailability, {
+      errorMap: () => ({ message: "Please select your weekly availability" }),
+    }),
     desiredProjectLength: z.nativeEnum(ProjectLength, {
       errorMap: () => ({
         message: "Please select your desired project length",
@@ -208,6 +208,8 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
           "availability.wednesdayAvailability",
           "availability.thursdayAvailability",
           "availability.fridayAvailability",
+          "availability.saturdayAvailability",
+          "availability.sundayAvailability",
           "availability.weeklyHours",
           "availability.desiredProjectLength",
         ];
@@ -299,6 +301,8 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
           wednesdayAvailability: data.availability.wednesdayAvailability,
           thursdayAvailability: data.availability.thursdayAvailability,
           fridayAvailability: data.availability.fridayAvailability,
+          saturdayAvailability: data.availability.saturdayAvailability,
+          sundayAvailability: data.availability.sundayAvailability,
           weeklyHours: data.availability.weeklyHours,
           desiredProjectLength: data.availability.desiredProjectLength,
         },
