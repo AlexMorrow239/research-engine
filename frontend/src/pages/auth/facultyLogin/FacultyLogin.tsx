@@ -12,10 +12,7 @@ const facultyLoginSchema = z.object({
   email: z
     .string()
     .email("Invalid email address")
-    .regex(
-      /^[a-zA-Z0-9._-]+@miami\.edu$/,
-      "Must be a valid Miami.edu email address"
-    ),
+    .regex(/.+@.*miami\.edu$/i, "Must be a valid Miami.edu email address"),
   password: z.string().min(1, "Password is required"),
 });
 
