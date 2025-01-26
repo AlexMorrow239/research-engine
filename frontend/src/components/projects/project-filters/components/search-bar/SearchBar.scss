@@ -78,8 +78,7 @@
 
   // Search button
   .search-button {
-    @include button-reset;
-    @include flex-center;
+    @include button-base;
     height: var(--input-height);
     min-width: 80px;
     padding: 0 var(--spacing-4);
@@ -87,21 +86,23 @@
     color: var(--color-white);
     border-radius: var(--radius-lg);
     font-size: var(--font-size-base);
-    font-weight: var(--font-weight-medium);
     transition: var(--transition-colors);
 
     &:hover {
-      background-color: var(--color-primary-dark);
+      background-color: var(--color-background-alt);
+      transform: translateY(-1px);
+      transition: var(--transition-all);
     }
 
-    &:focus-visible {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
+    &:active {
+      background-color: var(--color-background-alt);
+      transform: translateY(0);
     }
 
     &:disabled {
-      background-color: var(--color-gray-300);
+      opacity: 0.6;
       cursor: not-allowed;
+      transform: none;
     }
   }
 
