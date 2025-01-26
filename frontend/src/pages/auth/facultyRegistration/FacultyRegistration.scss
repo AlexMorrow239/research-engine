@@ -59,6 +59,31 @@
     gap: var(--spacing-2);
     margin-bottom: var(--spacing-4);
 
+    .password-input-wrapper {
+      position: relative;
+      width: 100%;
+
+      input {
+        width: 100%;
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: var(--spacing-3);
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--color-text-light);
+        cursor: pointer;
+        padding: var(--z-10);
+
+        &:hover {
+          color: var(--color-text-dark);
+        }
+      }
+    }
+
     label {
       font-weight: var(--font-weight-medium);
       color: var(--color-text-dark);
@@ -174,7 +199,7 @@
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
       box-shadow: var(--shadow-md);
-      z-index: 10;
+      z-index: var(--z-dropdown);
       width: 100%;
 
       .department-option {

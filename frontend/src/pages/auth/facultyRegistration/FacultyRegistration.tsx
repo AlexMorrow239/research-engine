@@ -90,6 +90,8 @@ export default function FacultyRegistration(): JSX.Element {
   const [researchAreas, setResearchAreas] = useState([""]);
   const [departmentSearch, setDepartmentSearch] = useState("");
   const [showDepartmentDropdown, setShowDepartmentDropdown] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const filteredDepartments = Object.values(Department).filter(
     (dept: Department) =>
@@ -198,12 +200,22 @@ export default function FacultyRegistration(): JSX.Element {
 
             <div className="form-group">
               <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                {...register("password")}
-                className={errors.password ? "error" : ""}
-              />
+              <div className="password-input-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  {...register("password")}
+                  className={errors.password ? "error" : ""}
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
               {errors.password && (
                 <span className="error-message">{errors.password.message}</span>
               )}
@@ -211,12 +223,24 @@ export default function FacultyRegistration(): JSX.Element {
 
             <div className="form-group">
               <label htmlFor="confirmPassword">Confirm Password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                {...register("confirmPassword")}
-                className={errors.confirmPassword ? "error" : ""}
-              />
+              <div className="password-input-wrapper">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  id="confirmPassword"
+                  {...register("confirmPassword")}
+                  className={errors.confirmPassword ? "error" : ""}
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={
+                    showConfirmPassword ? "Hide password" : "Show password"
+                  }
+                >
+                  {showConfirmPassword ? "Hide" : "Show"}
+                </button>
+              </div>
               {errors.confirmPassword && (
                 <span className="error-message">
                   {errors.confirmPassword.message}

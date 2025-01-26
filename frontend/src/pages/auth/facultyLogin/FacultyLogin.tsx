@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/store";
 import { loginUser } from "@/store/features/auth/authSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -25,6 +25,7 @@ export default function FacultyLogin(): JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -85,12 +86,22 @@ export default function FacultyLogin(): JSX.Element {
 
             <div className="form-group">
               <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                {...register("password")}
-                className={errors.password ? "error" : ""}
-              />
+              <div className="password-input-wrapper">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  {...register("password")}
+                  className={errors.password ? "error" : ""}
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
               {errors.password && (
                 <span className="error-message">{errors.password.message}</span>
               )}
