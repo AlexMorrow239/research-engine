@@ -112,6 +112,8 @@ export const ProjectCard = memo(function ProjectCard({
       aria-selected={isSelected}
     >
       <div className="project-card__content">
+        <div className="project-card__title">{project.title}</div>
+
         <div className="project-card__professor">
           {project.professor.name.firstName} {project.professor.name.lastName}
         </div>

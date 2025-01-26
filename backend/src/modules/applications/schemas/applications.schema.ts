@@ -88,6 +88,12 @@ export class AvailabilityInfo {
 
   @Prop({ required: true, type: String })
   fridayAvailability: string;
+
+  @Prop({ required: true, type: String })
+  saturdayAvailability: string;
+
+  @Prop({ required: true, type: String })
+  sundayAvailability: string;
 }
 
 @Schema()

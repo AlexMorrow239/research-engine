@@ -9,11 +9,7 @@ import { ErrorHandler } from '@/common/utils/error-handler.util';
 import { LoginResponseDto } from '@/common/dto/auth/login-response.dto';
 
 import { Professor } from '../professors/schemas/professors.schema';
-import {
-  CreateProfessorDto,
-  ProfessorResponseDto,
-  RegisterProfessorDto,
-} from '@/common/dto/professors';
+import { ProfessorResponseDto, RegisterProfessorDto } from '@/common/dto/professors';
 import { ProfessorsService } from '../professors/professors.service';
 import { ConfigService } from '@nestjs/config';
 

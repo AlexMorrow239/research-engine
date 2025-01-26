@@ -30,4 +30,11 @@ export class AvailabilityDto {
   @IsString()
   @IsNotEmpty()
   fridayAvailability: string;
+  @IsString()
+  @IsNotEmpty()
+  saturdayAvailability: string;
+
+  @IsString()
+  @IsNotEmpty()
+  sundayAvailability: string;
 }

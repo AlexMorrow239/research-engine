@@ -153,3 +153,26 @@
     }
   }
 }
+
+// Custom Form Fields
+.form-field {
+  &__c-number {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  &__c-number-prefix {
+    position: absolute;
+    left: var(--spacing-3);
+    color: var(--color-text);
+    font-family: inherit;
+    font-size: var(--font-size-base);
+    user-select: none;
+    pointer-events: none;
+
+    & + .form-field__input {
+      padding-left: calc(var(--spacing-3) + 1.5ch);
+    }
+  }
+}

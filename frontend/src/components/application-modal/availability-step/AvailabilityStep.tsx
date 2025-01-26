@@ -17,14 +17,24 @@ type DayAvailability =
   | "tuesdayAvailability"
   | "wednesdayAvailability"
   | "thursdayAvailability"
-  | "fridayAvailability";
+  | "fridayAvailability"
+  | "saturdayAvailability"
+  | "sundayAvailability";
 
 const getDayAvailabilityField = (day: string): DayAvailability => {
   return `${day.toLowerCase()}Availability` as DayAvailability;
 };
 
 export const AvailabilityStep: React.FC<AvailabilityStepProps> = ({ form }) => {
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const days = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
 
   return (
     <div className="modal__step">

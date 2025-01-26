@@ -23,7 +23,7 @@ interface ProjectDetailsProps {
     requirements: string[];
     positions: number;
     status: ProjectStatus;
-    applicationDeadline?: Date;
+    applicationDeadline: Date;
     files: Array<{
       fileName: string;
       originalName: string;
@@ -45,7 +45,17 @@ export const ProjectDetails = memo(function ProjectDetails({
     }
 
     if (isDeadlineSoon(project.applicationDeadline)) {
-      return { status: "warning", text: "Deadline soon" };
+      return {
+        status: "warning",
+        text: new Date(project.applicationDeadline).toLocaleDateString(
+          undefined,
+          {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }
+        ),
+      };
     }
 
     return {

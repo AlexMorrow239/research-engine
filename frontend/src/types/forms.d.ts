@@ -36,6 +36,8 @@ export interface ApplicationFormData {
     wednesdayAvailability: string;
     thursdayAvailability: string;
     fridayAvailability: string;
+    saturdayAvailability: string;
+    sundayAvailability: string;
     weeklyHours: WeeklyAvailability;
     desiredProjectLength: ProjectLength;
   };

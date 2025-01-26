@@ -34,7 +34,7 @@ const applicationSchema = z.object({
       firstName: z.string().min(2, "First name is required"),
       lastName: z.string().min(2, "Last name is required"),
     }),
-    cNumber: z.string().regex(/^C[0-9]{8}$/, "Must be in format C12345678"),
+    cNumber: z.string().regex(/^[0-9]{8}$/, "Must be in format C12345678"),
     email: z.string().email("Must be a valid email address"),
     phoneNumber: z
       .string()
@@ -97,6 +97,10 @@ const applicationSchema = z.object({
     weeklyHours: z.nativeEnum(WeeklyAvailability, {
       errorMap: () => ({ message: "Please select your weekly availability" }),
     }),
+    saturdayAvailability: z
+      .string()
+      .min(1, "Saturday availability is required"),
+    sundayAvailability: z.string().min(1, "Sunday availability is required"),
     desiredProjectLength: z.nativeEnum(ProjectLength, {
       errorMap: () => ({
         message: "Please select your desired project length",

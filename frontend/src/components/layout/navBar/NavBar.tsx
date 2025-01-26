@@ -63,7 +63,13 @@ export const NavBar = (): JSX.Element => {
 
         {/* Powered By section */}
         <div className="nav__powered-by">
-          <img src={poweredBy} alt="Bonsai Logo" className="nav__bonsai-logo" />
+          <Link to="https://bonsaiacg.com/" className="nav__logo">
+            <img
+              src={poweredBy}
+              alt="Bonsai Logo"
+              className="nav__bonsai-logo"
+            />
+          </Link>
         </div>
 
         {/* Mobile menu toggle button */}

@@ -68,13 +68,38 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
               placeholder="Enter your last name"
             />
           </div>
-          <FormField
-            form={form}
-            label="C Number"
-            name="studentInfo.cNumber"
-            placeholder="C12345678"
-            help="Enter your University ID number"
-          />
+          <div className="form-field">
+            <label className="form-field__label">
+              C Number
+              <span className="form-field__required">*</span>
+            </label>
+            <div className="form-field__c-number">
+              <span className="form-field__c-number-prefix">C</span>
+              <input
+                className={`form-field__input ${
+                  errors.studentInfo?.cNumber ? "form-field__input--error" : ""
+                }`}
+                {...form.register("studentInfo.cNumber")}
+                onChange={(e) => {
+                  const value = e.target.value
+                    .replace(/[^0-9]/g, "")
+                    .slice(0, 8);
+                  form.setValue("studentInfo.cNumber", `C${value}`);
+                  console.log(value);
+                }}
+                placeholder="12345678"
+                value={watch("studentInfo.cNumber")?.replace(/^C/, "") || ""}
+              />
+            </div>
+            {errors.studentInfo?.cNumber && (
+              <span className="form-field__error">
+                {errors.studentInfo.cNumber.message}
+              </span>
+            )}
+            <span className="form-field__help">
+              Enter your University ID number
+            </span>
+          </div>
           <FormField
             form={form}
             label="Email"
