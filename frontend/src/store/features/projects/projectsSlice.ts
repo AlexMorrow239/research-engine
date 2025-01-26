@@ -7,7 +7,8 @@ import type { RootState } from "../../index";
 import { addToast } from "../ui/uiSlice";
 
 interface ProjectsState {
-  items: Project[];
+  allProjects: Project[];
+  professorProjects: Project[];
   currentProject: Project | null;
   totalProjects: number;
   isLoading: boolean;
@@ -28,7 +29,8 @@ interface ProjectsState {
 }
 
 const initialState: ProjectsState = {
-  items: [],
+  allProjects: [],
+  professorProjects: [],
   currentProject: null,
   totalProjects: 0,
   isLoading: false,
@@ -352,7 +354,7 @@ const projectsSlice = createSlice({
     builder
       .addCase(fetchProjects.pending, (state) => {
         // Only show loading on initial load, not during filter updates
-        if (state.items.length === 0) {
+        if (state.allProjects.length === 0) {
           state.isLoading = true;
         }
         state.error = null;
@@ -360,7 +362,7 @@ const projectsSlice = createSlice({
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isInitialLoad = false;
-        state.items = action.payload.projects;
+        state.allProjects = action.payload.projects;
         state.totalProjects = action.payload.total;
 
         // Extract unique research categories from all projects
@@ -378,10 +380,10 @@ const projectsSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(createProject.fulfilled, (state, action) => {
-        if (!state.items) {
-          state.items = [];
+        if (!state.allProjects) {
+          state.allProjects = [];
         }
-        state.items.unshift(action.payload);
+        state.allProjects.unshift(action.payload);
         state.totalProjects = (state.totalProjects || 0) + 1;
       })
       .addCase(fetchProfessorProjects.pending, (state: ProjectsState) => {
@@ -392,8 +394,7 @@ const projectsSlice = createSlice({
         fetchProfessorProjects.fulfilled,
         (state: ProjectsState, action: PayloadAction<Project[]>) => {
           state.isLoading = false;
-          state.items = action.payload;
-          state.totalProjects = action.payload.length;
+          state.professorProjects = action.payload;
         }
       )
       .addCase(
@@ -423,16 +424,16 @@ const projectsSlice = createSlice({
       .addCase(updateProject.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        // Find and update the project in items array
+        // Find and update the project in allProjects array
         const updatedProject = action.payload;
         if (!updatedProject) return;
 
         const projectId = updatedProject.id;
-        const index = state.items.findIndex(
+        const index = state.allProjects.findIndex(
           (project) => project.id === projectId
         );
         if (index !== -1) {
-          state.items[index] = updatedProject;
+          state.allProjects[index] = updatedProject;
         }
 
         // Update currentProject if it matches
@@ -452,7 +453,9 @@ const projectsSlice = createSlice({
         const projectId = action.payload;
         if (!projectId) return;
 
-        state.items = state.items.filter((project) => project.id !== projectId);
+        state.allProjects = state.allProjects.filter(
+          (project) => project.id !== projectId
+        );
         state.totalProjects = state.totalProjects - 1;
         if (state.currentProject?.id === projectId) {
           state.currentProject = null;
@@ -473,11 +476,11 @@ const projectsSlice = createSlice({
         const updatedProject = action.payload;
         if (!updatedProject) return;
 
-        const index = state.items.findIndex(
+        const index = state.allProjects.findIndex(
           (project) => project.id === updatedProject.id
         );
         if (index !== -1) {
-          state.items[index] = updatedProject;
+          state.allProjects[index] = updatedProject;
         }
         if (state.currentProject?.id === updatedProject.id) {
           state.currentProject = updatedProject;

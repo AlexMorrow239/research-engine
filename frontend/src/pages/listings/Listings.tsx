@@ -21,7 +21,7 @@ export default function Listings(): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
   const {
-    items: projects,
+    allProjects: projects,
     isLoading,
     isInitialLoad,
     filters,

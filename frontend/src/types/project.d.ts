@@ -47,7 +47,8 @@ export interface ProjectFiltersType {
 export type ProjectSortOption = "newest" | "oldest" | string;
 
 export interface ProjectsState extends BaseState {
-  items: Project[];
+  allProjects: Project[];
+  professorProjects: Project[];
   currentProject: Project | null;
   totalProjects: number;
   filters: ProjectFilters;
