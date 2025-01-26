@@ -37,14 +37,13 @@ export default function FacultyLogin(): JSX.Element {
 
   const onSubmit = async (data: FacultyLoginForm): Promise<void> => {
     try {
-      // Attempt login
       const result = await dispatch(loginUser(data)).unwrap();
 
       if (result.accessToken) {
         navigate("/faculty/dashboard");
       }
     } catch (err) {
-      // Just log the error - the auth slice will handle the error toast
+      // The auth slice and API will handle the error toast
       console.error("Login error:", err);
     }
   };

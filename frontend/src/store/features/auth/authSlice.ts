@@ -41,7 +41,6 @@ export const registerFaculty = createAsyncThunk<
         { requiresAuth: false }
       );
 
-      // Only handle success toast here
       if (response.accessToken) {
         localStorage.setItem("accessToken", response.accessToken);
         dispatch(
@@ -61,7 +60,7 @@ export const registerFaculty = createAsyncThunk<
       }
       return rejectWithValue(
         new ApiError({
-          message: "Registration failed. Please try again.",
+          message: "Registration failed. Please try again or contact support.",
           toastType: "error",
           toastDuration: 5000,
         })
@@ -82,7 +81,6 @@ export const loginUser = createAsyncThunk<
       { requiresAuth: false }
     );
 
-    // Only handle success toast here
     if (response.accessToken) {
       localStorage.setItem("accessToken", response.accessToken);
       dispatch(
@@ -100,7 +98,8 @@ export const loginUser = createAsyncThunk<
     }
     return rejectWithValue(
       new ApiError({
-        message: "An unexpected error occurred. Please try again.",
+        message:
+          "Invalid credentials. Please check your email or password or register for a new account.",
         toastType: "error",
         toastDuration: 5000,
       })

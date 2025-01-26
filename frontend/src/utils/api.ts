@@ -104,46 +104,18 @@ export const api = {
           }
         }
 
-        const errorMessage =
-          (errorData as { message?: string })?.message?.toLowerCase() || "";
-
         // Handle specific status codes
         switch (response.status) {
           case 401:
-            if (errorMessage.includes("invalid admin password")) {
-              throw new ApiError({
-                message: "Incorrect admin password. Please contact UGR.",
-                status: 401,
-                data: errorData,
-                toastType: "error",
-                toastDuration: 5000,
-              });
-            } else if (errorMessage.includes("no account found")) {
-              throw new ApiError({
-                message:
-                  "No account found with this email. Please check your email or register for a new account.",
-                status: 401,
-                data: errorData,
-                toastType: "warning",
-                toastDuration: 6000,
-              });
-            } else if (errorMessage.includes("incorrect password")) {
-              throw new ApiError({
-                message: "Incorrect password. Please try again.",
-                status: 401,
-                data: errorData,
-                toastType: "error",
-                toastDuration: 5000,
-              });
-            }
-            // Default 401 handling
-            localStorage.removeItem("accessToken");
+            // Replace specific error messages with a generic one
             throw new ApiError({
-              message: "Authentication required",
+              message:
+                "Invalid credentials. Please check your email or password or register for a new account.",
               status: 401,
               data: errorData,
+              toastType: "error",
+              toastDuration: 5000,
             });
-
           case 403:
             throw new ApiError({
               message: "Access forbidden",
