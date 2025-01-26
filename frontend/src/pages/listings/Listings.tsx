@@ -32,10 +32,6 @@ export default function Listings(): JSX.Element {
 
   const [isMobileDetailView, setIsMobileDetailView] = useState(false);
 
-  useEffect(() => {
-    console.log("Current projects in Listings:", projects);
-  }, [projects]);
-
   // Combine URL params handling and fetching into a single effect
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -68,7 +64,7 @@ export default function Listings(): JSX.Element {
       dispatch(setFilters(newFilters));
       dispatch(fetchProjects());
     }
-  }, [location.search]); // Remove filters from dependencies
+  }, [location.search]);
 
   // Effect for updating URL when filters change
   useEffect(() => {
@@ -191,8 +187,6 @@ export default function Listings(): JSX.Element {
               <div className="no-results">No matching positions found</div>
             ) : (
               projects.map((project) => {
-                console.log("Processing project:", project); // Debug log
-
                 if (!project || !project.id) {
                   console.warn("Invalid project object:", project);
                   return null;

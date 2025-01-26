@@ -6,7 +6,7 @@ import { CampusSelect } from "./components/CampusSelect";
 import { CategorySelect } from "./components/CategorySelect";
 import { DepartmentSelect } from "./components/DepartmentSelect";
 import { ResetButton } from "./components/ResetButton";
-import { SearchBar } from "./components/SearchBar";
+import { SearchBar } from "./components/search-bar/SearchBar";
 import { SortSelect } from "./components/SortSelect";
 import "./ProjectFilters.scss";
 

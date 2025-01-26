@@ -33,15 +33,15 @@ export type SortOption = {
 };
 
 export interface ProjectFiltersType {
-  search: string;
-  campus: string;
-  departments: string[];
-  researchCategories: string[];
-  sortBy: "createdAt" | "applicationDeadline";
-  sortOrder: "asc" | "desc";
   page: number;
   limit: number;
+  departments?: string[];
+  campus?: string;
   status?: ProjectStatus;
+  search?: string; // Search filter
+  researchCategories?: string[];
+  sortBy?: "createdAt" | "applicationDeadline";
+  sortOrder?: "asc" | "desc";
 }
 
 export type ProjectSortOption = "newest" | "oldest" | string;
@@ -51,23 +51,7 @@ export interface ProjectsState extends BaseState {
   professorProjects: Project[];
   currentProject: Project | null;
   totalProjects: number;
-  filters: ProjectFilters;
+  filters: ProjectFiltersType;
   availableResearchCategories: string[];
-}
-
-export interface ProjectsState extends BaseState {
-  items: Project[];
-  currentProject: Project | null;
-  totalProjects: number;
-  filters: {
-    page: number;
-    limit: number;
-    departments?: string[];
-    campus?: string;
-    status?: ProjectStatus;
-    search?: string;
-    researchCategories?: string[];
-    sortBy?: "createdAt" | "applicationDeadline";
-    sortOrder?: "asc" | "desc";
-  };
+  isInitialLoad?: boolean;
 }

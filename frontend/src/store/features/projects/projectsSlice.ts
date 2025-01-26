@@ -1,32 +1,10 @@
 import { type ProjectStatus } from "@/common/enums";
-import type { ApiResponse, Project } from "@/types";
+import type { ApiResponse, Project, ProjectsState } from "@/types";
 import { api, ApiError } from "@/utils/api";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "../../index";
 import { addToast } from "../ui/uiSlice";
-
-interface ProjectsState {
-  allProjects: Project[];
-  professorProjects: Project[];
-  currentProject: Project | null;
-  totalProjects: number;
-  isLoading: boolean;
-  isInitialLoad: boolean;
-  error: string | null;
-  availableResearchCategories: string[];
-  filters: {
-    page: number;
-    limit: number;
-    departments?: string[];
-    campus?: string;
-    status?: ProjectStatus;
-    search?: string;
-    researchCategories?: string[];
-    sortBy?: "createdAt" | "applicationDeadline";
-    sortOrder?: "asc" | "desc";
-  };
-}
 
 const initialState: ProjectsState = {
   allProjects: [],
@@ -53,27 +31,45 @@ export const fetchProjects = createAsyncThunk(
     try {
       const { filters } = (getState() as RootState).projects;
 
-      const queryParams = new URLSearchParams({
-        page: filters.page.toString(),
-        limit: filters.limit.toString(),
-        ...(filters.departments?.length && {
-          departments: filters.departments.join(","),
-        }),
-        ...(filters.campus &&
-          filters.campus !== "" && { campus: filters.campus }),
-        ...(filters.search && { search: filters.search }),
-        ...(filters.researchCategories &&
-          filters.researchCategories.length > 0 && {
-            researchCategories: filters.researchCategories.join(","),
-          }),
-        ...(filters.sortBy && { sortBy: filters.sortBy }),
-        ...(filters.sortOrder && { sortOrder: filters.sortOrder }),
-      });
+      const queryParams = new URLSearchParams();
+
+      // Add basic params
+      queryParams.append("page", filters.page.toString());
+      queryParams.append("limit", filters.limit.toString());
+
+      // Only add search if it exists and isn't empty
+      if (filters.search) {
+        queryParams.append("search", filters.search);
+      }
+
+      // Add other filters if they exist
+      if (filters.departments?.length) {
+        queryParams.append("departments", filters.departments.join(","));
+      }
+
+      if (filters.campus && filters.campus !== "") {
+        queryParams.append("campus", filters.campus);
+      }
+
+      if (filters.researchCategories?.length) {
+        queryParams.append(
+          "researchCategories",
+          filters.researchCategories.join(",")
+        );
+      }
+
+      if (filters.sortBy) {
+        queryParams.append("sortBy", filters.sortBy);
+      }
+
+      if (filters.sortOrder) {
+        queryParams.append("sortOrder", filters.sortOrder);
+      }
 
       const response = await api.fetch<{
         projects: Project[];
         total: number;
-      }>(`/api/projects?${queryParams}`, {
+      }>(`/api/projects?${queryParams.toString()}`, {
         requiresAuth: false,
       });
 
@@ -359,16 +355,9 @@ const projectsSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
-        console.log(
-          "Before state update - current projects:",
-          state.allProjects
-        );
-        console.log("Action payload projects:", action.payload.projects);
         state.isLoading = false;
         state.isInitialLoad = false;
         state.allProjects = action.payload.projects;
-        console.log("After state update - new projects:", state.allProjects);
-
         state.totalProjects = action.payload.total;
 
         // Extract unique research categories from all projects
@@ -483,7 +472,7 @@ const projectsSlice = createSlice({
         if (!updatedProject) return;
 
         // Update both allProjects and professorProjects arrays
-        const updateProjectInArray = (projects: Project[]) => {
+        const updateProjectInArray = (projects: Project[]): void => {
           const index = projects.findIndex(
             (project) => project.id === updatedProject.id
           );

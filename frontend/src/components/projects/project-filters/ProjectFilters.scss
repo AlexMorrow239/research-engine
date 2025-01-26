@@ -19,43 +19,6 @@
     padding: var(--spacing-4);
   }
 
-  &__search {
-    position: relative;
-
-    svg {
-      position: absolute;
-      left: var(--spacing-3);
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--color-text-light);
-    }
-
-    input {
-      width: 100%;
-      height: var(--input-height);
-      padding: var(--spacing-2) var(--spacing-2) var(--spacing-2)
-        var(--spacing-8);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      font-size: var(--font-size-base);
-
-      &:focus {
-        outline: none;
-        border-color: var(--color-primary);
-        box-shadow: 0 0 0 2px var(--color-primary-transparent);
-      }
-
-      &::placeholder {
-        color: var(--color-text-light);
-        font-size: var(--font-size-sm);
-
-        @media (min-width: 768px) {
-          font-size: var(--font-size-base);
-        }
-      }
-    }
-  }
-
   &__controls {
     display: grid;
     grid-template-columns: 1fr;
