@@ -37,22 +37,22 @@ const missionCards: MissionCard[] = [
 
 const teamMembers: TeamMember[] = [
   {
-    name: "Alex Kim",
-    role: "President of Research Ambassadors",
+    name: "Alex Morrow",
+    role: "Co-Founder, Technical Lead",
     description:
-      "Senior majoring in Neuroscience with a focus on cognitive development. Leading initiatives to expand research opportunities and foster interdisciplinary collaboration.",
+      "Sophomore double majoring in Computer Science, and Data Science/Artificial Intelligence. Concurrently pursuing an M.S. in Computer Science.",
+  },
+  {
+    name: "Alexandr Kim",
+    role: "President",
+    description:
+      "Junior pursuing a dual degreein Computer Science, and Business Administration in Business Technology.",
   },
   {
     name: "Ethan Tieu",
-    role: "Director of Operations",
+    role: "Co-Founder, Vice President",
     description:
-      "Senior in Neuroscience with a minor in Business Administration. Coordinating research programs and developing strategic partnerships across departments.",
-  },
-  {
-    name: "Alex Marrow",
-    role: "Technical Lead",
-    description:
-      "Junior in Cell and Molecular Biology with expertise in bioinformatics. Managing platform development and implementing innovative technical solutions.",
+      "Senior pursuing a B.S/B.A. in Neruoscience and Computer Science respectively.",
   },
 ];
 

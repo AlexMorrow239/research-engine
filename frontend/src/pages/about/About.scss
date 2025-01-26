@@ -2,10 +2,11 @@
 
 .about-page {
   background-color: var(--color-background);
+  min-height: 100%;
 
   .hero-section {
     position: relative;
-    padding: var(--spacing-20) 0;
+    padding: var(--spacing-32) 0;
     background: linear-gradient(
       135deg,
       var(--color-primary-dark) 0%,
@@ -176,7 +177,7 @@
 
       &:hover {
         transform: translateY(-4px);
-        box-shadow: var(--shadow-lg);
+        box-shadow: var(--shadow-2xl);
         border-color: var(--color-primary);
 
         .icon {
@@ -212,7 +213,7 @@
       padding: var(--spacing-8);
       background-color: var(--color-background);
       border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-lg);
 
       h2 {
         font-size: var(--font-size-3xl);
