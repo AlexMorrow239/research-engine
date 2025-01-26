@@ -10,13 +10,13 @@ import { type ApplicationFormData } from "@/types";
 import { FileText, Upload, X } from "lucide-react";
 import React, { useState } from "react";
 import { type UseFormReturn } from "react-hook-form";
-import "./PersonalInfo.scss";
+import "./StudentInfo.scss";
 
-interface PersonalInfoStepProps {
+interface StudentInfoStepProps {
   form: UseFormReturn<ApplicationFormData>;
 }
 
-export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
+export const StudentInfoStep: React.FC<StudentInfoStepProps> = ({ form }) => {
   const {
     formState: { errors },
     setValue,
@@ -85,7 +85,6 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({ form }) => {
                     .replace(/[^0-9]/g, "")
                     .slice(0, 8);
                   form.setValue("studentInfo.cNumber", `C${value}`);
-                  console.log(value);
                 }}
                 placeholder="12345678"
                 value={watch("studentInfo.cNumber")?.replace(/^C/, "") || ""}

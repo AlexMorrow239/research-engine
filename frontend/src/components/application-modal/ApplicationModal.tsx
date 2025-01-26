@@ -18,8 +18,8 @@ import { z } from "zod";
 import { AdditionalInfoStep } from "./additional-info-step/AdditionalInfo";
 import "./ApplicationModal.scss";
 import { AvailabilityStep } from "./availability-step/AvailabilityStep";
-import { PersonalInfoStep } from "./personal-info-step/PersonalInfo";
 import { ProgressStep } from "./progress-step/ProgressStep";
+import { StudentInfoStep } from "./student-info-step/StudentInfo";
 
 interface ApplicationModalProps {
   isOpen: boolean;
@@ -384,7 +384,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
             noValidate
             encType="multipart/form-data"
           >
-            {currentStep === 1 && <PersonalInfoStep form={form} />}
+            {currentStep === 1 && <StudentInfoStep form={form} />}
             {currentStep === 2 && <AvailabilityStep form={form} />}
             {currentStep === 3 && <AdditionalInfoStep form={form} />}
 
