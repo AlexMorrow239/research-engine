@@ -3,7 +3,7 @@ import { loginUser } from "@/store/features/auth/authSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import "./FacultyLogin.scss";
 
@@ -82,7 +82,15 @@ export default function FacultyLogin(): JSX.Element {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <div className="password-header">
+                <label htmlFor="password">Password</label>
+                <Link
+                  to="/auth/reset-password"
+                  className="forgot-password-link"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <div className="password-input-wrapper">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -113,9 +121,12 @@ export default function FacultyLogin(): JSX.Element {
             {isLoading ? "Signing In..." : "Sign In"}
           </button>
 
-          <p className="faculty-login__footer">
-            Don't have an account? <a href="/faculty/register">Register here</a>
-          </p>
+          <div className="faculty-login__footer">
+            <p>
+              Don't have an account?{" "}
+              <Link to="/faculty/register">Register here</Link>
+            </p>
+          </div>
         </form>
       </div>
     </div>

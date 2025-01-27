@@ -107,6 +107,79 @@ export const loginUser = createAsyncThunk<
   }
 });
 
+export const requestPasswordReset = createAsyncThunk<
+  void,
+  string,
+  { rejectValue: ApiError }
+>("auth/requestPasswordReset", async (email, { dispatch, rejectWithValue }) => {
+  try {
+    await api.post(
+      "/api/auth/forgot-password",
+      { email },
+      { requiresAuth: false }
+    );
+    dispatch(
+      addToast({
+        type: "success",
+        message:
+          "If an account exists with that email, password reset instructions have been sent.",
+      })
+    );
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return rejectWithValue(error);
+    }
+    return rejectWithValue(
+      new ApiError({
+        message: "Failed to request password reset. Please try again later.",
+        toastType: "error",
+        toastDuration: 5000,
+      })
+    );
+  }
+});
+
+interface ResetPasswordPayload {
+  token: string;
+  password: string;
+}
+
+export const resetPassword = createAsyncThunk<
+  void,
+  ResetPasswordPayload,
+  { rejectValue: ApiError }
+>(
+  "auth/resetPassword",
+  async ({ token, password }, { dispatch, rejectWithValue }) => {
+    try {
+      await api.post(
+        "/api/auth/reset-password",
+        { token, newPassword: password },
+        { requiresAuth: false }
+      );
+      dispatch(
+        addToast({
+          type: "success",
+          message:
+            "Password reset successful! You can now log in with your new password.",
+        })
+      );
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return rejectWithValue(error);
+      }
+      return rejectWithValue(
+        new ApiError({
+          message:
+            "Failed to reset password. Please try again or request a new reset link.",
+          toastType: "error",
+          toastDuration: 5000,
+        })
+      );
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -160,6 +233,30 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       })
       .addCase(registerFaculty.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload?.message || "An error occurred";
+      })
+      // Password reset request cases
+      .addCase(requestPasswordReset.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(requestPasswordReset.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(requestPasswordReset.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload?.message || "An error occurred";
+      })
+      // Reset password cases
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(resetPassword.fulfilled, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload?.message || "An error occurred";
       });

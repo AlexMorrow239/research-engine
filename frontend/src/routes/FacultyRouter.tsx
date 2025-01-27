@@ -2,6 +2,7 @@ import FacultyLogin from "@/pages/auth/facultyLogin/FacultyLogin";
 import FacultyRegistration from "@/pages/auth/facultyRegistration/FacultyRegistration";
 import ProjectDashboard from "@/pages/projects/project-dashboard/ProjectDashboard";
 import { ProjectForm } from "@/pages/projects/project-form/ProjectForm";
+import { ResetPassword } from "@/pages/reset-password/ResetPassword";
 import { useAppSelector } from "@/store";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { ProtectedLayout } from "./ProtectedLayout";
@@ -24,6 +25,7 @@ export const FacultyRouter = (): JSX.Element => {
       />
       <Route path="login" element={<FacultyLogin />} />
       <Route path="register" element={<FacultyRegistration />} />
+      <Route path="auth/reset-password" element={<ResetPassword />} />
 
       {/* Protected Routes */}
       <Route element={<ProtectedLayout />}>

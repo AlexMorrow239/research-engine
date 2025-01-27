@@ -9,11 +9,13 @@ import { Professor, ProfessorSchema } from '../professors/schemas/professors.sch
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { EmailModule } from '../email/email.module';
 
 // Configures authentication module and dependencies
 @Module({
   imports: [
     ProfessorsModule,
+    EmailModule,
     MongooseModule.forFeature([{ name: Professor.name, schema: ProfessorSchema }]),
     JwtModule.registerAsync({
       inject: [ConfigService],

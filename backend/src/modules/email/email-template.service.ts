@@ -15,6 +15,20 @@ interface EmailTemplate {
 export class EmailTemplateService {
   constructor(private readonly configService: ConfigService) {}
 
+  private getFrontendUrl(): string {
+    const isNetworkMode = this.configService.get<string>('NETWORK_MODE') === 'true';
+    const env = this.configService.get<string>('NODE_ENV');
+
+    if (env === 'development') {
+      return isNetworkMode
+        ? this.configService.get<string>('FRONTEND_URL_NETWORK', 'http://100.65.62.87:5173')
+        : this.configService.get<string>('FRONTEND_URL_LOCAL', 'http://localhost:5173');
+    }
+
+    // For production, use the production frontend URL
+    return this.configService.get<string>('FRONTEND_URL', 'http://localhost:5173');
+  }
+
   private getEmailStyles(): string {
     return `
       <style>
@@ -360,8 +374,8 @@ Research Engine Team`;
   }
 
   getPasswordResetTemplate(firstName: string, resetToken: string): EmailTemplate {
-    const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
-    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+    const frontendUrl = this.getFrontendUrl();
+    const resetUrl = `${frontendUrl}/faculty/auth/reset-password?token=${resetToken}`;
 
     const text = `Dear ${firstName},
 

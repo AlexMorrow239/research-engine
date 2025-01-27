@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Res } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiForgotPassword, ApiLogin, ApiRegister, ApiResetPassword } from '@/common/docs';
 import { LoginDto } from '@/common/dto/auth/login.dto';
@@ -7,6 +7,7 @@ import { LoginResponseDto } from '@/common/dto/auth/login-response.dto';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto } from '@/common/dto/auth/forgot-password.dto';
 import { ResetPasswordDto } from '@/common/dto/auth/reset-password.dto';
+import { Response } from 'express';
 
 /**
  * Controller handling professor authentication endpoints
