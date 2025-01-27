@@ -113,13 +113,15 @@ export class EmailService {
     retryCount = 0,
   ): Promise<void> {
     try {
+      const config = this.emailConfigService.getEmailConfig();
       await this.transporter.sendMail({
-        from: this.emailConfigService.getEmailConfig().from,
+        from: config.from,
         to,
         subject,
-        text, // Plain text version
-        html, // HTML version
-        replyTo: this.emailConfigService.getEmailConfig().replyTo,
+        text: `${text}\n\nNOTE: This email was sent from a no-reply address. Please do not reply to this email.`,
+        html: `${html}\n<p style="color: #64748b; font-size: 12px; margin-top: 20px;">NOTE: This email was sent from a no-reply address. Please do not reply to this email.</p>`,
+        replyTo: config.replyTo,
+        headers: config.headers,
       });
       this.logger.log(`Email sent successfully to ${to}`);
     } catch (error) {

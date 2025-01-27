@@ -9,6 +9,10 @@ export class EmailConfigService {
 
   getEmailConfig(): EmailConfig {
     const environment = this.configService.get<string>('NODE_ENV');
+    const noreplyAddress = this.configService.get<string>(
+      'SMTP_NOREPLY_ADDRESS',
+      'noreply-research@miami.edu',
+    );
 
     if (environment === 'production') {
       return {
@@ -19,7 +23,12 @@ export class EmailConfigService {
           user: this.configService.get<string>('SMTP_USER'),
           pass: this.configService.get<string>('SMTP_PASSWORD'),
         },
-        from: this.configService.get<string>('SMTP_FROM_ADDRESS', 'research-portal@miami.edu'),
+        from: noreplyAddress,
+        replyTo: noreplyAddress,
+        headers: {
+          'Auto-Submitted': 'auto-generated',
+          'X-Auto-Response-Suppress': 'All',
+        },
       };
     }
 
@@ -32,7 +41,12 @@ export class EmailConfigService {
         user: this.configService.get<string>('SMTP_USER'),
         pass: this.configService.get<string>('SMTP_PASSWORD'),
       },
-      from: this.configService.get<string>('SMTP_FROM_ADDRESS'),
+      from: noreplyAddress,
+      replyTo: noreplyAddress,
+      headers: {
+        'Auto-Submitted': 'auto-generated',
+        'X-Auto-Response-Suppress': 'All',
+      },
     };
   }
 }
