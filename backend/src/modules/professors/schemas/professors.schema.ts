@@ -54,6 +54,12 @@ export class Professor extends Document {
   @Prop({ default: true })
   isActive: boolean;
 
+  @Prop()
+  resetPasswordToken?: string;
+
+  @Prop()
+  resetPasswordExpires?: Date;
+
   createdAt: Date;
   updatedAt: Date;
 }

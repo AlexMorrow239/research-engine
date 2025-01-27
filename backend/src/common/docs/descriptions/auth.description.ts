@@ -45,5 +45,45 @@ export const AuthDescriptions = {
     registrationError: 'Registration failed. Please check your input and try again.',
     invalidAdminPassword:
       'Invalid administrator password. Please contact your department administrator.',
+    forgotPasswordSuccess: 'If account exists, reset instructions will be sent to email',
+    resetPasswordSuccess: 'Password successfully reset',
+    invalidResetToken: 'Invalid or expired reset token',
+    invalidPasswordFormat: 'New password does not meet security requirements',
+  },
+  forgotPassword: {
+    summary: 'Request Password Reset',
+    description: `
+      Request a password reset email.
+      
+      Process:
+      1. Submit miami.edu email address
+      2. If account exists, a reset token will be emailed
+      3. Token expires after 1 hour
+      4. Use token with reset-password endpoint
+      
+      Note: 
+      - For security, the endpoint returns success regardless of email existence
+      - Only miami.edu email addresses are accepted
+    `,
+  },
+
+  resetPassword: {
+    summary: 'Reset Password',
+    description: `
+      Reset password using token received via email.
+      
+      Requirements:
+      1. Valid reset token (from email)
+      2. New password meeting strength requirements:
+         - Minimum 8 characters
+         - At least one uppercase letter
+         - At least one lowercase letter
+         - At least one number
+         - At least one special character
+      
+      Note:
+      - Token expires after 1 hour
+      - Previous password will be invalidated
+    `,
   },
 };

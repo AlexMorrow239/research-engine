@@ -154,4 +154,22 @@ export class EmailService {
       });
     }
   }
+
+  async sendPasswordResetEmail(
+    email: string,
+    firstName: string,
+    resetToken: string,
+  ): Promise<void> {
+    try {
+      const { subject, text, html } = this.emailTemplateService.getPasswordResetTemplate(
+        firstName,
+        resetToken,
+      );
+
+      await this.sendEmailWithRetry(email, subject, text, html);
+      this.logger.log(`Password reset email sent to ${email}`);
+    } catch (error) {
+      ErrorHandler.handleServiceError(this.logger, error, 'send password reset email', { email });
+    }
+  }
 }

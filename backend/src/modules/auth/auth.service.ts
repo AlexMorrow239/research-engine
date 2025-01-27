@@ -12,6 +12,7 @@ import { Professor } from '../professors/schemas/professors.schema';
 import { ProfessorResponseDto, RegisterProfessorDto } from '@/common/dto/professors';
 import { ProfessorsService } from '../professors/professors.service';
 import { ConfigService } from '@nestjs/config';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +23,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly professorsService: ProfessorsService,
     private readonly configService: ConfigService,
+    private readonly emailService: EmailService,
   ) {}
 
   async register(registerProfessorDto: RegisterProfessorDto): Promise<LoginResponseDto> {
@@ -108,5 +110,68 @@ export class AuthService {
         title: professor.title,
       },
     });
+  }
+
+  async forgotPassword(email: string): Promise<void> {
+    try {
+      const professor = await this.professorModel.findOne({ email });
+      if (!professor) {
+        // Return void even if professor not found to prevent email enumeration
+        return;
+      }
+
+      const resetToken = this.jwtService.sign(
+        { sub: professor._id, email: professor.email },
+        { expiresIn: '1h' },
+      );
+
+      // Store hashed reset token
+      const hashedToken = await bcrypt.hash(resetToken, 10);
+      await this.professorModel.findByIdAndUpdate(professor._id, {
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: new Date(Date.now() + 3600000), // 1 hour
+      });
+
+      // Send reset email using EmailService
+      await this.emailService.sendPasswordResetEmail(
+        professor.email,
+        professor.name.firstName,
+        resetToken,
+      );
+    } catch (error) {
+      ErrorHandler.handleServiceError(this.logger, error, 'forgot password request', { email });
+    }
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    try {
+      const payload = this.jwtService.verify(token);
+      const professor = await this.professorModel.findOne({
+        _id: payload.sub,
+        resetPasswordExpires: { $gt: new Date() },
+      });
+
+      if (!professor) {
+        throw new UnauthorizedException('Invalid or expired reset token');
+      }
+
+      // Verify stored token matches
+      const isValidToken = await bcrypt.compare(token, professor.resetPasswordToken);
+      if (!isValidToken) {
+        throw new UnauthorizedException('Invalid reset token');
+      }
+
+      // Update password and clear reset token
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await this.professorModel.findByIdAndUpdate(professor._id, {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+      });
+    } catch (error) {
+      ErrorHandler.handleServiceError(this.logger, error, 'reset password', {}, [
+        UnauthorizedException,
+      ]);
+    }
   }
 }

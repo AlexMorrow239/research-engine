@@ -13,6 +13,8 @@ import { CreateProfessorDto, RegisterProfessorDto } from '@/common/dto/professor
 
 import { AuthDescriptions } from '../descriptions/auth.description';
 import { loginExamples, registerExamples } from '../examples/auth.examples';
+import { ForgotPasswordDto } from '@/common/dto/auth/forgot-password.dto';
+import { ResetPasswordDto } from '@/common/dto/auth/reset-password.dto';
 
 export const ApiLogin = () =>
   applyDecorators(
@@ -51,5 +53,34 @@ export const ApiRegister = () =>
     ApiResponse({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       description: AuthDescriptions.responses.serverError,
+    }),
+  );
+
+export const ApiForgotPassword = () =>
+  applyDecorators(
+    ApiOperation(AuthDescriptions.forgotPassword),
+    ApiBody({ type: ForgotPasswordDto }),
+    ApiResponse({
+      status: HttpStatus.OK,
+      description: AuthDescriptions.responses.forgotPasswordSuccess,
+    }),
+    ApiBadRequestResponse({
+      description: AuthDescriptions.responses.invalidPasswordFormat,
+    }),
+  );
+
+export const ApiResetPassword = () =>
+  applyDecorators(
+    ApiOperation(AuthDescriptions.resetPassword),
+    ApiBody({ type: ResetPasswordDto }),
+    ApiResponse({
+      status: HttpStatus.OK,
+      description: AuthDescriptions.responses.resetPasswordSuccess,
+    }),
+    ApiBadRequestResponse({
+      description: AuthDescriptions.responses.invalidPasswordFormat,
+    }),
+    ApiUnauthorizedResponse({
+      description: AuthDescriptions.responses.invalidResetToken,
     }),
   );

@@ -45,6 +45,18 @@ export class ProfessorResponseDto {
   @ApiProperty()
   isActive: boolean;
 
+  @ApiPropertyOptional({
+    description: 'Hashed reset password token',
+    required: false,
+  })
+  resetPasswordToken?: string;
+
+  @ApiPropertyOptional({
+    description: 'Reset password token expiration date',
+    required: false,
+  })
+  resetPasswordExpires?: Date;
+
   @ApiProperty()
   createdAt: Date;
 

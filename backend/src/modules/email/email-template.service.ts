@@ -358,4 +358,55 @@ Research Engine Team`;
       html,
     };
   }
+
+  getPasswordResetTemplate(firstName: string, resetToken: string): EmailTemplate {
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+
+    const text = `Dear ${firstName},
+
+You have requested to reset your password for your Research Engine account. Please click the link below to reset your password:
+
+${resetUrl}
+
+This link will expire in 1 hour. If you did not request this password reset, please ignore this email.
+
+Best regards,
+Research Engine Team`;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          ${this.getEmailStyles()}
+        </head>
+        <body>
+          <div class="email-container">
+            <div class="header">
+              <h2>Password Reset Request</h2>
+            </div>
+            <div class="content">
+              <p>Dear ${firstName},</p>
+              <p>You have requested to reset your password for your Research Engine account.</p>
+              
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${resetUrl}" class="button">Reset Password</a>
+              </div>
+
+              <div class="warning">
+                This link will expire in 1 hour. If you did not request this password reset, please ignore this email.
+              </div>
+            </div>
+            ${this.getEmailFooter()}
+          </div>
+        </body>
+      </html>
+    `;
+
+    return {
+      subject: 'Research Engine - Password Reset Request',
+      text,
+      html,
+    };
+  }
 }
