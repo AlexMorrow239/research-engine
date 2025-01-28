@@ -1,0 +1,124 @@
+@use "@/styles/abstracts" as *;
+
+.faculty-account {
+  @include flex-center;
+  min-height: calc(100vh - var(--header-height));
+  padding: var(--spacing-6);
+  background-color: var(--color-background-alt);
+
+  &__container {
+    @include card-base;
+    width: 100%;
+    max-width: 800px;
+    padding: var(--spacing-8);
+  }
+
+  &__title {
+    margin-bottom: var(--spacing-4);
+    color: var(--color-text-dark);
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+  }
+
+  &__subtitle {
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-6);
+  }
+
+  &__form {
+    @include flex(column);
+    gap: var(--spacing-6);
+  }
+}
+
+.form-section {
+  @include flex(column);
+  gap: var(--spacing-4);
+
+  &__title {
+    color: var(--color-text-dark);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--spacing-2);
+  }
+}
+
+.form-group {
+  @include flex(column);
+  gap: var(--spacing-2);
+
+  label {
+    color: var(--color-text-dark);
+    font-weight: var(--font-weight-medium);
+  }
+
+  input,
+  select,
+  textarea {
+    @include input-base;
+
+    &.error {
+      border-color: var(--color-error);
+    }
+
+    &:disabled {
+      background-color: var(--color-background-alt);
+      cursor: not-allowed;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+}
+
+.array-input,
+.publication-input {
+  @include flex(row);
+  gap: var(--spacing-2);
+  align-items: flex-start;
+
+  input {
+    flex: 1;
+  }
+}
+
+.department-select {
+  position: relative;
+}
+
+.department-dropdown {
+  @include card-base;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: var(--color-background);
+}
+
+.department-option {
+  padding: var(--spacing-2) var(--spacing-3);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-background-alt);
+  }
+
+  &.no-results {
+    color: var(--color-text-muted);
+    cursor: default;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+}
+
+.error-message {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+}

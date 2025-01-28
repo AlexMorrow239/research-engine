@@ -330,11 +330,13 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
       formData.append("resume", data.studentInfo.resume);
 
       const resultAction = await dispatch(
-        createApplication({ projectId, formData })
+        createApplication({
+          projectId,
+          applicationData: formData,
+        })
       );
 
       if (createApplication.fulfilled.match(resultAction)) {
-        alert("Application submitted successfully!");
         handleReset();
         onClose();
       } else {
@@ -343,10 +345,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
       }
     } catch (error) {
       console.error("Error in submission:", error);
-      alert(
-        "Failed to submit application: " +
-          (error instanceof Error ? error.message : "An error occurred")
-      );
+      // Error toast will be handled by error middleware
     } finally {
       setIsSubmitting(false);
     }

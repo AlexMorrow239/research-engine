@@ -186,7 +186,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
   ): Promise<void> => {
     setIsSubmitting(true);
     try {
-      console.log("Campus value when publishing:", data.campus); // Add this line
       const formattedData: Omit<
         Project,
         "id" | "professor" | "files" | "isVisible" | "createdAt" | "updatedAt"

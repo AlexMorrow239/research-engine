@@ -1,5 +1,6 @@
 import FacultyLogin from "@/pages/auth/facultyLogin/FacultyLogin";
 import FacultyRegistration from "@/pages/auth/facultyRegistration/FacultyRegistration";
+import { FacultyAccount } from "@/pages/faculty-account/FacultyAccount";
 import ProjectDashboard from "@/pages/projects/project-dashboard/ProjectDashboard";
 import { ProjectForm } from "@/pages/projects/project-form/ProjectForm";
 import { ResetPassword } from "@/pages/reset-password/ResetPassword";
@@ -30,6 +31,7 @@ export const FacultyRouter = (): JSX.Element => {
       {/* Protected Routes */}
       <Route element={<ProtectedLayout />}>
         <Route path="dashboard" element={<ProjectDashboard />} />
+        <Route path="account" element={<FacultyAccount />} />
         <Route path="projects">
           <Route path="new" element={<ProjectForm mode="create" />} />
           <Route path=":projectId/edit" element={<ProjectForm mode="edit" />} />

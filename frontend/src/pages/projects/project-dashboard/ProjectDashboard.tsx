@@ -2,7 +2,7 @@ import { ProjectStatus } from "@/common/enums";
 import { ProjectSection } from "@/components/projects/project-section/ProjectSection";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { fetchProfessorProjects } from "@/store/features/projects/projectsSlice";
-import { Plus } from "lucide-react";
+import { Plus, UserCog } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProjectDashboard.scss";
@@ -66,13 +66,22 @@ export default function ProjectDashboard(): JSX.Element {
             Manage and create research opportunities for students
           </p>
         </div>
-        <button
-          className="btn btn--primary btn--large"
-          onClick={() => navigate("/faculty/projects/new")}
-        >
-          <Plus size={24} />
-          <span>Create New Project</span>
-        </button>
+        <div className="project-dashboard__actions">
+          <button
+            className="btn btn--secondary btn--large"
+            onClick={() => navigate("/faculty/account")}
+          >
+            <UserCog size={24} />
+            <span>Edit Profile</span>
+          </button>
+          <button
+            className="btn btn--primary btn--large"
+            onClick={() => navigate("/faculty/projects/new")}
+          >
+            <Plus size={24} />
+            <span>Create New Project</span>
+          </button>
+        </div>
       </div>
 
       <div className="project-dashboard__content">

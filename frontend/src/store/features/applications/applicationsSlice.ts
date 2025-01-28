@@ -1,8 +1,9 @@
 import { type ApplicationStatus } from "@/common/enums";
 import type { ApiResponse, Application } from "@/types";
-import { api } from "@/utils/api";
+import { api, ApiError } from "@/utils/api";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { addToast } from "../ui/uiSlice";
 
 interface ApplicationsState {
   items: Application[];
@@ -29,6 +30,27 @@ const initialState: ApplicationsState = {
     limit: 10,
   },
 };
+export const handleEmailStatus = createAsyncThunk(
+  "applications/handleEmailStatus",
+  async (
+    {
+      success,
+      message,
+    }: {
+      success: boolean;
+      message: string;
+    },
+    { dispatch }
+  ) => {
+    dispatch(
+      addToast({
+        type: success ? "success" : "error",
+        message,
+        duration: 6000,
+      })
+    );
+  }
+);
 
 // Create Application
 export const createApplication = createAsyncThunk(
@@ -36,28 +58,42 @@ export const createApplication = createAsyncThunk(
   async (
     {
       projectId,
-      formData,
+      applicationData,
     }: {
       projectId: string;
-      formData: FormData;
+      applicationData: FormData;
     },
-    { rejectWithValue }
+    { dispatch }
   ) => {
     try {
-      const response = await api.post<Application>(
+      const response = await api.post<ApiResponse<Application>>(
         `/api/projects/${projectId}/applications`,
-        formData,
+        applicationData,
         {
-          isFormData: true,
           requiresAuth: false,
+          isFormData: true,
         }
       );
-      return response;
+
+      // Show immediate success message for application submission
+      dispatch(
+        addToast({
+          type: "success",
+          message:
+            "Application submitted successfully! You will receive a confirmation email shortly.",
+          duration: 5000,
+        })
+      );
+
+      return response.data;
     } catch (error) {
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
+      if (error instanceof ApiError) {
+        throw error;
       }
-      return rejectWithValue("Failed to create application");
+      throw new ApiError({
+        message: "Failed to submit application. Please try again.",
+        toastType: "error",
+      });
     }
   }
 );

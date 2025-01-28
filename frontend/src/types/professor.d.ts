@@ -21,3 +21,16 @@ export interface Professor {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface ProfessorAccountUpdate {
+  name: {
+    firstName: string;
+    lastName: string;
+  };
+  department: Department;
+  title?: string;
+  office: string;
+  researchAreas: string[];
+  publications?: Publication[];
+  bio?: string;
+}

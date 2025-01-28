@@ -42,6 +42,12 @@
     max-width: 400px;
   }
 
+  &__actions {
+    display: flex;
+    gap: var(--spacing-4);
+    align-items: center;
+  }
+
   .btn--primary {
     @include flex(row, center, center);
     gap: var(--spacing-2);

@@ -15,6 +15,7 @@ import {
 import storage from "redux-persist/lib/storage";
 import applicationsReducer from "./features/applications/applicationsSlice";
 import authReducer from "./features/auth/authSlice";
+import professorsReducer from "./features/professors/professorsSlice";
 import projectsReducer from "./features/projects/projectsSlice";
 import uiReducer from "./features/ui/uiSlice";
 import { authMiddleware } from "./middleware/authMiddleware";
@@ -56,6 +57,7 @@ export const store = configureStore({
     auth: persistedAuthReducer,
     ui: persistedUiReducer,
     applications: persistedApplicationsReducer,
+    professors: professorsReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
