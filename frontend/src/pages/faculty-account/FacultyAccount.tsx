@@ -1,4 +1,5 @@
 import { Department } from "@/common/enums";
+import { FormField } from "@/components/common/form-field/FormField";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   fetchProfessor,
@@ -48,15 +49,17 @@ export const FacultyAccount = (): JSX.Element => {
   const [departmentSearch, setDepartmentSearch] = useState("");
   const [showDepartmentDropdown, setShowDepartmentDropdown] = useState(false);
 
+  const form = useForm<FacultyAccountForm>({
+    resolver: zodResolver(facultyAccountSchema),
+    mode: "onChange",
+  });
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-  } = useForm<FacultyAccountForm>({
-    resolver: zodResolver(facultyAccountSchema),
-    mode: "onChange",
-  });
+  } = form;
 
   useEffect(() => {
     dispatch(fetchProfessor());
@@ -130,47 +133,30 @@ export const FacultyAccount = (): JSX.Element => {
           <div className="form-section">
             <h2 className="form-section__title">Required Information</h2>
 
-            <div className="form-group">
-              <label htmlFor="email">Miami Email Address</label>
-              <input
-                type="email"
-                id="email"
-                {...register("email")}
-                className={errors.email ? "error" : ""}
-                disabled
-              />
-              {errors.email && (
-                <span className="error-message">{errors.email.message}</span>
-              )}
-            </div>
+            <FormField
+              formType="generic"
+              form={form}
+              name="email"
+              label="Miami Email Address"
+              type="email"
+              disabled
+            />
 
-            <div className="form-group">
-              <label htmlFor="firstName">First Name</label>
-              <input
-                type="text"
-                id="firstName"
-                {...register("firstName")}
-                className={errors.firstName ? "error" : ""}
-              />
-              {errors.firstName && (
-                <span className="error-message">
-                  {errors.firstName.message}
-                </span>
-              )}
-            </div>
+            <FormField
+              formType="generic"
+              form={form}
+              name="firstName"
+              label="First Name"
+              required
+            />
 
-            <div className="form-group">
-              <label htmlFor="lastName">Last Name</label>
-              <input
-                type="text"
-                id="lastName"
-                {...register("lastName")}
-                className={errors.lastName ? "error" : ""}
-              />
-              {errors.lastName && (
-                <span className="error-message">{errors.lastName.message}</span>
-              )}
-            </div>
+            <FormField
+              formType="generic"
+              form={form}
+              name="lastName"
+              label="Last Name"
+              required
+            />
 
             <div className="form-group">
               <label htmlFor="department">Department</label>
@@ -213,19 +199,14 @@ export const FacultyAccount = (): JSX.Element => {
               )}
             </div>
 
-            <div className="form-group">
-              <label htmlFor="office">Office Location</label>
-              <input
-                type="text"
-                id="office"
-                {...register("office")}
-                placeholder="e.g., McArthur Engineering Building, Room 123"
-                className={errors.office ? "error" : ""}
-              />
-              {errors.office && (
-                <span className="error-message">{errors.office.message}</span>
-              )}
-            </div>
+            <FormField
+              formType="generic"
+              form={form}
+              name="office"
+              label="Office Location"
+              required
+              placeholder="e.g., McArthur Engineering Building, Room 123"
+            />
 
             <div className="form-group">
               <label>Research Areas</label>
@@ -266,16 +247,14 @@ export const FacultyAccount = (): JSX.Element => {
 
           <div className="form-section">
             <h2 className="form-section__title">Optional Information</h2>
-
-            <div className="form-group">
-              <label htmlFor="title">Academic Title</label>
-              <input
-                type="text"
-                id="title"
-                {...register("title")}
-                placeholder="e.g., Associate Professor"
-              />
-            </div>
+            <FormField
+              formType="generic"
+              form={form}
+              name="title"
+              label="Academic Title"
+              required={false}
+              placeholder="e.g., Associate Professor"
+            />
 
             <div className="form-group">
               <label>Publications (Optional)</label>
@@ -315,19 +294,16 @@ export const FacultyAccount = (): JSX.Element => {
               </button>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="bio">Bio</label>
-              <textarea
-                id="bio"
-                {...register("bio")}
-                className={errors.bio ? "error" : ""}
-                placeholder="Tell us about your research interests and experience..."
-                rows={4}
-              />
-              {errors.bio && (
-                <span className="error-message">{errors.bio.message}</span>
-              )}
-            </div>
+            <FormField
+              formType="generic"
+              form={form}
+              name="bio"
+              label="Bio"
+              type="textarea"
+              required={false}
+              rows={4}
+              placeholder="Tell us about your research interests and experience..."
+            />
           </div>
 
           <button

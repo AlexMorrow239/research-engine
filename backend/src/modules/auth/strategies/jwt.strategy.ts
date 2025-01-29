@@ -23,10 +23,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    const professor = await this.professorModel.findById(payload.sub);
-    if (!professor) {
-      throw new UnauthorizedException('Professor not found');
+    try {
+      const professor = await this.professorModel.findById(payload.sub);
+      if (!professor) {
+        throw new UnauthorizedException('Professor not found');
+      }
+      return professor;
+    } catch (error) {
+      // Check if error is TokenExpiredError from jsonwebtoken
+      if (error.name === 'TokenExpiredError') {
+        throw new UnauthorizedException({ message: 'Token expired', expired: true });
+      }
+      throw error;
     }
-    return professor;
   }
 }

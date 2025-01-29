@@ -9,6 +9,7 @@ import {
   Logger,
   NotFoundException,
   Type,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { MongoServerError } from 'mongodb';
 
@@ -41,7 +42,7 @@ export class ErrorHandler {
     error: Error,
     context: string,
     details?: Record<string, any>,
-    knownErrors: Type<Error>[] = [NotFoundException],
+    knownErrors: Type<Error>[] = [NotFoundException, UnauthorizedException],
   ): never {
     // Log the error with context and details
     logger.error(
@@ -54,8 +55,26 @@ export class ErrorHandler {
       error.constructor.name,
     );
 
+    // Handle JWT token expiration
+    if (error.name === 'TokenExpiredError') {
+      throw new UnauthorizedException({
+        message: 'Your session has expired',
+        expired: true,
+      });
+    }
+
     // Check if error is a known type that should be rethrown
     if (knownErrors.some((errorType) => error instanceof errorType)) {
+      // If it's an UnauthorizedException with expired flag, preserve that information
+      if (
+        error instanceof UnauthorizedException &&
+        error.getResponse() &&
+        typeof error.getResponse() === 'object' &&
+        error.getResponse() !== null &&
+        'expired' in (error.getResponse() as object)
+      ) {
+        throw error;
+      }
       throw error;
     }
 

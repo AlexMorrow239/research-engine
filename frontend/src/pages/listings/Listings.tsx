@@ -153,7 +153,7 @@ export default function Listings(): JSX.Element {
   if (isInitialLoad || (isLoading && projects.length === 0)) {
     return (
       <div className="listings-page">
-        <div className="loading-spinner">Loading...</div>
+        <div className="loading">Loading projects...</div>
       </div>
     );
   }

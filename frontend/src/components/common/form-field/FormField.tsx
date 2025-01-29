@@ -1,17 +1,20 @@
 import { type ApplicationFormData } from "@/types";
-import React from "react";
-import { type FieldError, type UseFormReturn } from "react-hook-form";
+import type {
+  FieldError,
+  Path,
+  PathValue,
+  UseFormReturn,
+} from "react-hook-form";
 import "./FormField.scss";
 
-type FormPaths =
+type ApplicationFormPaths =
   | `studentInfo.${keyof ApplicationFormData["studentInfo"]}`
   | `studentInfo.name.${"firstName" | "lastName"}`
   | `availability.${keyof ApplicationFormData["availability"]}`
   | `additionalInfo.${keyof ApplicationFormData["additionalInfo"]}`;
 
-interface FormFieldProps {
+interface BaseFormFieldProps<T> {
   label: string;
-  name: FormPaths;
   type?: string;
   required?: boolean;
   placeholder?: string;
@@ -19,10 +22,29 @@ interface FormFieldProps {
   help?: string;
   min?: string;
   max?: string;
+  disabled?: boolean;
+  rows?: number;
+  defaultValue?: T;
+}
+
+interface ApplicationFormFieldProps extends BaseFormFieldProps<string> {
+  formType: "application";
+  name: ApplicationFormPaths;
   form: UseFormReturn<ApplicationFormData>;
 }
 
-export const FormField: React.FC<FormFieldProps> = ({
+interface GenericFormFieldProps<T extends Record<string, unknown>>
+  extends BaseFormFieldProps<PathValue<T, Path<T>>> {
+  formType: "generic";
+  name: Path<T>;
+  form: UseFormReturn<T>;
+}
+
+type FormFieldProps<T extends Record<string, unknown>> =
+  | ApplicationFormFieldProps
+  | GenericFormFieldProps<T>;
+
+export function FormField<T extends Record<string, unknown>>({
   label,
   name,
   type = "text",
@@ -33,31 +55,36 @@ export const FormField: React.FC<FormFieldProps> = ({
   min,
   max,
   form,
-}) => {
+  disabled = false,
+  rows,
+  formType,
+  defaultValue,
+}: FormFieldProps<T>): JSX.Element {
   const {
-    register,
     formState: { errors },
   } = form;
 
-  const getError = () => {
-    const [section, ...parts] = name.split(".");
-    const sectionErrors = errors[section as keyof typeof errors];
+  const registerField =
+    formType === "application"
+      ? form.register(name)
+      : form.register(name, { value: defaultValue });
 
-    if (!sectionErrors) return undefined;
+  const getError = (): Record<string, unknown> | FieldError | undefined => {
+    const parts = name.split(".");
+    let currentErrors: Record<string, unknown> | FieldError | undefined =
+      errors;
 
-    if (parts.length === 1) {
-      return sectionErrors[parts[0] as keyof typeof sectionErrors];
+    for (const part of parts) {
+      if (!currentErrors || typeof currentErrors !== "object") return undefined;
+      if (!("message" in currentErrors)) {
+        currentErrors = (currentErrors as Record<string, unknown>)[part] as
+          | Record<string, unknown>
+          | FieldError
+          | undefined;
+      }
     }
 
-    if (parts.length === 2) {
-      const [parent, child] = parts;
-      const parentErrors = sectionErrors[parent as keyof typeof sectionErrors];
-      return parentErrors && typeof parentErrors === "object"
-        ? (parentErrors as Record<string, FieldError>)[child]
-        : undefined;
-    }
-
-    return undefined;
+    return currentErrors;
   };
 
   const error = getError();
@@ -70,7 +97,11 @@ export const FormField: React.FC<FormFieldProps> = ({
         {required && <span className="form-field__required">*</span>}
       </label>
       {options ? (
-        <select {...register(name)} className={inputClassName}>
+        <select
+          {...registerField}
+          className={inputClassName}
+          disabled={disabled}
+        >
           <option value="">Select {label.toLowerCase()}</option>
           {options.map(({ value, label }) => (
             <option key={value} value={value}>
@@ -78,24 +109,33 @@ export const FormField: React.FC<FormFieldProps> = ({
             </option>
           ))}
         </select>
+      ) : type === "textarea" ? (
+        <textarea
+          {...registerField}
+          className={inputClassName}
+          placeholder={placeholder}
+          disabled={disabled}
+          rows={rows}
+        />
       ) : (
         <input
-          {...register(name)}
+          {...registerField}
           type={type}
           className={inputClassName}
           placeholder={placeholder}
           min={min}
           max={max}
+          disabled={disabled}
         />
       )}
       {help && <span className="form-field__help">{help}</span>}
       {error && (
         <span className="form-field__error">
-          {typeof error === "object" && "message" in error
-            ? error.message
+          {typeof error === "object" && error !== null && "message" in error
+            ? String(error.message)
             : String(error)}
         </span>
       )}
     </div>
   );
-};
+}

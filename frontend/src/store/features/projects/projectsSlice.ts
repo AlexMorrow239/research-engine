@@ -134,11 +134,13 @@ export const fetchProfessorProjects = createAsyncThunk(
       }`;
 
       const response = await api.fetch<Project[]>(url);
-
       return response;
     } catch (error) {
-      console.error("Fetch Professor Projects Error:", error);
-      if (error instanceof Error) {
+      if (error instanceof ApiError) {
+        if (error.status === 401) {
+          // Let the error middleware handle auth errors
+          return rejectWithValue(error);
+        }
         return rejectWithValue(error.message);
       }
       return rejectWithValue("An unknown error occurred");

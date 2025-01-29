@@ -107,7 +107,22 @@ export const api = {
         // Handle specific status codes
         switch (response.status) {
           case 401:
-            // Replace specific error messages with a generic one
+            if (
+              errorData &&
+              typeof errorData === "object" &&
+              "expired" in errorData
+            ) {
+              // Clear auth state and redirect
+              localStorage.removeItem("accessToken");
+              throw new ApiError({
+                message: "Your session has expired. Please log in again.",
+                status: 401,
+                data: { expired: true },
+                toastType: "warning",
+                toastDuration: 5000,
+              });
+            }
+            // Generic error message for securityt
             throw new ApiError({
               message:
                 "Invalid credentials. Please check your email or password or register for a new account.",

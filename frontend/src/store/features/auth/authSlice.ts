@@ -199,9 +199,11 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
     },
     handleTokenExpiration: (state) => {
-      state.isAuthenticated = false;
-      state.accessToken = null;
       state.user = null;
+      state.accessToken = null;
+      state.isAuthenticated = false;
+      state.error = null;
+      localStorage.removeItem("accessToken");
     },
   },
   extraReducers: (builder) => {
