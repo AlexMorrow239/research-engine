@@ -85,7 +85,7 @@ export default function FacultyLogin(): JSX.Element {
               <div className="password-header">
                 <label htmlFor="password">Password</label>
                 <Link
-                  to="/auth/reset-password"
+                  to="/faculty/auth/reset-password"
                   className="forgot-password-link"
                 >
                   Forgot password?
