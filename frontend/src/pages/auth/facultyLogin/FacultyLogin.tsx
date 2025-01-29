@@ -1,3 +1,4 @@
+import { FormField } from "@/components/common/form-field/FormField";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { loginUser } from "@/store/features/auth/authSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,14 +25,16 @@ export default function FacultyLogin(): JSX.Element {
   const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
   const [showPassword, setShowPassword] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FacultyLoginForm>({
+  const form = useForm<FacultyLoginForm>({
     resolver: zodResolver(facultyLoginSchema),
     mode: "onChange",
   });
+
+  const {
+    handleSubmit,
+    formState: { errors },
+    register,
+  } = form;
 
   const onSubmit = async (data: FacultyLoginForm): Promise<void> => {
     try {
@@ -67,19 +70,14 @@ export default function FacultyLogin(): JSX.Element {
           noValidate
         >
           <div className="form-section">
-            <div className="form-group">
-              <label htmlFor="email">Miami Email Address</label>
-              <input
-                type="email"
-                id="email"
-                {...register("email")}
-                className={errors.email ? "error" : ""}
-                placeholder="username@miami.edu"
-              />
-              {errors.email && (
-                <span className="error-message">{errors.email.message}</span>
-              )}
-            </div>
+            <FormField
+              formType="generic"
+              form={form}
+              name="email"
+              label="Miami Email Address"
+              type="email"
+              placeholder="username@miami.edu"
+            />
 
             <div className="form-group">
               <div className="password-header">

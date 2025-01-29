@@ -1,5 +1,6 @@
 import { CAMPUS_OPTIONS } from "@/common/constants";
 import { Campus, ProjectStatus } from "@/common/enums";
+import { FormField } from "@/components/common/form-field/FormField";
 import { useAppDispatch } from "@/store";
 import {
   createProject,
@@ -10,14 +11,7 @@ import {
 import type { Project } from "@/types";
 import { ApiError } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Book,
-  Briefcase,
-  Calendar,
-  FileText,
-  MapPin,
-  Users,
-} from "lucide-react";
+import { Briefcase, MapPin } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -99,17 +93,19 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
   const [researchCategories, setResearchCategories] = useState([""]);
   const [requirements, setRequirements] = useState([""]);
 
+  const form = useForm<ProjectFormData>({
+    resolver: zodResolver(projectSchema),
+    defaultValues: initialFormData,
+    mode: "onChange",
+  });
+
   const {
     register,
     handleSubmit,
     setValue,
     watch,
     formState: { errors },
-  } = useForm<ProjectFormData>({
-    resolver: zodResolver(projectSchema),
-    defaultValues: initialFormData,
-    mode: "onChange",
-  });
+  } = form;
 
   const currentStatus = watch("status");
 
@@ -250,42 +246,25 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
         <section className="form-section">
           <h2 className="form-section__title">Basic Information</h2>
 
-          <div className="form-group">
-            <label htmlFor="title" className="form-group__label">
-              <FileText className="form-group__icon" size={16} />
-              Project Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              {...register("title")}
-              className={`form-input ${errors.title ? "form-input--error" : ""}`}
-              placeholder="Enter a descriptive title for your research project"
-            />
-            {errors.title && (
-              <span className="form-group__error">{errors.title.message}</span>
-            )}
-          </div>
+          <FormField
+            formType="generic"
+            form={form}
+            name="title"
+            label="Project Title"
+            placeholder="Enter a descriptive title for your research project"
+            defaultValue={mode === "edit" ? watch("title") : ""}
+          />
 
-          <div className="form-group">
-            <label htmlFor="description" className="form-group__label">
-              <Book className="form-group__icon" size={16} />
-              Project Description
-            </label>
-            <textarea
-              id="description"
-              {...register("description")}
-              className={`form-input form-input--textarea ${
-                errors.description ? "form-input--error" : ""
-              }`}
-              placeholder="Describe your research project, its goals, and what students will be doing"
-            />
-            {errors.description && (
-              <span className="form-group__error">
-                {errors.description.message}
-              </span>
-            )}
-          </div>
+          <FormField
+            formType="generic"
+            form={form}
+            name="description"
+            label="Project Description"
+            type="textarea"
+            placeholder="Describe your research project, its goals, and what students will be doing"
+            defaultValue={mode === "edit" ? watch("description") : ""}
+            rows={4}
+          />
 
           <div className="form-group">
             <label htmlFor="campus" className="form-group__label">
@@ -313,45 +292,31 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
         <section className="form-section">
           <h2 className="form-section__title">Project Details</h2>
 
-          <div className="form-group">
-            <label htmlFor="positions" className="form-group__label">
-              <Users className="form-group__icon" size={16} />
-              Number of Positions
-            </label>
-            <input
-              type="number"
-              id="positions"
-              {...register("positions", { valueAsNumber: true })}
-              className={`form-input ${errors.positions ? "form-input--error" : ""}`}
-              min={1}
-              max={10}
-            />
-            {errors.positions && (
-              <span className="form-group__error">
-                {errors.positions.message}
-              </span>
-            )}
-          </div>
+          <FormField
+            formType="generic"
+            form={form}
+            name="positions"
+            label="Number of Positions"
+            type="number"
+            min="1"
+            max="10"
+            defaultValue={
+              mode === "edit" ? watch("positions")?.toString() : "1"
+            }
+          />
 
-          <div className="form-group">
-            <label htmlFor="applicationDeadline" className="form-group__label">
-              <Calendar className="form-group__icon" size={16} />
-              Application Deadline
-            </label>
-            <input
-              type="date"
-              id="applicationDeadline"
-              {...register("applicationDeadline")}
-              className={`form-input ${
-                errors.applicationDeadline ? "form-input--error" : ""
-              }`}
-            />
-            {errors.applicationDeadline && (
-              <span className="form-group__error">
-                {errors.applicationDeadline.message}
-              </span>
-            )}
-          </div>
+          <FormField
+            formType="generic"
+            form={form}
+            name="applicationDeadline"
+            label="Application Deadline"
+            type="date"
+            defaultValue={
+              mode === "edit"
+                ? watch("applicationDeadline")?.toISOString().split("T")[0]
+                : ""
+            }
+          />
 
           <div className="form-group">
             <label className="form-group__label">Research Categories</label>

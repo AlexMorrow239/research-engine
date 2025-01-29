@@ -1,3 +1,4 @@
+import { FormField } from "@/components/common/form-field/FormField";
 import { useAppDispatch } from "@/store";
 import {
   requestPasswordReset,
@@ -101,26 +102,13 @@ export const ResetPassword = (): JSX.Element => {
                   Enter your email address and we'll send you instructions to
                   reset your password.
                 </p>
-                <div className="form-field">
-                  <label htmlFor="email" className="form-field__label">
-                    Email Address
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    className={`form-field__input ${
-                      requestForm.formState.errors.email
-                        ? "form-field__input--error"
-                        : ""
-                    }`}
-                    {...requestForm.register("email")}
-                  />
-                  {requestForm.formState.errors.email && (
-                    <span className="form-field__error">
-                      {requestForm.formState.errors.email.message}
-                    </span>
-                  )}
-                </div>
+                <FormField
+                  formType="generic"
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  form={requestForm}
+                />
                 <button
                   type="submit"
                   className="button button--primary button--full"
