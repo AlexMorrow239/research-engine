@@ -1,21 +1,12 @@
 import ugrLogo from "@/assets/images/navbar/miami-ugr.png";
 import poweredBy from "@/assets/images/navbar/powered-by-bonsai.png";
 import { navigationItems } from "@/config/navigation";
-import { useAppDispatch, useAppSelector } from "@/store";
-import { logout } from "@/store/features/auth/authSlice";
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import "./NavBar.scss";
 
 export const NavBar = (): JSX.Element => {
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const handleLogout = (): void => {
-    dispatch(logout());
-    setIsMobileMenuOpen(false);
-  };
 
   const toggleMobileMenu = (): void => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -53,12 +44,6 @@ export const NavBar = (): JSX.Element => {
               {item.label}
             </NavLink>
           ))}
-
-          {isAuthenticated && (
-            <button className="nav__link" onClick={handleLogout}>
-              Logout
-            </button>
-          )}
         </div>
 
         {/* Powered By section */}

@@ -1,8 +1,9 @@
 import { ProjectStatus } from "@/common/enums";
 import { ProjectSection } from "@/components/projects/project-section/ProjectSection";
 import { useAppDispatch, useAppSelector } from "@/store";
+import { logout } from "@/store/features/auth/authSlice";
 import { fetchProfessorProjects } from "@/store/features/projects/projectsSlice";
-import { Plus, UserCog } from "lucide-react";
+import { LogOut, Plus, UserCog } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ProjectDashboard.scss";
@@ -14,6 +15,11 @@ export default function ProjectDashboard(): JSX.Element {
   const { professorProjects = [], isLoading } = useAppSelector(
     (state) => state.projects
   );
+
+  const handleLogout = async (): Promise<void> => {
+    await dispatch(logout());
+    navigate("/");
+  };
 
   const draftProjects =
     professorProjects?.filter(
@@ -73,6 +79,13 @@ export default function ProjectDashboard(): JSX.Element {
           >
             <UserCog size={24} />
             <span>Edit Profile</span>
+          </button>
+          <button
+            className="btn btn--secondary btn--large"
+            onClick={handleLogout}
+          >
+            <LogOut size={24} />
+            <span>Logout</span>
           </button>
           <button
             className="btn btn--primary btn--large"
