@@ -1,6 +1,7 @@
 import { Department } from "@/common/enums";
 import { ArrayField } from "@/components/common/array-field/ArrayField";
 import { FormField } from "@/components/common/form-field/FormField";
+import { SearchableDropdown } from "@/components/common/searchable-dropdown/SearchableDropdown";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { registerFaculty } from "@/store/features/auth/authSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -87,22 +88,8 @@ export default function FacultyRegistration(): JSX.Element {
   const { isLoading, error } = useAppSelector((state) => state.auth);
   const [publications, setPublications] = useState([{ title: "", link: "" }]);
   const [researchAreas, setResearchAreas] = useState([""]);
-  const [departmentSearch, setDepartmentSearch] = useState("");
-  const [showDepartmentDropdown, setShowDepartmentDropdown] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const filteredDepartments = Object.values(Department).filter(
-    (dept: Department) =>
-      dept.toLowerCase().includes(departmentSearch.toLowerCase())
-  );
-
-  // Add this function before the return statement
-  const handleDepartmentSelect = (department: string): void => {
-    setValue("department", department);
-    setDepartmentSearch(department);
-    setShowDepartmentDropdown(false);
-  };
 
   const form = useForm<FacultyRegistrationForm>({
     resolver: zodResolver(facultyRegistrationSchema),
@@ -266,46 +253,13 @@ export default function FacultyRegistration(): JSX.Element {
               label="Last Name"
             />
 
-            <div className="form-group">
-              <label htmlFor="department">Department</label>
-              <div className="department-select">
-                <input
-                  type="text"
-                  id="department"
-                  value={departmentSearch}
-                  onChange={(e) => {
-                    setDepartmentSearch(e.target.value);
-                    setShowDepartmentDropdown(true);
-                  }}
-                  onFocus={() => setShowDepartmentDropdown(true)}
-                  placeholder="Search for department..."
-                  className={errors.department ? "error" : ""}
-                />
-                {showDepartmentDropdown && (
-                  <div className="department-dropdown">
-                    {filteredDepartments.map((dept) => (
-                      <div
-                        key={dept as string}
-                        className="department-option"
-                        onClick={() => handleDepartmentSelect(dept as string)}
-                      >
-                        {dept as string}
-                      </div>
-                    ))}
-                    {filteredDepartments.length === 0 && (
-                      <div className="department-option no-results">
-                        No departments found
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              {errors.department && (
-                <span className="error-message">
-                  {errors.department.message}
-                </span>
-              )}
-            </div>
+            <SearchableDropdown
+              form={form}
+              name="department"
+              label="Department"
+              options={Object.values(Department)}
+              placeholder="Search for department..."
+            />
             <FormField
               formType="generic"
               form={form}

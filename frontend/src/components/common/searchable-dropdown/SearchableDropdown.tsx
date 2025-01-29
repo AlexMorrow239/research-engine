@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { Path, PathValue, UseFormReturn } from "react-hook-form";
 import "./SearchableDropdown.scss";
@@ -28,13 +29,14 @@ export function SearchableDropdown<T extends Record<string, unknown>>({
 
   const {
     setValue,
+    register,
     formState: { errors, touchedFields, submitCount },
   } = form;
 
   useEffect(() => {
     if (defaultValue) {
-      setValue(name, defaultValue as PathValue<T, Path<T>>);
       setSearch(defaultValue);
+      setValue(name, defaultValue as PathValue<T, Path<T>>);
     }
   }, [defaultValue, name, setValue]);
 
@@ -43,26 +45,31 @@ export function SearchableDropdown<T extends Record<string, unknown>>({
   );
 
   const handleSelect = (option: string): void => {
-    setValue(name, option as PathValue<T, Path<T>>);
     setSearch(option);
+    setValue(name, option as PathValue<T, Path<T>>, {
+      shouldValidate: true,
+      shouldTouch: true,
+    });
     setShowDropdown(false);
   };
 
-  // Get nested error using the name path
+  // Register the field with react-hook-form
+  const { ref, ...rest } = register(name);
+
   const error = name
     .split(".")
     .reduce<
       Record<string, unknown>
     >((obj, key) => (obj?.[key] || {}) as Record<string, unknown>, errors as Record<string, unknown>);
 
-  // Only show error if field was touched or form was submitted
   const touched = name
     .split(".")
     .reduce<
       Record<string, unknown>
     >((obj, key) => (obj?.[key] || {}) as Record<string, unknown>, touchedFields as Record<string, unknown>);
 
-  const showError = error && (touched || submitCount > 0);
+  const showError = Boolean(error?.message && (touched || submitCount > 0));
+
   return (
     <div className="searchable-dropdown">
       <label className="searchable-dropdown__label">
@@ -72,6 +79,8 @@ export function SearchableDropdown<T extends Record<string, unknown>>({
 
       <div className="searchable-dropdown__container">
         <input
+          {...rest}
+          ref={ref}
           type="text"
           value={search}
           onChange={(e) => {
@@ -81,9 +90,16 @@ export function SearchableDropdown<T extends Record<string, unknown>>({
           onFocus={() => setShowDropdown(true)}
           placeholder={placeholder}
           className={`searchable-dropdown__input ${
-            error ? "searchable-dropdown__input--error" : ""
+            showError ? "searchable-dropdown__input--error" : ""
           }`}
         />
+        {showDropdown && (
+          <X
+            className="searchable-dropdown__close-icon"
+            size={18}
+            onClick={() => setShowDropdown(false)}
+          />
+        )}
 
         {showDropdown && (
           <div className="searchable-dropdown__options">
