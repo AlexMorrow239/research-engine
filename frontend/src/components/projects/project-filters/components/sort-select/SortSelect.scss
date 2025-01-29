@@ -9,47 +9,38 @@
     color: var(--color-text-dark);
   }
 
-  .select-wrapper {
-    position: relative;
+  select {
+    width: 100%;
+    height: var(--input-height);
+    padding: var(--spacing-2) var(--spacing-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-background);
+    cursor: pointer;
+    user-select: none;
+    font-size: var(--font-size-sm);
+    color: var(--color-text);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--spacing-3) center;
+    background-size: 16px;
+    padding-right: var(--spacing-8);
 
-    &::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      right: var(--spacing-3);
-      transform: translateY(-50%);
-      width: 0;
-      height: 0;
-      border-left: 5px solid transparent;
-      border-right: 5px solid transparent;
-      border-top: 5px solid var(--color-text);
-      pointer-events: none;
+    @media (min-width: 768px) {
+      font-size: var(--font-size-base);
     }
 
-    select {
-      width: 100%;
-      padding: var(--spacing-2) var(--spacing-3);
-      padding-right: calc(var(--spacing-3) * 2 + 5px);
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-color: var(--color-background);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      font-size: var(--font-size-base);
-      color: var(--color-text);
-      cursor: pointer;
-      transition: all 0.2s ease;
+    &:hover {
+      border-color: var(--color-text);
+    }
 
-      &:hover {
-        border-color: var(--color-border-hover);
-      }
-
-      &:focus {
-        outline: none;
-        border-color: var(--color-primary);
-        box-shadow: 0 0 0 2px var(--color-primary-transparent);
-      }
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px var(--color-primary-transparent);
     }
   }
 }
