@@ -100,7 +100,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
   });
 
   const {
-    register,
     handleSubmit,
     setValue,
     watch,

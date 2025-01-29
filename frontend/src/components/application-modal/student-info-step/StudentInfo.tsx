@@ -27,13 +27,13 @@ export const StudentInfoStep: React.FC<StudentInfoStepProps> = ({ form }) => {
   const resumeFile = watch("studentInfo.resume");
   const selectedEthnicGroups = watch("studentInfo.racialEthnicGroups") || [];
 
-  const handleFileChange = (file: File | null) => {
+  const handleFileChange = (file: File | null): void => {
     if (file) {
       setValue("studentInfo.resume", file);
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: React.DragEvent): void => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -43,7 +43,7 @@ export const StudentInfoStep: React.FC<StudentInfoStepProps> = ({ form }) => {
     }
   };
 
-  const handleDrag = (e: React.DragEvent) => {
+  const handleDrag = (e: React.DragEvent): void => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(e.type === "dragenter" || e.type === "dragover");
