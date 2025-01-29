@@ -1,5 +1,6 @@
 import { CAMPUS_OPTIONS } from "@/common/constants";
 import { Campus, ProjectStatus } from "@/common/enums";
+import { ArrayField } from "@/components/common/array-field/ArrayField";
 import { FormField } from "@/components/common/form-field/FormField";
 import { useAppDispatch } from "@/store";
 import {
@@ -11,7 +12,6 @@ import {
 import type { Project } from "@/types";
 import { ApiError } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Briefcase } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -99,12 +99,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
     mode: "onChange",
   });
 
-  const {
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = form;
+  const { handleSubmit, setValue, watch } = form;
 
   const currentStatus = watch("status");
 
@@ -305,103 +300,27 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
             }
           />
 
-          <div className="form-group">
-            <label className="form-group__label">Research Categories</label>
-            <div className="form-group__array">
-              {researchCategories.map((category, index) => (
-                <div key={index} className="array-input">
-                  <input
-                    type="text"
-                    value={category}
-                    onChange={(e) => {
-                      const newCategories = [...researchCategories];
-                      newCategories[index] = e.target.value;
-                      setResearchCategories(newCategories);
-                      setValue("researchCategories", newCategories);
-                    }}
-                    className="form-input"
-                    placeholder="e.g., Machine Learning"
-                  />
-                  <button
-                    type="button"
-                    className="btn btn--icon"
-                    onClick={() => {
-                      const newCategories = [...researchCategories];
-                      newCategories.splice(index, 1);
-                      setResearchCategories(newCategories);
-                      setValue("researchCategories", newCategories);
-                    }}
-                    disabled={researchCategories.length === 1}
-                  >
-                    <span className="btn__icon">×</span>
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() =>
-                  setResearchCategories([...researchCategories, ""])
-                }
-                className="btn btn--secondary btn--sm"
-              >
-                Add Category
-              </button>
-            </div>
-            {errors.researchCategories && (
-              <span className="form-group__error">
-                {errors.researchCategories.message}
-              </span>
-            )}
-          </div>
+          <ArrayField
+            form={form}
+            name="researchCategories"
+            label="Research Categories"
+            value={researchCategories}
+            setValue={setResearchCategories}
+            placeholder="e.g., Machine Learning"
+            minItems={1}
+          />
 
-          <div className="form-group">
-            <label className="form-group__label">
-              <Briefcase className="form-group__icon" size={16} />
-              Requirements (Optional)
-            </label>
-            <div className="form-group__array">
-              {requirements.map((requirement, index) => (
-                <div key={index} className="array-input">
-                  <input
-                    type="text"
-                    value={requirement}
-                    onChange={(e) => {
-                      const newRequirements = [...requirements];
-                      newRequirements[index] = e.target.value;
-                      setRequirements(newRequirements);
-                      setValue("requirements", newRequirements);
-                    }}
-                    className="form-input"
-                    placeholder="e.g., Programming experience in Python"
-                  />
-                  <button
-                    type="button"
-                    className="btn btn--icon"
-                    onClick={() => {
-                      const newRequirements = [...requirements];
-                      newRequirements.splice(index, 1);
-                      setRequirements(newRequirements);
-                      setValue("requirements", newRequirements);
-                    }}
-                  >
-                    <span className="btn__icon">×</span>
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => setRequirements([...requirements, ""])}
-                className="btn btn--secondary btn--sm"
-              >
-                Add Requirement
-              </button>
-            </div>
-            {errors.requirements && (
-              <span className="form-group__error">
-                {errors.requirements.message}
-              </span>
-            )}
-          </div>
+          <ArrayField
+            form={form}
+            name="requirements"
+            label="Requirements"
+            value={requirements}
+            setValue={setRequirements}
+            placeholder="e.g., Programming experience in Python"
+            required={false}
+            help="Add any specific requirements for applicants"
+            addButtonText="Add Requirement"
+          />
         </section>
 
         <footer className="form-actions">

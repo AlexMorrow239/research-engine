@@ -1,4 +1,5 @@
 import { Department } from "@/common/enums";
+import { ArrayField } from "@/components/common/array-field/ArrayField";
 import { FormField } from "@/components/common/form-field/FormField";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
@@ -208,41 +209,16 @@ export const FacultyAccount = (): JSX.Element => {
               placeholder="e.g., McArthur Engineering Building, Room 123"
             />
 
-            <div className="form-group">
-              <label>Research Areas</label>
-              {researchAreas.map((area, index) => (
-                <div key={index} className="array-input">
-                  <input
-                    type="text"
-                    value={area}
-                    onChange={(e) => {
-                      const newAreas = [...researchAreas];
-                      newAreas[index] = e.target.value;
-                      setResearchAreas(newAreas);
-                    }}
-                    placeholder="e.g., Machine Learning"
-                  />
-                  <button
-                    type="button"
-                    className="button button--secondary"
-                    onClick={() => {
-                      const newAreas = [...researchAreas];
-                      newAreas.splice(index, 1);
-                      setResearchAreas(newAreas);
-                    }}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => setResearchAreas([...researchAreas, ""])}
-                className="button button--secondary"
-              >
-                Add Research Area
-              </button>
-            </div>
+            <ArrayField
+              form={form}
+              name="researchAreas"
+              label="Research Areas"
+              value={researchAreas}
+              setValue={setResearchAreas}
+              placeholder="e.g., Machine Learning"
+              minItems={1}
+              defaultValue={professor?.researchAreas || [""]}
+            />
           </div>
 
           <div className="form-section">
