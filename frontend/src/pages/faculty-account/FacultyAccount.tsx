@@ -7,6 +7,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import "./FacultyAccount.scss";
 
@@ -36,6 +37,7 @@ type FacultyAccountForm = z.infer<typeof facultyAccountSchema>;
 
 export const FacultyAccount = (): JSX.Element => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { professor, isLoading, error } = useAppSelector(
     (state) => state.professors
   );
@@ -83,7 +85,6 @@ export const FacultyAccount = (): JSX.Element => {
   const onSubmit = async (data: FacultyAccountForm): Promise<void> => {
     try {
       const { email: _email, firstName, lastName, ...rest } = data;
-      console.log("Submitting form:", data); // Add this for debugging
 
       await dispatch(
         updateProfessor({
@@ -96,7 +97,11 @@ export const FacultyAccount = (): JSX.Element => {
           publications,
         })
       ).unwrap();
+
+      // If code gets here, the update was successful
+      navigate("/faculty/dashboard");
     } catch (error) {
+      // On error, stay on the current page (no navigation)
       console.error("Failed to update account:", error);
     }
   };
