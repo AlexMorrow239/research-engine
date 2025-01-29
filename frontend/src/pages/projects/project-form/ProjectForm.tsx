@@ -11,7 +11,7 @@ import {
 import type { Project } from "@/types";
 import { ApiError } from "@/utils/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Briefcase, MapPin } from "lucide-react";
+import { Briefcase } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -266,27 +266,15 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
             rows={4}
           />
 
-          <div className="form-group">
-            <label htmlFor="campus" className="form-group__label">
-              <MapPin className="form-group__icon" size={16} />
-              Campus
-            </label>
-            <select
-              id="campus"
-              {...register("campus")}
-              className={`form-input ${errors.campus ? "form-input--error" : ""}`}
-            >
-              <option value="">Select a campus</option>
-              {CAMPUS_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            {errors.campus && (
-              <span className="form-group__error">{errors.campus.message}</span>
-            )}
-          </div>
+          <FormField
+            formType="generic"
+            form={form}
+            type="select"
+            label="Campus"
+            name="campus"
+            options={CAMPUS_OPTIONS}
+            defaultValue={mode == "edit" ? watch("campus") : ""}
+          />
         </section>
 
         <section className="form-section">

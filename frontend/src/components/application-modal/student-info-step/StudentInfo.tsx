@@ -56,12 +56,14 @@ export const StudentInfoStep: React.FC<StudentInfoStepProps> = ({ form }) => {
         <div className="personal-info__grid">
           <div className="personal-info__grid--paired">
             <FormField
+              formType="application"
               form={form}
               label="First Name"
               name="studentInfo.name.firstName"
               placeholder="Enter your first name"
             />
             <FormField
+              formType="application"
               form={form}
               label="Last Name"
               name="studentInfo.name.lastName"
@@ -100,6 +102,7 @@ export const StudentInfoStep: React.FC<StudentInfoStepProps> = ({ form }) => {
             </span>
           </div>
           <FormField
+            formType="application"
             form={form}
             label="Email"
             name="studentInfo.email"
@@ -107,6 +110,7 @@ export const StudentInfoStep: React.FC<StudentInfoStepProps> = ({ form }) => {
             placeholder="your.email@miami.edu"
           />
           <FormField
+            formType="application"
             form={form}
             label="Phone Number"
             name="studentInfo.phoneNumber"
@@ -114,6 +118,7 @@ export const StudentInfoStep: React.FC<StudentInfoStepProps> = ({ form }) => {
             type="tel"
           />
           <FormField
+            formType="application"
             form={form}
             label="Citizenship Status"
             name="studentInfo.citizenship"
@@ -127,12 +132,14 @@ export const StudentInfoStep: React.FC<StudentInfoStepProps> = ({ form }) => {
         <div className="personal-info__grid">
           <div className="personal-info__grid--paired">
             <FormField
+              formType="application"
               form={form}
               label="Academic Standing"
               name="studentInfo.academicStanding"
               options={ACADEMIC_STANDING_OPTIONS}
             />
             <FormField
+              formType="application"
               form={form}
               label="Expected Graduation Date"
               name="studentInfo.graduationDate"
@@ -143,12 +150,14 @@ export const StudentInfoStep: React.FC<StudentInfoStepProps> = ({ form }) => {
           </div>
           <div className="personal-info__grid--paired">
             <FormField
+              formType="application"
               form={form}
               label="College"
               name="studentInfo.major1College"
               options={COLLEGE_OPTIONS}
             />
             <FormField
+              formType="application"
               form={form}
               label="Major"
               name="studentInfo.major1"
@@ -157,6 +166,7 @@ export const StudentInfoStep: React.FC<StudentInfoStepProps> = ({ form }) => {
             />
           </div>
           <FormField
+            formType="application"
             form={form}
             label="GPA"
             name="studentInfo.gpa"
