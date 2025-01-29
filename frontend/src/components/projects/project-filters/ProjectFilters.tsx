@@ -7,7 +7,7 @@ import { CategorySelect } from "./components/CategorySelect";
 import { DepartmentSelect } from "./components/DepartmentSelect";
 import { ResetButton } from "./components/ResetButton";
 import { SearchBar } from "./components/search-bar/SearchBar";
-import { SortSelect } from "./components/SortSelect";
+import { SortSelect } from "./components/sort-select/SortSelect";
 import "./ProjectFilters.scss";
 
 export const ProjectFilters: React.FC = () => {

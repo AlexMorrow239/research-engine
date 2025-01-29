@@ -3,23 +3,27 @@
 .project-filters__search {
   position: relative;
   width: 100%;
+  margin-bottom: var(--spacing-4);
 
-  // Mobile toggle button
+  // Mobile search toggle button
   .mobile-search-toggle {
     @include button-reset;
     @include flex-center;
     display: none;
-    height: var(--input-height);
-    padding: 0 var(--spacing-4);
+    width: var(--spacing-10);
+    height: var(--spacing-10);
     background-color: var(--color-background);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    color: var(--color-text);
-    transition: var(--transition-colors);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
 
     &:hover {
-      background-color: var(--color-background-alt);
-      border-color: var(--color-text);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+
+    svg {
+      color: var(--color-text);
     }
   }
 
@@ -29,45 +33,72 @@
     gap: var(--spacing-2);
     width: 100%;
     position: relative;
+    transition: all 0.3s ease;
   }
 
   // Search icon
   .search-icon {
-    @include position-absolute(50%, null, null, var(--spacing-3));
+    @include position-absolute(50%, null, null, var(--spacing-4));
     transform: translateY(-50%);
     color: var(--color-text-light);
     pointer-events: none;
+    z-index: 2;
+  }
+
+  // Input field wrapper
+  .input-wrapper {
+    position: relative;
+    flex: 1;
   }
 
   // Input field
   input {
-    @include input-base;
-    flex: 1;
-    padding-left: var(--spacing-8);
-    padding-right: var(--spacing-8); // Reduced to make space for reset button
+    width: 100%;
+    height: var(--button-height-base);
+    padding: 0 var(--spacing-4);
+    padding-left: var(--spacing-10);
+    padding-right: var(--spacing-10);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-base);
+    font-size: var(--font-size-base);
+    transition: all 0.2s ease;
+    background-color: var(--color-background);
+    color: var(--color-text);
+
+    &::placeholder {
+      color: var(--color-text-light);
+    }
+
+    &:hover:not(:disabled) {
+      border-color: var(--color-border-dark);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px var(--color-primary-transparent);
+      transform: translateY(-1px);
+    }
   }
 
   // Reset button
   .reset-button {
     @include button-reset;
     @include flex-center;
-    @include position-absolute(
-      50%,
-      calc(var(--spacing-2) + 80px),
-      null,
-      null
-    ); // Positioned from right edge, accounting for search button
+    @include position-absolute(50%, var(--spacing-3), null, null);
     transform: translateY(-50%);
     width: var(--spacing-6);
     height: var(--spacing-6);
     color: var(--color-text-light);
     border-radius: 50%;
-    transition: var(--transition-colors);
+    transition: all 0.2s ease;
     z-index: 2;
+    background-color: transparent;
 
     &:hover {
       color: var(--color-text);
-      background-color: var(--color-gray-100);
+      background-color: var(--color-background-alt);
     }
 
     &:focus-visible {
@@ -78,58 +109,81 @@
 
   // Search button
   .search-button {
-    @include button-base;
-    height: var(--input-height);
-    min-width: 80px;
-    padding: 0 var(--spacing-4);
-    background-color: var(--color-primary);
-    color: var(--color-white);
-    border-radius: var(--radius-lg);
+    height: var(--button-height-base);
+    padding: 0 var(--spacing-6);
+    border-radius: var(--radius-base);
+    font-weight: var(--font-weight-medium);
     font-size: var(--font-size-base);
-    transition: var(--transition-colors);
+    color: white;
+    background: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 100px;
+    margin-left: var(--spacing-2);
 
-    &:hover {
-      background-color: var(--color-background-alt);
+    &:hover:not(:disabled) {
+      background: var(--color-primary-dark);
+      border-color: var(--color-primary-dark);
       transform: translateY(-1px);
-      transition: var(--transition-all);
     }
 
     &:active {
-      background-color: var(--color-background-alt);
       transform: translateY(0);
     }
 
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      transform: none;
+      pointer-events: none;
     }
   }
 
   // Mobile styles
-  @include respond-to("sm", "down") {
+  @media (max-width: 640px) {
     .mobile-search-toggle {
       display: flex;
     }
 
     .search-container {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: var(--z-dropdown);
+      position: fixed;
+      top: var(--spacing-4);
+      left: var(--spacing-4);
+      right: var(--spacing-4);
+      flex-direction: column;
+      gap: var(--spacing-3);
+      padding: var(--spacing-4);
       background-color: var(--color-background);
+      border-radius: var(--radius-base);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
     }
 
-    &.expanded {
-      .search-container {
-        display: flex;
-      }
+    &.expanded .search-container {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
 
-      .mobile-search-toggle {
-        display: none;
-      }
+    input {
+      width: 100%;
+    }
+
+    .search-button {
+      width: 100%;
+      margin-left: 0;
+    }
+
+    // Overlay background
+    &.expanded::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
     }
   }
 }

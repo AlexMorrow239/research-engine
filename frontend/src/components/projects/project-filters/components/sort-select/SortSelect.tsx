@@ -2,6 +2,7 @@ import type { RootState } from "@/store";
 import { setFilters } from "@/store/features/projects/projectsSlice";
 import type { SortOption } from "@/types";
 import { useDispatch, useSelector } from "react-redux";
+import "./SortSelect.scss";
 
 const SORT_OPTIONS: SortOption[] = [
   { value: "createdAt", label: "Newest First", order: "desc" },
