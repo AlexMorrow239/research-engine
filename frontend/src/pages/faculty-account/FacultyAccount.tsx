@@ -1,6 +1,7 @@
 import { Department } from "@/common/enums";
 import { ArrayField } from "@/components/common/array-field/ArrayField";
 import { FormField } from "@/components/common/form-field/FormField";
+import { SearchableDropdown } from "@/components/common/searchable-dropdown/SearchableDropdown";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   fetchProfessor,
@@ -47,20 +48,14 @@ export const FacultyAccount = (): JSX.Element => {
   const [publications, setPublications] = useState<
     { title: string; link: string }[]
   >([{ title: "", link: "" }]);
-  const [departmentSearch, setDepartmentSearch] = useState("");
-  const [showDepartmentDropdown, setShowDepartmentDropdown] = useState(false);
+  const [, setDepartmentSearch] = useState("");
 
   const form = useForm<FacultyAccountForm>({
     resolver: zodResolver(facultyAccountSchema),
     mode: "onChange",
   });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    setValue,
-  } = form;
+  const { register, handleSubmit, setValue } = form;
 
   useEffect(() => {
     dispatch(fetchProfessor());
@@ -110,15 +105,31 @@ export const FacultyAccount = (): JSX.Element => {
     }
   };
 
-  const filteredDepartments = Object.values(Department).filter((dept) =>
-    dept.toLowerCase().includes(departmentSearch.toLowerCase())
-  );
+  // early return for loading state
+  if (isLoading) {
+    return (
+      <div className="faculty-account">
+        <div className="faculty-account__container">
+          <h1>Loading...</h1>
+        </div>
+      </div>
+    );
+  }
 
-  const handleDepartmentSelect = (department: string): void => {
-    setValue("department", department as Department);
-    setDepartmentSearch(department);
-    setShowDepartmentDropdown(false);
-  };
+  // early return for error state when professor is null
+  if (!professor) {
+    return (
+      <div className="faculty-account">
+        <div className="faculty-account__container">
+          <h1>Error Loading Account</h1>
+          <p>
+            Unable to load faculty account information. Please try again later.
+          </p>
+          {error && <p className="error-message">{error}</p>}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="faculty-account">
@@ -159,46 +170,14 @@ export const FacultyAccount = (): JSX.Element => {
               required
             />
 
-            <div className="form-group">
-              <label htmlFor="department">Department</label>
-              <div className="department-select">
-                <input
-                  type="text"
-                  id="department"
-                  value={departmentSearch}
-                  onChange={(e) => {
-                    setDepartmentSearch(e.target.value);
-                    setShowDepartmentDropdown(true);
-                  }}
-                  onFocus={() => setShowDepartmentDropdown(true)}
-                  placeholder="Search for department..."
-                  className={errors.department ? "error" : ""}
-                />
-                {showDepartmentDropdown && (
-                  <div className="department-dropdown">
-                    {filteredDepartments.map((dept) => (
-                      <div
-                        key={dept}
-                        className="department-option"
-                        onClick={() => handleDepartmentSelect(dept)}
-                      >
-                        {dept}
-                      </div>
-                    ))}
-                    {filteredDepartments.length === 0 && (
-                      <div className="department-option no-results">
-                        No departments found
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              {errors.department && (
-                <span className="error-message">
-                  {errors.department.message}
-                </span>
-              )}
-            </div>
+            <SearchableDropdown
+              form={form}
+              name="department"
+              label="Department"
+              options={Object.values(Department)}
+              placeholder="Search for department..."
+              defaultValue={professor.department}
+            />
 
             <FormField
               formType="generic"
