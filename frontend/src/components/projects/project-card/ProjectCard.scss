@@ -83,6 +83,8 @@
     margin-bottom: var(--spacing-2);
     line-height: 1.2;
     @include truncate(2);
+    word-break: break-word;
+    max-width: 100%;
   }
 
   &__professor {

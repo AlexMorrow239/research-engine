@@ -1,4 +1,5 @@
 import { FormField } from "@/components/common/form-field/FormField";
+import { PasswordField } from "@/components/common/password-field/PasswordField";
 import { useAppDispatch } from "@/store";
 import {
   requestPasswordReset,
@@ -136,46 +137,18 @@ export const ResetPassword = (): JSX.Element => {
             <p className="reset-password__description">
               Please enter your new password below.
             </p>
-            <div className="form-field">
-              <label htmlFor="password" className="form-field__label">
-                New Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                className={`form-field__input ${
-                  resetForm.formState.errors.password
-                    ? "form-field__input--error"
-                    : ""
-                }`}
-                {...resetForm.register("password")}
-              />
-              {resetForm.formState.errors.password && (
-                <span className="form-field__error">
-                  {resetForm.formState.errors.password.message}
-                </span>
-              )}
-            </div>
-            <div className="form-field">
-              <label htmlFor="confirmPassword" className="form-field__label">
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                type="password"
-                className={`form-field__input ${
-                  resetForm.formState.errors.confirmPassword
-                    ? "form-field__input--error"
-                    : ""
-                }`}
-                {...resetForm.register("confirmPassword")}
-              />
-              {resetForm.formState.errors.confirmPassword && (
-                <span className="form-field__error">
-                  {resetForm.formState.errors.confirmPassword.message}
-                </span>
-              )}
-            </div>
+            <PasswordField
+              form={resetForm}
+              name="password"
+              label="New Password"
+              placeholder="Enter your new password"
+            />
+            <PasswordField
+              form={resetForm}
+              name="confirmPassword"
+              label="Confirm Password"
+              placeholder="Confirm your new password"
+            />
             <button
               type="submit"
               className="button button--primary button--full"

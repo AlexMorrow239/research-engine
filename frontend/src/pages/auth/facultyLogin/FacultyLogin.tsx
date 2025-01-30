@@ -1,8 +1,9 @@
 import { FormField } from "@/components/common/form-field/FormField";
+import { PasswordField } from "@/components/common/password-field/PasswordField";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { loginUser } from "@/store/features/auth/authSlice";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -23,18 +24,13 @@ export default function FacultyLogin(): JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, isAuthenticated } = useAppSelector((state) => state.auth);
-  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<FacultyLoginForm>({
     resolver: zodResolver(facultyLoginSchema),
     mode: "onChange",
   });
 
-  const {
-    handleSubmit,
-    formState: { errors },
-    register,
-  } = form;
+  const { handleSubmit } = form;
 
   const onSubmit = async (data: FacultyLoginForm): Promise<void> => {
     try {
@@ -79,36 +75,12 @@ export default function FacultyLogin(): JSX.Element {
               placeholder="username@miami.edu"
             />
 
-            <div className="form-group">
-              <div className="password-header">
-                <label htmlFor="password">Password</label>
-                <Link
-                  to="/faculty/auth/reset-password"
-                  className="forgot-password-link"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-              <div className="password-input-wrapper">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  {...register("password")}
-                  className={errors.password ? "error" : ""}
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
-              {errors.password && (
-                <span className="error-message">{errors.password.message}</span>
-              )}
-            </div>
+            <PasswordField
+              form={form}
+              name="password"
+              label="Password"
+              placeholder="Enter your password"
+            />
           </div>
 
           <button

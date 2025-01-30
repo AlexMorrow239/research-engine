@@ -1,6 +1,7 @@
 import { Department } from "@/common/enums";
 import { ArrayField } from "@/components/common/array-field/ArrayField";
 import { FormField } from "@/components/common/form-field/FormField";
+import { PasswordField } from "@/components/common/password-field/PasswordField";
 import { SearchableDropdown } from "@/components/common/searchable-dropdown/SearchableDropdown";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { registerFaculty } from "@/store/features/auth/authSlice";
@@ -88,20 +89,13 @@ export default function FacultyRegistration(): JSX.Element {
   const { isLoading, error } = useAppSelector((state) => state.auth);
   const [publications, setPublications] = useState([{ title: "", link: "" }]);
   const [researchAreas, setResearchAreas] = useState([""]);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const form = useForm<FacultyRegistrationForm>({
     resolver: zodResolver(facultyRegistrationSchema),
     mode: "onChange",
   });
 
-  const {
-    setValue,
-    handleSubmit,
-    formState: { errors },
-    register,
-  } = form;
+  const { setValue, handleSubmit, register } = form;
 
   const onSubmit = async (data: FacultyRegistrationForm): Promise<void> => {
     try {
@@ -181,62 +175,25 @@ export default function FacultyRegistration(): JSX.Element {
               placeholder="username@miami.edu"
             />
 
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <div className="password-input-wrapper">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  id="password"
-                  {...register("password")}
-                  className={errors.password ? "error" : ""}
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
-              {errors.password && (
-                <span className="error-message">{errors.password.message}</span>
-              )}
-            </div>
+            <PasswordField
+              form={form}
+              name="password"
+              label="Password"
+              placeholder="Enter your password"
+            />
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <div className="password-input-wrapper">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  id="confirmPassword"
-                  {...register("confirmPassword")}
-                  className={errors.confirmPassword ? "error" : ""}
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  aria-label={
-                    showConfirmPassword ? "Hide password" : "Show password"
-                  }
-                >
-                  {showConfirmPassword ? "Hide" : "Show"}
-                </button>
-              </div>
-              {errors.confirmPassword && (
-                <span className="error-message">
-                  {errors.confirmPassword.message}
-                </span>
-              )}
-            </div>
+            <PasswordField
+              form={form}
+              name="confirmPassword"
+              label="Confirm Password"
+              placeholder="Confirm your password"
+            />
 
-            <FormField
-              formType="generic"
+            <PasswordField
               form={form}
               name="adminPassword"
               label="Admin Password"
-              type="password"
+              placeholder="Enter admin password"
             />
 
             <FormField
