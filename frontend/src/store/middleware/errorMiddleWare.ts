@@ -13,11 +13,13 @@ const isAuthAction = (actionType: string): boolean => {
 
 // Helper to handle session expiration
 const handleSessionExpiration = (store: { dispatch: AppDispatch }): void => {
+  localStorage.removeItem("accessToken");
   store.dispatch(logout());
   store.dispatch(
     addToast({
       message: "Your session has expired. Please log in again.",
-      type: "error",
+      type: "warning",
+      duration: 5000,
     })
   );
 };
@@ -56,14 +58,16 @@ export const errorMiddleware: Middleware =
         data: payload.data,
       });
 
-      // Handle authentication errors
+      // Handle authentication errors first
       if (payload.status === 401 && !isAuthAction(action.type)) {
         handleSessionExpiration(store);
         return next(action);
       }
 
-      // Display the error toast using ApiError properties
-      store.dispatch(addToast(createErrorToast(payload)));
+      // Only show toast for non-401 errors since handleSessionExpiration already shows a toast
+      if (payload.status !== 401) {
+        store.dispatch(addToast(createErrorToast(payload)));
+      }
     } else {
       // Handle non-ApiError rejections
       store.dispatch(

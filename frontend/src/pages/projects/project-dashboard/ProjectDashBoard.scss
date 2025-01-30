@@ -46,9 +46,15 @@
     display: flex;
     gap: var(--spacing-4);
     align-items: center;
+
+    @include respond-to("md", "down") {
+      flex-direction: column-reverse;
+      width: 100%;
+    }
   }
 
-  .btn--primary {
+  .btn--primary,
+  .btn--secondary {
     @include flex(row, center, center);
     gap: var(--spacing-2);
     padding: var(--spacing-3) var(--spacing-6);
@@ -59,6 +65,13 @@
     border-radius: var(--radius-md);
     transition: all 0.2s ease;
     border: 2px solid var(--color-primary);
+
+    @include respond-to("md", "down") {
+      width: 100%;
+      padding: var(--spacing-3);
+      font-size: var(--font-size-base);
+      justify-content: center;
+    }
 
     &:hover {
       background-color: var(--color-primary);
@@ -74,8 +87,8 @@
     }
 
     svg {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
     }
   }
 
@@ -87,14 +100,15 @@
   }
 
   // Responsive adjustments
+  // Responsive adjustments
   @include respond-to("md", "down") {
     padding: var(--spacing-4);
 
     &__header {
       flex-direction: column;
-      gap: var(--spacing-6);
+      gap: var(--spacing-4);
       align-items: stretch;
-      text-align: center;
+      text-align: left;
       padding: var(--spacing-4);
       margin-bottom: var(--spacing-6);
     }
@@ -102,26 +116,28 @@
     &__title-group {
       h1 {
         font-size: var(--font-size-2xl);
+        margin-bottom: var(--spacing-1);
       }
     }
 
     &__subtitle {
       max-width: none;
-    }
-
-    .btn--primary {
-      width: 100%;
-      padding: var(--spacing-4);
-      font-size: var(--font-size-lg);
-
-      svg {
-        width: 24px;
-        height: 24px;
-      }
+      font-size: var(--font-size-sm);
     }
 
     &__content {
       gap: var(--spacing-6);
+    }
+  }
+
+  // Small mobile adjustments
+  @include respond-to("sm", "down") {
+    &__header {
+      padding: var(--spacing-3);
+    }
+
+    &__actions {
+      gap: var(--spacing-2);
     }
   }
 }

@@ -1,9 +1,8 @@
 import { ProjectStatus } from "@/common/enums";
 import { ProjectSection } from "@/components/projects/project-section/ProjectSection";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { handleTokenExpiration, logout } from "@/store/features/auth/authSlice";
+import { logout } from "@/store/features/auth/authSlice";
 import { fetchProfessorProjects } from "@/store/features/projects/projectsSlice";
-import { ApiError } from "@/utils/api";
 import { LogOut, Plus, UserCog } from "lucide-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -52,21 +51,7 @@ export default function ProjectDashboard(): JSX.Element {
     dispatch(fetchProfessorProjects({}))
       .unwrap()
       .catch((error) => {
-        if (
-          error instanceof ApiError &&
-          error.status === 401 &&
-          error.data &&
-          typeof error.data === "object" &&
-          error.data !== null &&
-          "expired" in error.data
-        ) {
-          dispatch(handleTokenExpiration());
-          navigate("/faculty/login", {
-            state: {
-              message: "Your session has expired. Please log in again.",
-            },
-          });
-        }
+        console.error("Error fetching professor projects:", error);
       });
   }, [dispatch, user, navigate]);
 
