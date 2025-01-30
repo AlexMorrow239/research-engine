@@ -358,7 +358,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
       <div className="modal__container">
         <DialogPanel className="modal__content">
           <div className="modal__header">
-            <div>
+            <div className="modal__title-container">
               <DialogTitle className="modal__title">
                 Research Position Application
                 <span className="modal__title-project">{projectTitle}</span>
