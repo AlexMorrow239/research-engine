@@ -351,7 +351,7 @@ const projectsSlice = createSlice({
     builder
       .addCase(fetchProjects.pending, (state) => {
         // Only show loading on initial load, not during filter updates
-        if (state.allProjects.length === 0) {
+        if (state.isInitialLoad) {
           state.isLoading = true;
         }
         state.error = null;

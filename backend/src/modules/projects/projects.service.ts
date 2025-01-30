@@ -134,9 +134,48 @@ export class ProjectsService {
         filter.professor = { $in: professors.map((prof) => prof._id) };
       }
       if (search) {
+        // Split search terms and remove empty strings
+        const searchTerms = search
+          .trim()
+          .split(/\s+/)
+          .filter((term) => term.length > 0);
+
+        const professorQuery =
+          searchTerms.length > 1
+            ? {
+                $and: [
+                  {
+                    $or: [
+                      { 'name.firstName': { $regex: searchTerms[0], $options: 'i' } },
+                      { 'name.lastName': { $regex: searchTerms[0], $options: 'i' } },
+                    ],
+                  },
+                  {
+                    $or: [
+                      { 'name.firstName': { $regex: searchTerms[1], $options: 'i' } },
+                      { 'name.lastName': { $regex: searchTerms[1], $options: 'i' } },
+                    ],
+                  },
+                ],
+              }
+            : {
+                $or: [
+                  { 'name.firstName': { $regex: searchTerms[0], $options: 'i' } },
+                  { 'name.lastName': { $regex: searchTerms[0], $options: 'i' } },
+                ],
+              };
+
+        const professorIds = await this.projectModel.db
+          .collection('professors')
+          .find(professorQuery)
+          .project({ _id: 1 })
+          .toArray();
+
         filter.$or = [
           { title: { $regex: search, $options: 'i' } },
           { description: { $regex: search, $options: 'i' } },
+          { requirements: { $regex: search, $options: 'i' } },
+          { professor: { $in: professorIds.map((prof) => prof._id) } },
         ];
       }
       if (researchCategories?.length > 0) {

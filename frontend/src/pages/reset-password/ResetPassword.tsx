@@ -190,7 +190,7 @@ export const ResetPassword = (): JSX.Element => {
           <button
             type="button"
             className="button button--link"
-            onClick={() => navigate("faculty/login")}
+            onClick={() => navigate("/faculty/login")}
           >
             Back to Login
           </button>
