@@ -120,10 +120,6 @@ export class EmailTemplateService {
   private getEmailFooter(): string {
     return `
       <div class="footer">
-        <div class="footer-logos">
-          <img src="https://placeholder-url/um-logo.png" alt="University of Miami" class="footer-logo" />
-          <img src="https://placeholder-url/research-engine-logo.png" alt="Research Engine" class="footer-logo" />
-        </div>
         <p style="color: #005030; font-weight: 500;">University of Miami Research Engine</p>
         <p>1320 S Dixie Hwy, Coral Gables, FL 33146</p>
         <p style="font-size: 12px; color: #64748b;">This is an automated message. Please do not reply to this email.</p>
