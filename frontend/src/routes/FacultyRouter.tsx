@@ -1,5 +1,5 @@
-import FacultyLogin from "@/pages/auth/facultyLogin/FacultyLogin";
-import FacultyRegistration from "@/pages/auth/facultyRegistration/FacultyRegistration";
+import FacultyLogin from "@/pages/auth/faculty-login/FacultyLogin";
+import FacultyRegistration from "@/pages/auth/faculty-registration/FacultyRegistration";
 import { FacultyAccount } from "@/pages/faculty-account/FacultyAccount";
 import ProjectDashboard from "@/pages/projects/project-dashboard/ProjectDashboard";
 import { ProjectForm } from "@/pages/projects/project-form/ProjectForm";
