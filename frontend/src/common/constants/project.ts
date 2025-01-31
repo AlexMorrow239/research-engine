@@ -1,9 +1,4 @@
-import {
-  Campus,
-  ProjectLength,
-  ProjectStatus,
-  WeeklyAvailability,
-} from "../enums";
+import { Campus, ProjectLength, ProjectStatus } from "../enums";
 
 export const PROJECT_STATUS_OPTIONS = [
   { value: ProjectStatus.DRAFT, label: "Draft" },
@@ -11,13 +6,6 @@ export const PROJECT_STATUS_OPTIONS = [
   { value: ProjectStatus.CLOSED, label: "Closed" },
   // Special display-only status for expired projects
   { value: ProjectStatus.PUBLISHED, label: "Expired", isExpired: true },
-] as const;
-
-export const WEEKLY_AVAILABILITY_OPTIONS = [
-  { value: WeeklyAvailability.ZERO_TO_FIVE, label: "0-5 hours per week" },
-  { value: WeeklyAvailability.SIX_TO_EIGHT, label: "6-8 hours per week" },
-  { value: WeeklyAvailability.NINE_TO_ELEVEN, label: "9-11 hours per week" },
-  { value: WeeklyAvailability.TWELVE_PLUS, label: "12+ hours per week" },
 ] as const;
 
 export const PROJECT_LENGTH_OPTIONS = [
