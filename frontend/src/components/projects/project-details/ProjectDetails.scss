@@ -81,12 +81,15 @@
   // Faculty Mentor Section
   &__professor {
     padding: var(--spacing-4);
-    border-bottom: 1px solid var(--color-border);
     background-color: var(--color-background);
 
     h3 {
       font-size: var(--font-size-base);
       margin-bottom: var(--spacing-2);
+    }
+
+    a {
+      width: fit-content;
     }
 
     .info {
@@ -176,39 +179,6 @@
       background-color: var(--color-background-alt);
       border-radius: var(--radius-full);
       color: var(--color-text);
-    }
-  }
-
-  // Files Section
-  &__files {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: grid;
-    gap: var(--spacing-2);
-
-    .file-link {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--spacing-2);
-      padding: var(--spacing-2);
-      border-radius: var(--radius-md);
-      color: var(--color-primary);
-      font-size: var(--font-size-sm);
-      text-decoration: none;
-      transition: background-color 0.2s ease;
-
-      &:hover {
-        background-color: var(--color-background-alt);
-        text-decoration: underline;
-      }
-
-      .icon {
-        width: 16px;
-        height: 16px;
-        color: var(--color-text-light);
-        flex-shrink: 0;
-      }
     }
   }
 

@@ -1,39 +1,16 @@
 import { memo, useMemo, useState } from "react";
 
-import { Building2, FileText, Mail, User } from "lucide-react";
+import { Building2, Mail, User } from "lucide-react";
 
 import { ApplicationModal } from "@/components/application-modal/ApplicationModal";
 
-import type { Campus, ProjectStatus } from "@/common/enums";
-
+import { Project } from "@/types";
 import { isDeadlineExpired, isDeadlineSoon } from "@/utils/dateUtils";
 
 import "./ProjectDetails.scss";
 
 interface ProjectDetailsProps {
-  project: {
-    id: string;
-    title: string;
-    description: string;
-    campus: Campus;
-    professor: {
-      name: {
-        firstName: string;
-        lastName: string;
-      };
-      department: string;
-      email: string;
-    };
-    researchCategories: string[];
-    requirements: string[];
-    positions: number;
-    status: ProjectStatus;
-    applicationDeadline: Date;
-    files: Array<{
-      fileName: string;
-      originalName: string;
-    }>;
-  } | null;
+  project: Project;
 }
 
 export const ProjectDetails = memo(function ProjectDetails({
@@ -170,27 +147,6 @@ export const ProjectDetails = memo(function ProjectDetails({
               </span>
             ))}
           </div>
-        </section>
-      )}
-
-      {project.files.length > 0 && (
-        <section className="card__section">
-          <h3>Additional Documents</h3>
-          <ul className="project-details__files">
-            {project.files.map((file) => (
-              <li key={file.fileName}>
-                <a
-                  href={`/api/projects/files/${file.fileName}`}
-                  className="file-link"
-                  download
-                  aria-label={`Download ${file.originalName}`}
-                >
-                  <FileText className="icon" aria-hidden="true" />
-                  <span>{file.originalName}</span>
-                </a>
-              </li>
-            ))}
-          </ul>
         </section>
       )}
 

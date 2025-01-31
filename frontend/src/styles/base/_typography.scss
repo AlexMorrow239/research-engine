@@ -1,5 +1,4 @@
-/* Base Typography Settings
------------------------------ */
+// Base Typography Settings
 html {
   font-size: var(--font-size-base);
   -webkit-font-smoothing: antialiased;
@@ -20,8 +19,7 @@ body {
     "calt" 1;
 }
 
-/* Heading System
------------------------------ */
+// Heading System
 h1,
 h2,
 h3,
@@ -81,8 +79,7 @@ h6 {
   color: var(--color-text-light);
 }
 
-/* Paragraph & Text Elements
------------------------------ */
+// Paragraph & Text Elements
 p {
   margin: 0 0 var(--spacing-4) 0;
   max-width: 70ch;
@@ -99,6 +96,7 @@ p {
   }
 }
 
+// Link styles
 a {
   color: var(--color-primary);
   text-decoration: none;
@@ -113,6 +111,13 @@ a {
   // External link styles
   &[target="_blank"] {
     cursor: alias;
+  }
+
+  // Remove any text-decoration to ensure only border-bottom is used
+  &:hover,
+  &:focus,
+  &:active {
+    text-decoration: none;
   }
 }
 
@@ -132,8 +137,7 @@ small {
   line-height: var(--line-height-tight);
 }
 
-/* List Styles
------------------------------ */
+// List Styles
 ul,
 ol {
   margin: 0 0 var(--spacing-4) 0;
@@ -159,8 +163,7 @@ li {
   }
 }
 
-/* Code & Monospace
------------------------------ */
+// Code & Monospace
 code,
 pre,
 .mono {
@@ -197,15 +200,13 @@ code {
   word-break: break-word;
 }
 
-/* Selection Styles
------------------------------ */
+// Selection Styles
 ::selection {
   background-color: var(--color-primary);
   color: white;
 }
 
-/* Article & Long-form Content
------------------------------ */
+// Article & Long-form Content
 article {
   > * + * {
     margin-top: var(--spacing-4);
@@ -220,8 +221,7 @@ article {
   }
 }
 
-/* Form Typography
------------------------------ */
+// Form Typography
 label {
   display: block;
   font-size: var(--font-size-sm);
@@ -240,8 +240,7 @@ button {
   color: var(--color-text);
 }
 
-/* Helper Classes
------------------------------ */
+// Helper Classes
 // Font Sizes with responsive options
 .text-xs {
   font-size: var(--font-size-xs);
