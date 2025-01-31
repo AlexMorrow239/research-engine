@@ -1,36 +1,55 @@
 import {
-  ApplicationStatus,
   Campus,
   ProjectLength,
   ProjectStatus,
   WeeklyAvailability,
 } from "../enums";
 
-export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
-  [ProjectStatus.DRAFT]: "Draft",
-  [ProjectStatus.PUBLISHED]: "Published",
-  [ProjectStatus.CLOSED]: "Closed",
-} as const;
-
-export const APPLICATION_STATUS_LABELS: Record<ApplicationStatus, string> = {
-  [ApplicationStatus.PENDING]: "Pending",
-  [ApplicationStatus.CLOSED]: "Closed",
-} as const;
-
-export const WEEKLY_AVAILABILITY_OPTIONS = [
-  {
-    value: WeeklyAvailability.ZERO_TO_FIVE,
-    label: WeeklyAvailability.ZERO_TO_FIVE,
-  },
-  // ... rest of availability options ...
+export const PROJECT_STATUS_OPTIONS = [
+  { value: ProjectStatus.DRAFT, label: "Draft" },
+  { value: ProjectStatus.PUBLISHED, label: "Active" },
+  { value: ProjectStatus.CLOSED, label: "Closed" },
+  // Special display-only status for expired projects
+  { value: ProjectStatus.PUBLISHED, label: "Expired", isExpired: true },
 ] as const;
 
-export const CAMPUS_OPTIONS = [
-  { value: Campus.CORAL_GABLES, label: Campus.CORAL_GABLES },
-  // ... rest of campus options ...
+export const WEEKLY_AVAILABILITY_OPTIONS = [
+  { value: WeeklyAvailability.ZERO_TO_FIVE, label: "0-5 hours per week" },
+  { value: WeeklyAvailability.SIX_TO_EIGHT, label: "6-8 hours per week" },
+  { value: WeeklyAvailability.NINE_TO_ELEVEN, label: "9-11 hours per week" },
+  { value: WeeklyAvailability.TWELVE_PLUS, label: "12+ hours per week" },
 ] as const;
 
 export const PROJECT_LENGTH_OPTIONS = [
-  { value: ProjectLength.ONE, label: `${ProjectLength.ONE} semester` },
-  // ... rest of project length options ...
+  { value: ProjectLength.ONE, label: "1 semester" },
+  { value: ProjectLength.TWO, label: "2 semesters" },
+  { value: ProjectLength.THREE, label: "3 semesters" },
+  { value: ProjectLength.FOUR_PLUS, label: "4+ semesters" },
 ] as const;
+
+export const CAMPUS_OPTIONS = [
+  { value: Campus.CORAL_GABLES, label: "Coral Gables Campus" },
+  { value: Campus.MEDICAL, label: "Miller Medical Campus" },
+  { value: Campus.MARINE, label: "Rosenstiel Marine Campus" },
+] as const;
+
+// Helper function to get a user-friendly status label that considers project expiration
+export const getProjectStatusLabel = (
+  status: ProjectStatus,
+  isExpired: boolean
+): string => {
+  if (status === ProjectStatus.PUBLISHED && isExpired) {
+    return "Expired";
+  }
+
+  switch (status) {
+    case ProjectStatus.DRAFT:
+      return "Draft";
+    case ProjectStatus.PUBLISHED:
+      return "Active";
+    case ProjectStatus.CLOSED:
+      return "Closed";
+    default:
+      return status;
+  }
+};

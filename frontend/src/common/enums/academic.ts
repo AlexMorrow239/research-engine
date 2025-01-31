@@ -24,7 +24,20 @@ export enum Department {
   CHEMISTRY = "Chemistry",
   CLASSICS = "Classics",
   COMPUTER_SCIENCE = "Computer Science",
-  // ... rest of departments ...
+  ENGLISH = "English",
+  GEOGRAPHY = "Geography and Sustainable Development",
+  HISTORY = "History",
+  INTERNATIONAL_STUDIES = "International Studies",
+  MATHEMATICS = "Mathematics",
+  MODERN_LANGUAGES = "Modern Languages & Literatures",
+  PHILOSOPHY = "Philosophy",
+  PHYSICS = "Physics",
+  POLITICAL_SCIENCE = "Political Science",
+  PSYCHOLOGY = "Psychology",
+  RELIGIOUS_STUDIES = "Religious Studies",
+  SOCIOLOGY = "Sociology and Criminology",
+  THEATRE = "Theatre Arts",
+  WRITING = "Writing Studies",
 }
 
 /**
