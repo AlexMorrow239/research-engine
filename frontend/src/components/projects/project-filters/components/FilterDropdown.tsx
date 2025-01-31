@@ -32,7 +32,7 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: MouseEvent): void => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
@@ -42,7 +42,8 @@ export const FilterDropdown: React.FC<FilterDropdownProps> = ({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return (): void =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen, onToggle]);
 
   return (

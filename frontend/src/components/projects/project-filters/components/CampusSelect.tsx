@@ -19,7 +19,9 @@ export const CampusSelect: React.FC = () => {
     (state: RootState) => state.projects.filters.campus
   );
 
-  const handleCampusChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleCampusChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
     dispatch(setFilters({ campus: event.target.value }));
   };
 

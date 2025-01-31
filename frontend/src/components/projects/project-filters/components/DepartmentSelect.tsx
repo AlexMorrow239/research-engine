@@ -6,7 +6,7 @@ import { setFilters } from "@/store/features/projects/projectsSlice";
 
 import { Department } from "@/common/enums";
 
-import { type RootState } from "@/store";
+import type { RootState } from "@/store";
 
 import { FilterDropdown } from "./FilterDropdown";
 
@@ -19,14 +19,14 @@ export const DepartmentSelect: React.FC = () => {
     (state: RootState) => state.projects.filters.departments
   );
 
-  const handleToggle = () => {
+  const handleToggle = (): void => {
     setIsOpen(!isOpen);
     if (!isOpen) {
       setSearchValue("");
     }
   };
 
-  const handleSelect = (department: string) => {
+  const handleSelect = (department: string): void => {
     const newDepartments = selectedDepartments?.includes(department)
       ? selectedDepartments?.filter((d) => d !== department)
       : [...(selectedDepartments ?? []), department];

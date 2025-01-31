@@ -16,7 +16,7 @@ import "./ProjectFilters.scss";
 export const ProjectFilters: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleReset = () => {
+  const handleReset = (): void => {
     dispatch(
       setFilters({
         search: "",

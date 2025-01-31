@@ -1,7 +1,7 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-import { type ApplicationStatus } from "@/common/enums";
+import type { ApplicationStatus } from "@/common/enums";
 
 import type { ApiResponse, Application } from "@/types";
 import { api, ApiError } from "@/utils/api";

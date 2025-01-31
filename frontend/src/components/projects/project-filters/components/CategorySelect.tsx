@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { setFilters } from "@/store/features/projects/projectsSlice";
 
-import { type RootState } from "@/store";
+import type { RootState } from "@/store";
 
 import { FilterDropdown } from "./FilterDropdown";
 
@@ -20,14 +20,14 @@ export const CategorySelect: React.FC = () => {
     (state: RootState) => state.projects.availableResearchCategories
   );
 
-  const handleToggle = () => {
+  const handleToggle = (): void => {
     setIsOpen(!isOpen);
     if (!isOpen) {
       setSearchValue("");
     }
   };
 
-  const handleSelect = (category: string) => {
+  const handleSelect = (category: string): void => {
     const newCategories = selectedCategories?.includes(category)
       ? selectedCategories?.filter((c) => c !== category)
       : [...(selectedCategories ?? []), category];

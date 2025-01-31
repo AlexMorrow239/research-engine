@@ -52,7 +52,9 @@ export interface ProjectsState extends BaseState {
   professorProjects: Project[];
   currentProject: Project | null;
   totalProjects: number;
+  isLoading: boolean;
   filters: ProjectFiltersType;
   availableResearchCategories: string[];
   isInitialLoad?: boolean;
+  error: string | null;
 }

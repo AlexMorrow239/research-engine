@@ -76,6 +76,7 @@ export default tseslint.config(
   // TypeScript-specific config (with type checking)
   {
     files: ["src/**/*.{ts,tsx}"],
+    excludes: ["*.config.{js,ts}", "vite.config.ts"],
     extends: [...tseslint.configs.recommended],
     languageOptions: {
       parser: tseslint.parser,
@@ -102,7 +103,6 @@ export default tseslint.config(
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        project: "./tsconfig.node.json",
         tsconfigRootDir: import.meta.dirname,
       },
     },

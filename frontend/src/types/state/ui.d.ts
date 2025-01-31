@@ -10,7 +10,7 @@ export interface UIState {
   globalLoading: boolean;
 }
 
-export interface Toast {
+export interface ToastType {
   id: string;
   message: string;
   type: "error" | "success" | "warning" | "info";

@@ -17,7 +17,7 @@ import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
 import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
 import { ProjectFilters } from "@/components/projects/project-filters/ProjectFilters";
 
-import { type Campus } from "@/common/enums";
+import type { Campus } from "@/common/enums";
 
 import type { AppDispatch, RootState } from "@/store";
 import type { Project, ProjectsState } from "@/types";

@@ -4,7 +4,7 @@ import { Building2, FileText, Mail, User } from "lucide-react";
 
 import { ApplicationModal } from "@/components/application-modal/ApplicationModal";
 
-import { type Campus, type ProjectStatus } from "@/common/enums";
+import type { Campus, ProjectStatus } from "@/common/enums";
 
 import { isDeadlineExpired, isDeadlineSoon } from "@/utils/dateUtils";
 

@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 
 import { setFilters } from "@/store/features/projects/projectsSlice";
 
-import { type RootState } from "@/store";
+import type { RootState } from "@/store";
 
 interface FilterTag {
   type: "campus" | "department" | "category";
@@ -30,7 +30,7 @@ export const ActiveFilters: React.FC = () => {
     return tags;
   };
 
-  const handleRemoveTag = (tag: FilterTag) => {
+  const handleRemoveTag = (tag: FilterTag): void => {
     switch (tag.type) {
       case "campus":
         dispatch(setFilters({ ...filters, campus: "" }));

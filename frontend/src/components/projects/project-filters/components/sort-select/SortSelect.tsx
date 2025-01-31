@@ -20,7 +20,9 @@ export const SortSelect: React.FC = () => {
     (state: RootState) => state.projects.filters
   );
 
-  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleSortChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
     const selectedOption = SORT_OPTIONS[event.target.selectedIndex];
     dispatch(
       setFilters({

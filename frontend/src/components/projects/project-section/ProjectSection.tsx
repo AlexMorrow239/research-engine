@@ -12,7 +12,7 @@ import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
 import { ProjectStatus } from "@/common/enums";
 
 import { useAppDispatch } from "@/store";
-import { type Project } from "@/types";
+import type { Project } from "@/types";
 
 import "./ProjectSection.scss";
 
@@ -33,11 +33,11 @@ export function ProjectSection({
   const dispatch = useAppDispatch();
   const [loadingProjectId, setLoadingProjectId] = useState<string | null>(null);
 
-  const handleEdit = (projectId: string) => {
+  const handleEdit = (projectId: string): void => {
     navigate(`/faculty/projects/${projectId}/edit`);
   };
 
-  const handleDelete = async (projectId: string) => {
+  const handleDelete = async (projectId: string): Promise<void> => {
     try {
       setLoadingProjectId(projectId);
 
@@ -64,7 +64,7 @@ export function ProjectSection({
     }
   };
 
-  const handleCardClick = (projectId: string) => {
+  const handleCardClick = (projectId: string): void => {
     navigate(`/faculty/projects/${projectId}`);
   };
 
