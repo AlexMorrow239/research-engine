@@ -1,8 +1,8 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
-import { Application } from "@/modules/applications/schemas/applications.schema";
-import { ApplicationStatus } from "@common/enums";
+import { Application } from '@/modules/applications/schemas/applications.schema';
+import { ApplicationStatus } from '@common/enums';
 
 interface EmailTemplate {
   subject: string;
@@ -13,30 +13,6 @@ interface EmailTemplate {
 @Injectable()
 export class EmailTemplateService {
   constructor(private readonly configService: ConfigService) {}
-
-  private getFrontendUrl(): string {
-    const isNetworkMode =
-      this.configService.get<string>("NETWORK_MODE") === "true";
-    const env = this.configService.get<string>("NODE_ENV");
-
-    if (env === "development") {
-      return isNetworkMode
-        ? this.configService.get<string>(
-            "FRONTEND_URL_NETWORK",
-            "http://100.65.62.87:5173"
-          )
-        : this.configService.get<string>(
-            "FRONTEND_URL_LOCAL",
-            "http://localhost:5173"
-          );
-    }
-
-    // For production, use the production frontend URL
-    return this.configService.get<string>(
-      "FRONTEND_URL",
-      "http://localhost:5173"
-    );
-  }
 
   private getEmailStyles(): string {
     return `
@@ -138,7 +114,7 @@ export class EmailTemplateService {
 
   getApplicationConfirmationTemplate(
     projectTitle: string,
-    studentName: { firstName: string; lastName: string }
+    studentName: { firstName: string; lastName: string },
   ): EmailTemplate {
     const text = `Dear ${studentName.firstName} ${studentName.lastName},
 
@@ -169,13 +145,13 @@ Research Engine Team`;
       </html>
     `;
 
-    return { subject: "Research Application Confirmation", text, html };
+    return { subject: 'Research Application Confirmation', text, html };
   }
 
   getProfessorNotificationTemplate(
     projectTitle: string,
     application: Application,
-    resumeDownloadUrl: string
+    resumeDownloadUrl: string,
   ): EmailTemplate {
     const text = `Dear Professor,
   
@@ -190,9 +166,9 @@ Basic Information:
 
 Academic Information:
 - Major 1: ${application.studentInfo.major1} (${application.studentInfo.major1College})
-${application.studentInfo.hasAdditionalMajor ? `- Major 2: ${application.studentInfo.major2} (${application.studentInfo.major2College})\n` : ""}- Academic Standing: ${application.studentInfo.academicStanding}
+${application.studentInfo.hasAdditionalMajor ? `- Major 2: ${application.studentInfo.major2} (${application.studentInfo.major2College})\n` : ''}- Academic Standing: ${application.studentInfo.academicStanding}
 - Expected Graduation: ${new Date(application.studentInfo.graduationDate).toLocaleDateString()}
-${application.studentInfo.isPreHealth ? `- Pre-Health Track: ${application.studentInfo.preHealthTrack || "Yes"}\n` : ""}
+${application.studentInfo.isPreHealth ? `- Pre-Health Track: ${application.studentInfo.preHealthTrack || 'Yes'}\n` : ''}
 Availability:
 - Monday: ${application.availability.mondayAvailability}
 - Tuesday: ${application.availability.tuesdayAvailability}
@@ -203,10 +179,10 @@ Availability:
 - Desired Project Commitment: ${application.availability.desiredProjectLength}
 
 Additional Information:
-- Previous Research Experience: ${application.additionalInfo.hasPrevResearchExperience ? "Yes" : "No"}
-${application.additionalInfo.hasPrevResearchExperience && application.additionalInfo.prevResearchExperience ? `- Research Experience Details: ${application.additionalInfo.prevResearchExperience}\n` : ""}- Statement of Interest: ${application.additionalInfo.researchInterestDescription}
-- Federal Work Study: ${application.additionalInfo.hasFederalWorkStudy ? "Yes" : "No"}
-${application.additionalInfo.speaksOtherLanguages && application.additionalInfo.additionalLanguages?.length ? `- Additional Languages: ${application.additionalInfo.additionalLanguages.join(", ")}\n` : ""}- Comfortable with Animals: ${application.additionalInfo.comfortableWithAnimals ? "Yes" : "No"}
+- Previous Research Experience: ${application.additionalInfo.hasPrevResearchExperience ? 'Yes' : 'No'}
+${application.additionalInfo.hasPrevResearchExperience && application.additionalInfo.prevResearchExperience ? `- Research Experience Details: ${application.additionalInfo.prevResearchExperience}\n` : ''}- Statement of Interest: ${application.additionalInfo.researchInterestDescription}
+- Federal Work Study: ${application.additionalInfo.hasFederalWorkStudy ? 'Yes' : 'No'}
+${application.additionalInfo.speaksOtherLanguages && application.additionalInfo.additionalLanguages?.length ? `- Additional Languages: ${application.additionalInfo.additionalLanguages.join(', ')}\n` : ''}- Comfortable with Animals: ${application.additionalInfo.comfortableWithAnimals ? 'Yes' : 'No'}
 
 Resume: ${resumeDownloadUrl}
 
@@ -242,10 +218,10 @@ Research Engine Team`;
               <div class="info-section">
                 <h3 style="color: #005030; margin-bottom: 15px;">Academic Information</h3>
                 <p><span class="info-label">Major 1:</span> ${application.studentInfo.major1} (${application.studentInfo.major1College})</p>
-                ${application.studentInfo.hasAdditionalMajor ? `<p><span class="info-label">Major 2:</span> ${application.studentInfo.major2} (${application.studentInfo.major2College})</p>` : ""}
+                ${application.studentInfo.hasAdditionalMajor ? `<p><span class="info-label">Major 2:</span> ${application.studentInfo.major2} (${application.studentInfo.major2College})</p>` : ''}
                 <p><span class="info-label">Academic Standing:</span> ${application.studentInfo.academicStanding}</p>
                 <p><span class="info-label">Expected Graduation:</span> ${new Date(application.studentInfo.graduationDate).toLocaleDateString()}</p>
-                ${application.studentInfo.isPreHealth ? `<p><span class="info-label">Pre-Health Track:</span> ${application.studentInfo.preHealthTrack || "Yes"}</p>` : ""}
+                ${application.studentInfo.isPreHealth ? `<p><span class="info-label">Pre-Health Track:</span> ${application.studentInfo.preHealthTrack || 'Yes'}</p>` : ''}
               </div>
 
               <div class="info-section">
@@ -264,7 +240,7 @@ Research Engine Team`;
 
               <div class="info-section">
                 <h3 style="color: #005030; margin-bottom: 15px;">Additional Information</h3>
-                <p><span class="info-label">Previous Research Experience:</span> ${application.additionalInfo.hasPrevResearchExperience ? "Yes" : "No"}</p>
+                <p><span class="info-label">Previous Research Experience:</span> ${application.additionalInfo.hasPrevResearchExperience ? 'Yes' : 'No'}</p>
                 ${
                   application.additionalInfo.hasPrevResearchExperience &&
                   application.additionalInfo.prevResearchExperience
@@ -273,15 +249,15 @@ Research Engine Team`;
                   <span class="info-label">Research Experience Details:</span>
                   <div style="margin-left: 150px; margin-top: -24px;">${application.additionalInfo.prevResearchExperience}</div>
                 </div>`
-                    : ""
+                    : ''
                 }
                 <div style="margin: 10px 0;">
                   <span class="info-label">Statement of Interest:</span>
                   <div style="margin-left: 150px; margin-top: -24px;">${application.additionalInfo.researchInterestDescription}</div>
                 </div>
-                <p><span class="info-label">Federal Work Study:</span> ${application.additionalInfo.hasFederalWorkStudy ? "Yes" : "No"}</p>
-                ${application.additionalInfo.speaksOtherLanguages && application.additionalInfo.additionalLanguages?.length ? `<p><span class="info-label">Additional Languages:</span> ${application.additionalInfo.additionalLanguages.join(", ")}</p>` : ""}
-                <p><span class="info-label">Comfortable with Animals:</span> ${application.additionalInfo.comfortableWithAnimals ? "Yes" : "No"}</p>
+                <p><span class="info-label">Federal Work Study:</span> ${application.additionalInfo.hasFederalWorkStudy ? 'Yes' : 'No'}</p>
+                ${application.additionalInfo.speaksOtherLanguages && application.additionalInfo.additionalLanguages?.length ? `<p><span class="info-label">Additional Languages:</span> ${application.additionalInfo.additionalLanguages.join(', ')}</p>` : ''}
+                <p><span class="info-label">Comfortable with Animals:</span> ${application.additionalInfo.comfortableWithAnimals ? 'Yes' : 'No'}</p>
               </div>
 
               <div style="text-align: center; margin: 30px 0;">
@@ -348,7 +324,7 @@ Research Engine Team`;
 
   getApplicationStatusUpdateTemplate(
     projectTitle: string,
-    status: ApplicationStatus
+    status: ApplicationStatus,
   ): EmailTemplate {
     const text = `Your application for "${projectTitle}" has been ${status.toLowerCase()}.`;
 
@@ -382,11 +358,8 @@ Research Engine Team`;
     };
   }
 
-  getPasswordResetTemplate(
-    firstName: string,
-    resetToken: string
-  ): EmailTemplate {
-    const frontendUrl = this.getFrontendUrl();
+  getPasswordResetTemplate(firstName: string, resetToken: string): EmailTemplate {
+    const frontendUrl = this.configService.get<string>('url.frontend');
     const resetUrl = `${frontendUrl}/faculty/auth/reset-password?token=${resetToken}`;
 
     const text = `Dear ${firstName},
@@ -430,7 +403,7 @@ Research Engine Team`;
     `;
 
     return {
-      subject: "Research Engine - Password Reset Request",
+      subject: 'Research Engine - Password Reset Request',
       text,
       html,
     };

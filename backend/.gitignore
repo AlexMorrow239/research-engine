@@ -12,3 +12,11 @@
 *.tgz
 .yarn-integrity
 *.pem
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
