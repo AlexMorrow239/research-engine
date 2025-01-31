@@ -2,18 +2,16 @@
 
 .listings-page {
   min-height: 100vh;
-  background-color: var(--color-background-alt);
   padding: var(--spacing-2);
 
   .listings-layout {
     display: grid;
-    // Change to 35% for list, 65% for details
     grid-template-columns: minmax(320px, 35%) 1fr;
     gap: var(--spacing-3);
     margin-top: var(--spacing-2);
     position: relative;
-    min-height: calc(100vh - 120px); // Reduced from 200px
-    max-width: 1600px; // Add max-width for very large screens
+    min-height: calc(100vh - 120px);
+    max-width: 1600px;
     margin-left: auto;
     margin-right: auto;
 
@@ -25,17 +23,17 @@
 
   .listings-list {
     background-color: var(--color-background);
-    border-radius: var(--radius-md); // Reduced from lg
+    border-radius: var(--radius-md);
     border: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     position: sticky;
-    top: var(--spacing-2); // Reduced from spacing-4
+    top: var(--spacing-2);
     height: calc(100vh - var(--spacing-4));
     max-height: calc(100vh - var(--spacing-4));
 
     &__header {
-      padding: var(--spacing-3); // Reduced from spacing-4
+      padding: var(--spacing-3);
       border-bottom: 1px solid var(--color-border);
       background-color: var(--color-background);
       border-top-left-radius: var(--radius-md);
@@ -45,7 +43,7 @@
       z-index: 10;
 
       h2 {
-        font-size: var(--font-size-base); // Reduced from lg
+        font-size: var(--font-size-base);
         font-weight: var(--font-weight-semibold);
         color: var(--color-text-dark);
         margin: 0;
@@ -53,16 +51,15 @@
     }
 
     &__content {
-      padding: var(--spacing-2); // Reduced from spacing-4
+      padding: var(--spacing-2);
       overflow-y: auto;
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: var(--spacing-2); // Add gap between cards
+      gap: var(--spacing-2);
 
-      // Optimize scrollbar for space efficiency
       &::-webkit-scrollbar {
-        width: 4px; // Reduced from 6px
+        width: 4px;
       }
 
       &::-webkit-scrollbar-track {
@@ -177,7 +174,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 300px; // Reduced from 400px
+      min-height: 300px;
       color: var(--color-text-light);
       font-size: var(--font-size-base);
       text-align: center;
@@ -223,7 +220,7 @@
     text-align: center;
     padding: var(--spacing-4);
     margin: var(--spacing-4) auto;
-    max-width: 400px; // Reduced from 600px
+    max-width: 400px;
     background-color: var(--color-background);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
