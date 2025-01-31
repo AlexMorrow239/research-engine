@@ -1,11 +1,6 @@
-dist
-build
-coverage
-node_modules
-uploads
-uploads/projects
-uploads/resumes
-.nest
-test/jest-e2e.json
-jest.config.ts
+# base ignore patterns
+!.ignore
+.ignore
+
+# Additional eslint-specific patterns
 .eslintrc.js

@@ -55,7 +55,6 @@ module.exports = {
     'prettier/prettier': ['error', {}, { usePrettierrc: true }],
     'import/no-unresolved': 'error',
     'import/prefer-default-export': 'off',
-    'prettier/prettier': ['error', {}, { usePrettierrc: true }],
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     eqeqeq: ['error', 'always'],
     'no-return-await': 'off',
