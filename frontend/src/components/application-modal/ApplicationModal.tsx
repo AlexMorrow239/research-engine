@@ -1,3 +1,10 @@
+import { useCallback, useState } from "react";
+import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { X } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { createApplication } from "@/store/features/applications/applicationsSlice";
 import {
   AcademicStanding,
   Citizenship,
@@ -7,14 +14,7 @@ import {
   WeeklyAvailability,
 } from "@/common/enums";
 import { useAppDispatch } from "@/store";
-import { createApplication } from "@/store/features/applications/applicationsSlice";
-import { type ApplicationFormData } from "@/types";
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
-import { useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import type { ApplicationFormData } from "@/types";
 import { AdditionalInfoStep } from "./additional-info-step/AdditionalInfo";
 import "./ApplicationModal.scss";
 import { AvailabilityStep } from "./availability-step/AvailabilityStep";

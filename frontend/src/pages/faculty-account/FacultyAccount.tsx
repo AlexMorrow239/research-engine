@@ -1,18 +1,18 @@
-import { Department } from "@/common/enums";
-import { ArrayField } from "@/components/common/array-field/ArrayField";
-import { FormField } from "@/components/common/form-field/FormField";
-import { SearchableDropdown } from "@/components/common/searchable-dropdown/SearchableDropdown";
-import { useAppDispatch, useAppSelector } from "@/store";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import {
   fetchProfessor,
   updateProfessor,
 } from "@/store/features/professors/professorsSlice";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { z } from "zod";
+import { ArrayField } from "@/components/common/array-field/ArrayField";
+import { FormField } from "@/components/common/form-field/FormField";
+import { SearchableDropdown } from "@/components/common/searchable-dropdown/SearchableDropdown";
+import { useAppDispatch, useAppSelector } from "@/store";
 import "./FacultyAccount.scss";
+import { Department } from "@/common/enums";
 
 const facultyAccountSchema = z.object({
   email: z

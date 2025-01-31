@@ -1,15 +1,15 @@
+import React, { useState } from "react";
+import { FileText, Upload, X } from "lucide-react";
+import type { UseFormReturn } from "react-hook-form";
+import { FormField } from "@/components/common/form-field/FormField";
 import {
   ACADEMIC_STANDING_OPTIONS,
   CITIZENSHIP_OPTIONS,
   COLLEGE_OPTIONS,
   RACIAL_ETHNIC_OPTIONS,
 } from "@/common/constants";
-import { type RacialEthnicGroup } from "@/common/enums";
-import { FormField } from "@/components/common/form-field/FormField";
-import { type ApplicationFormData } from "@/types";
-import { FileText, Upload, X } from "lucide-react";
-import React, { useState } from "react";
-import { type UseFormReturn } from "react-hook-form";
+import type { RacialEthnicGroup } from "@/common/enums";
+import type { ApplicationFormData } from "@/types";
 import "./StudentInfo.scss";
 
 interface StudentInfoStepProps {

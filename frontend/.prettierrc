@@ -12,5 +12,22 @@
   "jsxSingleQuote": false,
   "quoteProps": "as-needed",
   "htmlWhitespaceSensitivity": "css",
-  "plugins": ["prettier-plugin-organize-imports"]
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": [
+    "^react$",
+    "^react-dom$",
+    "^react-router-dom$",
+    "^@reduxjs/toolkit$",
+    "^react-redux$",
+    "<THIRD_PARTY_MODULES>",
+    "^@/store/",
+    "^@/components/",
+    "^@/common/",
+    "^@/styles/",
+    "^@/",
+    "^@public/",
+    "^[./]"
+  ],
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true
 }

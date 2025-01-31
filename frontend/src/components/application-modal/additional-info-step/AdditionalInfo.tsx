@@ -1,6 +1,6 @@
-import { type ApplicationFormData } from "@/types";
 import React, { useEffect, useState } from "react";
-import { type UseFormReturn } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
+import type { ApplicationFormData } from "@/types";
 import "./AdditionalInfo.scss";
 
 interface AdditionalInfoStepProps {

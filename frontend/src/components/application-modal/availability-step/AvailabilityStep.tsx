@@ -1,11 +1,11 @@
+import React from "react";
+import type { UseFormReturn } from "react-hook-form";
+import { FormField } from "@/components/common/form-field/FormField";
 import {
   PROJECT_LENGTH_OPTIONS,
   WEEKLY_AVAILABILITY_OPTIONS,
 } from "@/common/constants";
-import { FormField } from "@/components/common/form-field/FormField";
-import { type ApplicationFormData } from "@/types";
-import React from "react";
-import { type UseFormReturn } from "react-hook-form";
+import type { ApplicationFormData } from "@/types";
 import "./Availability.scss";
 
 interface AvailabilityStepProps {
@@ -42,6 +42,7 @@ export const AvailabilityStep: React.FC<AvailabilityStepProps> = ({ form }) => {
       <div className="form-grid">
         {days.map((day) => (
           <FormField
+            formType="application"
             key={day}
             form={form}
             label={`${day} Availability`}
@@ -52,6 +53,7 @@ export const AvailabilityStep: React.FC<AvailabilityStepProps> = ({ form }) => {
         ))}
 
         <FormField
+          formType="application"
           form={form}
           label="Weekly Hours Commitment"
           name="availability.weeklyHours"
@@ -60,6 +62,7 @@ export const AvailabilityStep: React.FC<AvailabilityStepProps> = ({ form }) => {
         />
 
         <FormField
+          formType="application"
           form={form}
           label="Desired Project Commitment"
           name="availability.desiredProjectLength"
