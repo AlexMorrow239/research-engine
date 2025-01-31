@@ -1,5 +1,7 @@
-import { Atom, BookOpen, Code } from "lucide-react";
 import React from "react";
+
+import { Atom, BookOpen, Code } from "lucide-react";
+
 import "./About.scss";
 
 interface TeamMember {

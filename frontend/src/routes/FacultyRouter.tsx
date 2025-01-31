@@ -1,3 +1,5 @@
+import { Navigate, Route, Routes } from "react-router-dom";
+
 import FacultyLogin from "@/pages/auth/faculty-login/FacultyLogin";
 import FacultyRegistration from "@/pages/auth/faculty-registration/FacultyRegistration";
 import { FacultyAccount } from "@/pages/faculty-account/FacultyAccount";
@@ -5,7 +7,7 @@ import ProjectDashboard from "@/pages/projects/project-dashboard/ProjectDashboar
 import { ProjectForm } from "@/pages/projects/project-form/ProjectForm";
 import { ResetPassword } from "@/pages/reset-password/ResetPassword";
 import { useAppSelector } from "@/store";
-import { Navigate, Route, Routes } from "react-router-dom";
+
 import { ProtectedLayout } from "./ProtectedLayout";
 
 export const FacultyRouter = (): JSX.Element => {

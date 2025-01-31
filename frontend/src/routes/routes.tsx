@@ -1,9 +1,12 @@
+import { createBrowserRouter, Navigate } from "react-router-dom";
+
 import { ErrorDisplay } from "@/components/error-boundary/ErrorBoundary";
 import { MainLayout } from "@/components/layout/main-layout/MainLayout";
+
 import About from "@/pages/about/About";
 import Listings from "@/pages/listings/Listings";
 import NotFound from "@/pages/not-found/NotFound";
-import { createBrowserRouter, Navigate } from "react-router-dom";
+
 import { FacultyRouter } from "./FacultyRouter";
 
 export const router = createBrowserRouter([

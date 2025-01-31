@@ -1,15 +1,22 @@
-import { Department } from "@/common/enums";
+import { useEffect, useState } from "react";
+
+import { useNavigate } from "react-router-dom";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { registerFaculty } from "@/store/features/auth/authSlice";
+
 import { ArrayField } from "@/components/common/array-field/ArrayField";
 import { FormField } from "@/components/common/form-field/FormField";
 import { PasswordField } from "@/components/common/password-field/PasswordField";
 import { SearchableDropdown } from "@/components/common/searchable-dropdown/SearchableDropdown";
+
+import { Department } from "@/common/enums";
+
 import { useAppDispatch, useAppSelector } from "@/store";
-import { registerFaculty } from "@/store/features/auth/authSlice";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { z } from "zod";
+
 import "./FacultyRegistration.scss";
 
 interface FormattedData {

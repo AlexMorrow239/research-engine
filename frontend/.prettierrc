@@ -12,7 +12,7 @@
   "jsxSingleQuote": false,
   "quoteProps": "as-needed",
   "htmlWhitespaceSensitivity": "css",
-  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
   "importOrder": [
     "^react$",
     "^react-dom$",
@@ -29,5 +29,6 @@
     "^[./]"
   ],
   "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true
+  "importOrderSortSpecifiers": true,
+  "importOrderCaseInsensitive": true
 }

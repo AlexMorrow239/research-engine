@@ -1,15 +1,21 @@
-import { FormField } from "@/components/common/form-field/FormField";
-import { PasswordField } from "@/components/common/password-field/PasswordField";
-import { useAppDispatch } from "@/store";
+import { useState } from "react";
+
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import {
   requestPasswordReset,
   resetPassword,
 } from "@/store/features/auth/authSlice";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { z } from "zod";
+
+import { FormField } from "@/components/common/form-field/FormField";
+import { PasswordField } from "@/components/common/password-field/PasswordField";
+
+import { useAppDispatch } from "@/store";
+
 import "./ResetPassword.scss";
 
 // Form validation schemas

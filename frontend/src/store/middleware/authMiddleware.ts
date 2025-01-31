@@ -1,4 +1,5 @@
 import { isRejectedWithValue, type Middleware } from "@reduxjs/toolkit";
+
 import { handleTokenExpiration } from "../features/auth/authSlice";
 
 export const authMiddleware: Middleware = (store) => (next) => (action) => {

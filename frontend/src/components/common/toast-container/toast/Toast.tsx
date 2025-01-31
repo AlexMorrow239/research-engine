@@ -1,5 +1,7 @@
-import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { AlertTriangle, CheckCircle2, Info, X, XCircle } from "lucide-react";
+
 import "./Toast.scss";
 
 export interface ToastProps {

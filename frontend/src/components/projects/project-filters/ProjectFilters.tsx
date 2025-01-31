@@ -1,6 +1,9 @@
-import type { AppDispatch } from "@/store";
-import { setFilters } from "@/store/features/projects/projectsSlice";
 import { useDispatch } from "react-redux";
+
+import { setFilters } from "@/store/features/projects/projectsSlice";
+
+import type { AppDispatch } from "@/store";
+
 import { ActiveFilters } from "./components/ActiveFilters";
 import { CampusSelect } from "./components/CampusSelect";
 import { CategorySelect } from "./components/CategorySelect";

@@ -1,9 +1,11 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
+
 import {
   isRouteErrorResponse,
   useNavigate,
   useRouteError,
 } from "react-router-dom";
+
 import "./ErrorBoundary.scss";
 
 interface Props {

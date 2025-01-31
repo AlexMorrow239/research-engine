@@ -1,7 +1,10 @@
-import { type RootState } from "@/store";
-import { setFilters } from "@/store/features/projects/projectsSlice";
-import { X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
+
+import { X } from "lucide-react";
+
+import { setFilters } from "@/store/features/projects/projectsSlice";
+
+import { type RootState } from "@/store";
 
 interface FilterTag {
   type: "campus" | "department" | "category";

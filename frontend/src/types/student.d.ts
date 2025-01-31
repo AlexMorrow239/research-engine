@@ -1,4 +1,5 @@
 import type { ApplicationStatus } from "@/common/enums";
+
 import type { BaseState } from "./common";
 
 export interface Application {

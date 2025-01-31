@@ -1,6 +1,8 @@
-import { ApiError } from "@/utils/api";
 import type { Middleware } from "@reduxjs/toolkit";
 import { isRejectedWithValue } from "@reduxjs/toolkit";
+
+import { ApiError } from "@/utils/api";
+
 import { logout } from "../features/auth/authSlice";
 import { addToast, type ToastType } from "../features/ui/uiSlice";
 import type { AppDispatch } from "../index";

@@ -1,12 +1,18 @@
+import { useEffect } from "react";
+
+import { Link, useNavigate } from "react-router-dom";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { loginUser } from "@/store/features/auth/authSlice";
+
 import { FormField } from "@/components/common/form-field/FormField";
 import { PasswordField } from "@/components/common/password-field/PasswordField";
+
 import { useAppDispatch, useAppSelector } from "@/store";
-import { loginUser } from "@/store/features/auth/authSlice";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
-import { z } from "zod";
+
 import "./FacultyLogin.scss";
 
 // Define the form validation schema

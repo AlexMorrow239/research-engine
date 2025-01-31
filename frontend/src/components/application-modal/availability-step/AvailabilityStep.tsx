@@ -1,11 +1,16 @@
 import React from "react";
+
 import type { UseFormReturn } from "react-hook-form";
+
 import { FormField } from "@/components/common/form-field/FormField";
+
 import {
   PROJECT_LENGTH_OPTIONS,
   WEEKLY_AVAILABILITY_OPTIONS,
 } from "@/common/constants";
+
 import type { ApplicationFormData } from "@/types";
+
 import "./Availability.scss";
 
 interface AvailabilityStepProps {

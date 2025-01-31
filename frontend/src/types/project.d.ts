@@ -1,4 +1,5 @@
 import type { Campus, ProjectStatus } from "@/common/enums";
+
 import type { BaseState } from "./common";
 
 export interface Project {

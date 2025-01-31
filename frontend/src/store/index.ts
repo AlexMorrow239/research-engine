@@ -1,7 +1,8 @@
-import type { AuthState, UIState } from "@/types";
 import { configureStore } from "@reduxjs/toolkit";
+
 import type { TypedUseSelectorHook } from "react-redux";
 import { useDispatch, useSelector } from "react-redux";
+
 import {
   FLUSH,
   PAUSE,
@@ -13,6 +14,9 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+
+import type { AuthState, UIState } from "@/types";
+
 import applicationsReducer from "./features/applications/applicationsSlice";
 import authReducer from "./features/auth/authSlice";
 import professorsReducer from "./features/professors/professorsSlice";

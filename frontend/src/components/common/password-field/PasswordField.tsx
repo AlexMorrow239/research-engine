@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import type {
   FieldError,
   FieldErrors,
@@ -6,6 +7,7 @@ import type {
   PathValue,
   UseFormReturn,
 } from "react-hook-form";
+
 import "./PasswordField.scss";
 
 interface BasePasswordFieldProps<T> {

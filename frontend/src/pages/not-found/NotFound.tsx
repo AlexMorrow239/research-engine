@@ -1,6 +1,9 @@
-import { ArrowLeft } from "lucide-react";
 import React from "react";
+
 import { useNavigate } from "react-router-dom";
+
+import { ArrowLeft } from "lucide-react";
+
 import "./NotFound.scss";
 
 const NotFound: React.FC = () => {

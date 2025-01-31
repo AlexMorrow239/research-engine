@@ -1,10 +1,5 @@
-import { UI_CONSTANTS } from "@/common/constants";
-import { type Campus, ProjectStatus } from "@/common/enums";
-import {
-  formatDeadline,
-  isDeadlineExpired,
-  isDeadlineSoon,
-} from "@/utils/dateUtils";
+import { memo } from "react";
+
 import {
   Archive,
   Building2,
@@ -13,7 +8,16 @@ import {
   Trash2,
   Users,
 } from "lucide-react";
-import { memo } from "react";
+
+import { UI_CONSTANTS } from "@/common/constants";
+import { type Campus, ProjectStatus } from "@/common/enums";
+
+import {
+  formatDeadline,
+  isDeadlineExpired,
+  isDeadlineSoon,
+} from "@/utils/dateUtils";
+
 import "./ProjectCard.scss";
 
 interface ProjectCardProps {

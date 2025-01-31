@@ -1,8 +1,13 @@
-import { type Campus, type ProjectStatus } from "@/common/enums";
-import { ApplicationModal } from "@/components/application-modal/ApplicationModal";
-import { isDeadlineExpired, isDeadlineSoon } from "@/utils/dateUtils";
-import { Building2, FileText, Mail, User } from "lucide-react";
 import { memo, useMemo, useState } from "react";
+
+import { Building2, FileText, Mail, User } from "lucide-react";
+
+import { ApplicationModal } from "@/components/application-modal/ApplicationModal";
+
+import { type Campus, type ProjectStatus } from "@/common/enums";
+
+import { isDeadlineExpired, isDeadlineSoon } from "@/utils/dateUtils";
+
 import "./ProjectDetails.scss";
 
 interface ProjectDetailsProps {

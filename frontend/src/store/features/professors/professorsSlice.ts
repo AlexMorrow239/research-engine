@@ -1,6 +1,8 @@
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+
 import type { Professor, ProfessorAccountUpdate } from "@/types";
 import { api, ApiError } from "@/utils/api";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+
 import { addToast } from "../ui/uiSlice";
 
 interface ProfessorState {

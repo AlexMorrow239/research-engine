@@ -1,9 +1,14 @@
+import { useEffect, useState } from "react";
+
+import { useDispatch } from "react-redux";
+
+import { Search } from "lucide-react";
+
+import { setFilters } from "@/store/features/projects/projectsSlice";
+
 import { useDebounce } from "@/hooks/useDebounce";
 import type { AppDispatch } from "@/store";
-import { setFilters } from "@/store/features/projects/projectsSlice";
-import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+
 import "./SearchBar.scss";
 
 export const SearchBar: React.FC = () => {

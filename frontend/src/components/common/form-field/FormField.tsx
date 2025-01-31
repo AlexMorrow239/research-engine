@@ -1,10 +1,12 @@
-import { type ApplicationFormData } from "@/types";
 import type {
   FieldError,
   Path,
   PathValue,
   UseFormReturn,
 } from "react-hook-form";
+
+import { type ApplicationFormData } from "@/types";
+
 import "./FormField.scss";
 
 type ApplicationFormPaths =

@@ -1,13 +1,19 @@
-import { ProjectStatus } from "@/common/enums";
-import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
-import { useAppDispatch } from "@/store";
+import { useState } from "react";
+
+import { useNavigate } from "react-router-dom";
+
 import {
   deleteProject,
   delistProject,
 } from "@/store/features/projects/projectsSlice";
+
+import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
+
+import { ProjectStatus } from "@/common/enums";
+
+import { useAppDispatch } from "@/store";
 import { type Project } from "@/types";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import "./ProjectSection.scss";
 
 interface ProjectSectionProps {

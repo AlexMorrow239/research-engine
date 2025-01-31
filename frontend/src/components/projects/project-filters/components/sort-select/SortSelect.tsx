@@ -1,7 +1,10 @@
-import type { RootState } from "@/store";
-import { setFilters } from "@/store/features/projects/projectsSlice";
-import type { SortOption } from "@/types";
 import { useDispatch, useSelector } from "react-redux";
+
+import { setFilters } from "@/store/features/projects/projectsSlice";
+
+import type { RootState } from "@/store";
+import type { SortOption } from "@/types";
+
 import "./SortSelect.scss";
 
 const SORT_OPTIONS: SortOption[] = [

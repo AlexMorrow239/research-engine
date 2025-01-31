@@ -1,19 +1,27 @@
-import { type Campus } from "@/common/enums";
-import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
-import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
-import { ProjectFilters } from "@/components/projects/project-filters/ProjectFilters";
-import type { AppDispatch, RootState } from "@/store";
+import { useCallback, useEffect, useState } from "react";
+
+import { useLocation, useNavigate } from "react-router-dom";
+
+import { useDispatch, useSelector } from "react-redux";
+
+import { isEqual } from "lodash";
+import { ChevronLeft } from "lucide-react";
+
 import {
   fetchProjects,
   setCurrentProject,
   setFilters,
 } from "@/store/features/projects/projectsSlice";
+
+import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
+import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
+import { ProjectFilters } from "@/components/projects/project-filters/ProjectFilters";
+
+import { type Campus } from "@/common/enums";
+
+import type { AppDispatch, RootState } from "@/store";
 import type { Project, ProjectsState } from "@/types";
-import { isEqual } from "lodash";
-import { ChevronLeft } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+
 import "./Listings.scss";
 
 export default function Listings(): JSX.Element {

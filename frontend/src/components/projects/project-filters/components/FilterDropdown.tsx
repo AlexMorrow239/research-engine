@@ -1,6 +1,7 @@
+import { useEffect, useRef } from "react";
+
 import classNames from "classnames";
 import { ChevronDown, Search } from "lucide-react";
-import { useEffect, useRef } from "react";
 
 interface FilterDropdownProps {
   isOpen: boolean;

@@ -1,7 +1,10 @@
-import { Campus } from "@/common/enums";
-import type { RootState } from "@/store";
-import { setFilters } from "@/store/features/projects/projectsSlice";
 import { useDispatch, useSelector } from "react-redux";
+
+import { setFilters } from "@/store/features/projects/projectsSlice";
+
+import { Campus } from "@/common/enums";
+
+import type { RootState } from "@/store";
 
 const CAMPUS_OPTIONS = [
   { value: "", label: "All Campuses" },

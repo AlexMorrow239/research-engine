@@ -1,7 +1,11 @@
-import { type RootState } from "@/store";
-import { setFilters } from "@/store/features/projects/projectsSlice";
 import { useState } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
+
+import { setFilters } from "@/store/features/projects/projectsSlice";
+
+import { type RootState } from "@/store";
+
 import { FilterDropdown } from "./FilterDropdown";
 
 export const CategorySelect: React.FC = () => {

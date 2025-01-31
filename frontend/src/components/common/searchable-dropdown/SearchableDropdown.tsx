@@ -1,6 +1,8 @@
-import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { X } from "lucide-react";
 import type { Path, PathValue, UseFormReturn } from "react-hook-form";
+
 import "./SearchableDropdown.scss";
 
 interface SearchableDropdownProps<T extends Record<string, unknown>> {

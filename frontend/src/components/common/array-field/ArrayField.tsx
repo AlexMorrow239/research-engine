@@ -1,5 +1,7 @@
 import { useEffect } from "react";
+
 import type { Path, PathValue, UseFormReturn } from "react-hook-form";
+
 import "./ArrayField.scss";
 
 interface ArrayFieldProps<T extends Record<string, unknown>> {

@@ -1,21 +1,28 @@
-import { CAMPUS_OPTIONS } from "@/common/constants";
-import { Campus, ProjectStatus } from "@/common/enums";
-import { ArrayField } from "@/components/common/array-field/ArrayField";
-import { FormField } from "@/components/common/form-field/FormField";
-import { useAppDispatch } from "@/store";
+import React, { useEffect, useState } from "react";
+
+import { useNavigate, useParams } from "react-router-dom";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import {
   createProject,
   deleteProject,
   fetchProject,
   updateProject,
 } from "@/store/features/projects/projectsSlice";
+
+import { ArrayField } from "@/components/common/array-field/ArrayField";
+import { FormField } from "@/components/common/form-field/FormField";
+
+import { CAMPUS_OPTIONS } from "@/common/constants";
+import { Campus, ProjectStatus } from "@/common/enums";
+
+import { useAppDispatch } from "@/store";
 import type { Project } from "@/types";
 import { ApiError } from "@/utils/api";
-import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
-import { z } from "zod";
+
 import "./ProjectForm.scss";
 
 // Zod schema for project creation/editing

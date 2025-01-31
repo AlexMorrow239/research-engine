@@ -1,11 +1,18 @@
-import { ProjectStatus } from "@/common/enums";
-import { ProjectSection } from "@/components/projects/project-section/ProjectSection";
-import { useAppDispatch, useAppSelector } from "@/store";
+import { useEffect } from "react";
+
+import { useNavigate } from "react-router-dom";
+
+import { LogOut, Plus, UserCog } from "lucide-react";
+
 import { logout } from "@/store/features/auth/authSlice";
 import { fetchProfessorProjects } from "@/store/features/projects/projectsSlice";
-import { LogOut, Plus, UserCog } from "lucide-react";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+
+import { ProjectSection } from "@/components/projects/project-section/ProjectSection";
+
+import { ProjectStatus } from "@/common/enums";
+
+import { useAppDispatch, useAppSelector } from "@/store";
+
 import "./ProjectDashboard.scss";
 
 export default function ProjectDashboard(): JSX.Element {
