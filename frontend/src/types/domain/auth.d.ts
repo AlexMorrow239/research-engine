@@ -1,19 +1,5 @@
-import type { BaseState } from "./common";
+import type { BaseState } from "../state/common";
 import type { Professor } from "./professor";
-
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-export interface FacultyRegistrationForm {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  firstName: string;
-  lastName: string;
-  department: string;
-}
 
 export interface AuthResponse {
   accessToken: string;
@@ -31,4 +17,5 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  role: "STUDENT" | "FACULTY" | "ADMIN";
 }
