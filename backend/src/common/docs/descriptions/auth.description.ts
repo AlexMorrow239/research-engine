@@ -1,6 +1,6 @@
 export const AuthDescriptions = {
   login: {
-    summary: 'Professor Authentication',
+    summary: "Professor Authentication",
     description: `
       Authenticate a professor using their credentials.
       
@@ -19,7 +19,7 @@ export const AuthDescriptions = {
     `,
   },
   register: {
-    summary: 'Professor Registration',
+    summary: "Professor Registration",
     description: `
       Register a new professor account.
       
@@ -37,21 +37,26 @@ export const AuthDescriptions = {
     `,
   },
   responses: {
-    loginSuccess: 'Authentication successful. Use the returned token for subsequent requests.',
-    invalidCredentials: 'The provided email or password is incorrect.',
-    inactiveAccount: 'This account has been deactivated. Please contact administration.',
-    serverError: 'An unexpected error occurred during authentication.',
-    registrationSuccess: 'Registration successful. Use the returned token for subsequent requests.',
-    registrationError: 'Registration failed. Please check your input and try again.',
+    loginSuccess:
+      "Authentication successful. Use the returned token for subsequent requests.",
+    invalidCredentials: "The provided email or password is incorrect.",
+    inactiveAccount:
+      "This account has been deactivated. Please contact administration.",
+    serverError: "An unexpected error occurred during authentication.",
+    registrationSuccess:
+      "Registration successful. Use the returned token for subsequent requests.",
+    registrationError:
+      "Registration failed. Please check your input and try again.",
     invalidAdminPassword:
-      'Invalid administrator password. Please contact your department administrator.',
-    forgotPasswordSuccess: 'If account exists, reset instructions will be sent to email',
-    resetPasswordSuccess: 'Password successfully reset',
-    invalidResetToken: 'Invalid or expired reset token',
-    invalidPasswordFormat: 'New password does not meet security requirements',
+      "Invalid administrator password. Please contact your department administrator.",
+    forgotPasswordSuccess:
+      "If account exists, reset instructions will be sent to email",
+    resetPasswordSuccess: "Password successfully reset",
+    invalidResetToken: "Invalid or expired reset token",
+    invalidPasswordFormat: "New password does not meet security requirements",
   },
   forgotPassword: {
-    summary: 'Request Password Reset',
+    summary: "Request Password Reset",
     description: `
       Request a password reset email.
       
@@ -68,7 +73,7 @@ export const AuthDescriptions = {
   },
 
   resetPassword: {
-    summary: 'Reset Password',
+    summary: "Reset Password",
     description: `
       Reset password using token received via email.
       

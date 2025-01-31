@@ -1,5 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { ApiProperty } from "@nestjs/swagger";
+
+import { Type } from "class-transformer";
 import {
   IsArray,
   IsBoolean,
@@ -14,11 +15,11 @@ import {
   Min,
   MinLength,
   ValidateNested,
-} from 'class-validator';
+} from "class-validator";
 
-import { AcademicStanding, Citizenship, College } from '@common/enums';
+import { AcademicStanding, Citizenship, College } from "@common/enums";
 
-import { NameDto } from '../base/name.dto';
+import { NameDto } from "../base/name.dto";
 
 export class StudentInfoDto {
   @ApiProperty({ type: NameDto })
@@ -27,38 +28,38 @@ export class StudentInfoDto {
   name: NameDto;
 
   @ApiProperty({
-    example: 'C12345678',
-    description: 'University of Miami C-Number',
-    pattern: '^C[0-9]{8}$',
+    example: "C12345678",
+    description: "University of Miami C-Number",
+    pattern: "^C[0-9]{8}$",
   })
   @IsString()
-  @Matches(/^C[0-9]{8}$/, { message: 'C-Number must be in format: C12345678' })
+  @Matches(/^C[0-9]{8}$/, { message: "C-Number must be in format: C12345678" })
   cNumber: string;
 
   @ApiProperty({
-    example: 'student@miami.edu',
-    description: 'University of Miami email address',
+    example: "student@miami.edu",
+    description: "University of Miami email address",
   })
   @IsEmail()
   @Matches(/^[a-zA-Z0-9._-]+@miami\.edu$/, {
-    message: 'Email must be a valid miami.edu address',
+    message: "Email must be a valid miami.edu address",
   })
   email: string;
 
   @ApiProperty({
-    example: '305-123-4567',
-    pattern: '^[0-9]{3}-[0-9]{3}-[0-9]{4}$',
+    example: "305-123-4567",
+    pattern: "^[0-9]{3}-[0-9]{3}-[0-9]{4}$",
   })
   @IsString()
   @Matches(/^[0-9]{3}-[0-9]{3}-[0-9]{4}$/, {
-    message: 'Phone number must be in format: XXX-XXX-XXXX',
+    message: "Phone number must be in format: XXX-XXX-XXXX",
   })
   phoneNumber: string;
 
   @ApiProperty({
     type: [String],
-    description: 'Racial/Ethnic groups the student identifies with',
-    example: ['Hispanic/Latino', 'White'],
+    description: "Racial/Ethnic groups the student identifies with",
+    example: ["Hispanic/Latino", "White"],
   })
   @IsArray()
   @IsString({ each: true })
@@ -68,7 +69,7 @@ export class StudentInfoDto {
   @ApiProperty({
     enum: Citizenship,
     example: Citizenship.US_CITIZEN,
-    description: 'Citizenship status',
+    description: "Citizenship status",
   })
   @IsEnum(Citizenship)
   citizenship: Citizenship;
@@ -76,14 +77,14 @@ export class StudentInfoDto {
   @ApiProperty({
     enum: AcademicStanding,
     example: AcademicStanding.JUNIOR,
-    description: 'Current academic standing',
+    description: "Current academic standing",
   })
   @IsEnum(AcademicStanding)
   academicStanding: AcademicStanding;
 
   @ApiProperty({
-    example: '2025-05-15',
-    description: 'Expected graduation date',
+    example: "2025-05-15",
+    description: "Expected graduation date",
   })
   @Type(() => Date)
   @IsDate()
@@ -92,14 +93,14 @@ export class StudentInfoDto {
   @ApiProperty({
     enum: College,
     example: College.ARTS_AND_SCIENCES,
-    description: 'College of primary major',
+    description: "College of primary major",
   })
   @IsEnum(College)
   major1College: College;
 
   @ApiProperty({
-    example: 'Computer Science',
-    description: 'Primary major',
+    example: "Computer Science",
+    description: "Primary major",
   })
   @IsString()
   @MinLength(2)
@@ -112,7 +113,7 @@ export class StudentInfoDto {
   @ApiProperty({
     required: false,
     enum: College,
-    description: 'College of secondary major',
+    description: "College of secondary major",
   })
   @IsEnum(College)
   @IsOptional()
@@ -120,8 +121,8 @@ export class StudentInfoDto {
 
   @ApiProperty({
     required: false,
-    example: 'Mathematics',
-    description: 'Secondary major',
+    example: "Mathematics",
+    description: "Secondary major",
   })
   @IsString()
   @MinLength(2)
@@ -134,8 +135,8 @@ export class StudentInfoDto {
 
   @ApiProperty({
     required: false,
-    example: 'Pre-Med',
-    description: 'Pre-health track if applicable',
+    example: "Pre-Med",
+    description: "Pre-health track if applicable",
   })
   @IsString()
   @MinLength(2)
@@ -146,7 +147,7 @@ export class StudentInfoDto {
     minimum: 0,
     maximum: 4.0,
     example: 3.5,
-    description: 'Current GPA (0.0 - 4.0)',
+    description: "Current GPA (0.0 - 4.0)",
   })
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)

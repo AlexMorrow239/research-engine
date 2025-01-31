@@ -3,12 +3,12 @@
  * Provides basic endpoints for server health checks and favicon requests
  */
 
-import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get } from "@nestjs/common";
+import { ApiOperation, ApiResponse } from "@nestjs/swagger";
 
-import { AppService } from './app.service';
+import { AppService } from "./app.service";
 
-@Controller('/')
+@Controller("/")
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -16,9 +16,11 @@ export class AppController {
    * Root endpoint providing server status
    * @returns Welcome message indicating server is running
    */
-  @Get('/')
-  @ApiOperation({ summary: 'Provides visual feedback to indicate server is running' })
-  @ApiResponse({ status: 200, description: 'Returns the welcome message' })
+  @Get("/")
+  @ApiOperation({
+    summary: "Provides visual feedback to indicate server is running",
+  })
+  @ApiResponse({ status: 200, description: "Returns the welcome message" })
   getRoot(): string {
     return this.appService.getRoot();
   }
@@ -27,8 +29,8 @@ export class AppController {
    * Handle favicon requests to prevent 404 errors
    * @returns Empty string
    */
-  @Get('favicon.ico')
+  @Get("favicon.ico")
   ignoreFaviconRequest() {
-    return '';
+    return "";
   }
 }

@@ -1,6 +1,6 @@
 export const AnalyticsDescriptions = {
   getProjectAnalytics: {
-    summary: 'Get project analytics',
+    summary: "Get project analytics",
     description: `
       Retrieve comprehensive analytics for a specific project including:
       - Email engagement metrics (sent, views, clicks)
@@ -14,7 +14,7 @@ export const AnalyticsDescriptions = {
     `,
   },
   getGlobalAnalytics: {
-    summary: 'Get global analytics',
+    summary: "Get global analytics",
     description: `
       Retrieve platform-wide analytics aggregating data across all projects:
       - Total email engagement metrics
@@ -28,9 +28,9 @@ export const AnalyticsDescriptions = {
     `,
   },
   responses: {
-    retrieved: 'Analytics data successfully retrieved',
-    unauthorized: 'Authentication required to access analytics',
-    notFound: 'Project not found or no analytics available',
-    serverError: 'Error retrieving analytics data',
+    retrieved: "Analytics data successfully retrieved",
+    unauthorized: "Authentication required to access analytics",
+    notFound: "Project not found or no analytics available",
+    serverError: "Error retrieving analytics data",
   },
 };

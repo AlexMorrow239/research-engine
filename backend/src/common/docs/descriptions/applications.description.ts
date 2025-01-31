@@ -1,6 +1,6 @@
 export const ApplicationDescriptions = {
   create: {
-    summary: 'Submit new application',
+    summary: "Submit new application",
     description: `
       Submit a new application for a research project.
       
@@ -20,30 +20,33 @@ export const ApplicationDescriptions = {
     `,
   },
   responses: {
-    created: 'Application successfully submitted',
-    invalidData: 'Invalid application data or resume file',
-    unauthorized: 'Authentication required',
-    projectNotFound: 'Project not found or not accepting applications',
-    fileRequired: 'Resume file is required',
-    invalidFile: 'Invalid file format or size',
+    created: "Application successfully submitted",
+    invalidData: "Invalid application data or resume file",
+    unauthorized: "Authentication required",
+    projectNotFound: "Project not found or not accepting applications",
+    fileRequired: "Resume file is required",
+    invalidFile: "Invalid file format or size",
   },
 };
 
 export const applicationSwaggerFileSchema = {
-  type: 'object',
-  required: ['application', 'resume'],
+  type: "object",
+  required: ["application", "resume"],
   properties: {
-    application: { type: 'object', $ref: '#/components/schemas/CreateApplicationDto' },
+    application: {
+      type: "object",
+      $ref: "#/components/schemas/CreateApplicationDto",
+    },
     resume: {
-      type: 'string',
-      format: 'binary',
-      description: 'Resume file (PDF, DOC, or DOCX)',
+      type: "string",
+      format: "binary",
+      description: "Resume file (PDF, DOC, or DOCX)",
     },
   },
 };
 
 export const applicationResumeResponseContent = {
-  'application/pdf': {},
-  'application/msword': {},
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': {},
+  "application/pdf": {},
+  "application/msword": {},
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {},
 };

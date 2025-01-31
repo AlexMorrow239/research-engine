@@ -1,10 +1,10 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 class ProjectStatsDto {
-  @ApiProperty({ example: '507f1f77bcf86cd799439011' })
+  @ApiProperty({ example: "507f1f77bcf86cd799439011" })
   projectId: string;
 
-  @ApiProperty({ example: 'Research Project' })
+  @ApiProperty({ example: "Research Project" })
   title: string;
 
   @ApiProperty({ example: 10 })

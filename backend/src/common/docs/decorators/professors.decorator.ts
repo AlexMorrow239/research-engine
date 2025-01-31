@@ -1,13 +1,13 @@
-import { HttpStatus, applyDecorators } from '@nestjs/common';
+import { applyDecorators, HttpStatus } from "@nestjs/common";
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiBody,
+  ApiConflictResponse,
   ApiOperation,
   ApiResponse,
   ApiUnauthorizedResponse,
-  ApiBadRequestResponse,
-  ApiConflictResponse,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
 import {
   ChangePasswordDto,
@@ -15,15 +15,15 @@ import {
   ProfessorResponseDto,
   ReactivateAccountDto,
   UpdateProfessorDto,
-} from '@/common/dto/professors';
+} from "@/common/dto/professors";
 
-import { ProfessorDescriptions } from '../descriptions/professors.description';
+import { ProfessorDescriptions } from "../descriptions/professors.description";
 import {
-  createProfessorExamples,
-  updateProfessorExamples,
   changePasswordExamples,
+  createProfessorExamples,
   reactivateExamples,
-} from '../examples/professor.examples';
+  updateProfessorExamples,
+} from "../examples/professor.examples";
 
 export const ApiCreateProfessor = () =>
   applyDecorators(
@@ -49,7 +49,7 @@ export const ApiCreateProfessor = () =>
     ApiResponse({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       description: ProfessorDescriptions.responses.serverError,
-    }),
+    })
   );
 
 export const ApiGetProfile = () =>
@@ -61,7 +61,9 @@ export const ApiGetProfile = () =>
       description: ProfessorDescriptions.responses.profileRetrieved,
       type: ProfessorResponseDto,
     }),
-    ApiUnauthorizedResponse({ description: ProfessorDescriptions.responses.notAuthenticated }),
+    ApiUnauthorizedResponse({
+      description: ProfessorDescriptions.responses.notAuthenticated,
+    })
   );
 
 export const ApiUpdateProfile = () =>
@@ -77,8 +79,12 @@ export const ApiUpdateProfile = () =>
       description: ProfessorDescriptions.responses.profileUpdated,
       type: ProfessorResponseDto,
     }),
-    ApiUnauthorizedResponse({ description: ProfessorDescriptions.responses.notAuthenticated }),
-    ApiBadRequestResponse({ description: ProfessorDescriptions.responses.invalidInput }),
+    ApiUnauthorizedResponse({
+      description: ProfessorDescriptions.responses.notAuthenticated,
+    }),
+    ApiBadRequestResponse({
+      description: ProfessorDescriptions.responses.invalidInput,
+    })
   );
 
 export const ApiChangePassword = () =>
@@ -96,7 +102,9 @@ export const ApiChangePassword = () =>
     ApiUnauthorizedResponse({
       description: ProfessorDescriptions.responses.invalidCurrentPassword,
     }),
-    ApiBadRequestResponse({ description: ProfessorDescriptions.responses.invalidPasswordFormat }),
+    ApiBadRequestResponse({
+      description: ProfessorDescriptions.responses.invalidPasswordFormat,
+    })
   );
 
 export const ApiDeactivateAccount = () =>
@@ -107,7 +115,9 @@ export const ApiDeactivateAccount = () =>
       status: HttpStatus.OK,
       description: ProfessorDescriptions.responses.accountDeactivated,
     }),
-    ApiUnauthorizedResponse({ description: ProfessorDescriptions.responses.notAuthenticated }),
+    ApiUnauthorizedResponse({
+      description: ProfessorDescriptions.responses.notAuthenticated,
+    })
   );
 
 export const ApiReactivateAccount = () =>
@@ -121,6 +131,10 @@ export const ApiReactivateAccount = () =>
       status: HttpStatus.OK,
       description: ProfessorDescriptions.responses.accountReactivated,
     }),
-    ApiUnauthorizedResponse({ description: ProfessorDescriptions.responses.invalidCredentials }),
-    ApiBadRequestResponse({ description: ProfessorDescriptions.responses.accountAlreadyActive }),
+    ApiUnauthorizedResponse({
+      description: ProfessorDescriptions.responses.invalidCredentials,
+    }),
+    ApiBadRequestResponse({
+      description: ProfessorDescriptions.responses.accountAlreadyActive,
+    })
   );

@@ -1,24 +1,25 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
 
-import { NameDto } from '../base/name.dto';
+import { Type } from "class-transformer";
+import { IsNotEmpty, IsString, ValidateNested } from "class-validator";
+
+import { NameDto } from "../base/name.dto";
 
 class ProfessorLoginInfoDto {
   @ApiProperty({
-    example: '507f1f77bcf86cd799439011',
-    description: 'Unique identifier for the professor',
-    format: 'mongodb-objectid',
+    example: "507f1f77bcf86cd799439011",
+    description: "Unique identifier for the professor",
+    format: "mongodb-objectid",
   })
   @IsString()
   @IsNotEmpty()
   id: string;
 
   @ApiProperty({
-    example: 'professor.name@miami.edu',
-    description: 'University of Miami email address',
-    format: 'email',
-    pattern: '.*@miami.edu$',
+    example: "professor.name@miami.edu",
+    description: "University of Miami email address",
+    format: "email",
+    pattern: ".*@miami.edu$",
   })
   @IsString()
   @IsNotEmpty()
@@ -28,8 +29,8 @@ class ProfessorLoginInfoDto {
     type: NameDto,
     description: "Professor's full name information",
     example: {
-      firstName: 'John',
-      lastName: 'Doe',
+      firstName: "John",
+      lastName: "Doe",
     },
   })
   @ValidateNested()
@@ -37,16 +38,16 @@ class ProfessorLoginInfoDto {
   name: NameDto;
 
   @ApiProperty({
-    example: 'Computer Science',
-    description: 'Academic department',
+    example: "Computer Science",
+    description: "Academic department",
   })
   @IsString()
   @IsNotEmpty()
   department: string;
 
   @ApiProperty({
-    example: 'Associate Professor',
-    description: 'Academic title',
+    example: "Associate Professor",
+    description: "Academic title",
     required: false,
   })
   @IsString()
@@ -55,11 +56,11 @@ class ProfessorLoginInfoDto {
 
 export class LoginResponseDto {
   @ApiProperty({
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
     description: `JWT access token for authorization.
       Include this token in the Authorization header as 'Bearer <token>'
       for subsequent authenticated requests.`,
-    format: 'jwt',
+    format: "jwt",
   })
   @IsString()
   @IsNotEmpty()
@@ -67,7 +68,8 @@ export class LoginResponseDto {
 
   @ApiProperty({
     type: ProfessorLoginInfoDto,
-    description: 'Basic professor information returned upon successful authentication',
+    description:
+      "Basic professor information returned upon successful authentication",
   })
   @ValidateNested()
   @Type(() => ProfessorLoginInfoDto)

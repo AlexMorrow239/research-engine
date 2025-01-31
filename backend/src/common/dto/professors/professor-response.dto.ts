@@ -1,4 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+
 class PublicationResponseDto {
   @ApiProperty()
   title: string;
@@ -46,13 +47,13 @@ export class ProfessorResponseDto {
   isActive: boolean;
 
   @ApiPropertyOptional({
-    description: 'Hashed reset password token',
+    description: "Hashed reset password token",
     required: false,
   })
   resetPasswordToken?: string;
 
   @ApiPropertyOptional({
-    description: 'Reset password token expiration date',
+    description: "Reset password token expiration date",
     required: false,
   })
   resetPasswordExpires?: Date;

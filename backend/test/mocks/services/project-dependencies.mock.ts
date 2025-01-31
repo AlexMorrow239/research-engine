@@ -1,8 +1,8 @@
-import { ApplicationStatus } from '@/common/enums';
+import { ApplicationStatus } from "@/common/enums";
 
 export const mockFileStorageService = {
-  saveFile: jest.fn().mockResolvedValue('mock-file-name'),
-  getFile: jest.fn().mockResolvedValue({ buffer: Buffer.from('mock-file') }),
+  saveFile: jest.fn().mockResolvedValue("mock-file-name"),
+  getFile: jest.fn().mockResolvedValue({ buffer: Buffer.from("mock-file") }),
   deleteFile: jest.fn().mockResolvedValue(undefined),
 };
 
@@ -13,7 +13,7 @@ export const mockEmailService = {
 export const mockApplicationsService = {
   findProjectApplications: jest.fn().mockResolvedValue([
     {
-      studentInfo: { email: 'student@test.com' },
+      studentInfo: { email: "student@test.com" },
       status: ApplicationStatus.PENDING,
     },
   ]),

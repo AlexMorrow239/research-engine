@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
 
 interface DownloadTokenPayload {
   professorId: string;
   applicationId: string;
-  type: 'download';
+  type: "download";
 }
 
 // Manages secure download tokens for file access
@@ -13,29 +13,31 @@ interface DownloadTokenPayload {
 export class DownloadTokenService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
+    private readonly configService: ConfigService
   ) {}
 
   generateToken(professorId: string, applicationId: string): string {
     const payload: DownloadTokenPayload = {
       professorId,
       applicationId,
-      type: 'download',
+      type: "download",
     };
 
     return this.jwtService.sign(payload, {
-      secret: this.configService.get('JWT_DOWNLOAD_SECRET'),
+      secret: this.configService.get("JWT_DOWNLOAD_SECRET"),
     });
   }
 
-  verifyToken(token: string): { professorId: string; applicationId: string } | null {
+  verifyToken(
+    token: string
+  ): { professorId: string; applicationId: string } | null {
     try {
       const payload = this.jwtService.verify<DownloadTokenPayload>(token, {
-        secret: this.configService.get('JWT_DOWNLOAD_SECRET'),
+        secret: this.configService.get("JWT_DOWNLOAD_SECRET"),
         ignoreExpiration: true,
       });
 
-      if (payload.type !== 'download') return null;
+      if (payload.type !== "download") return null;
 
       return {
         professorId: payload.professorId,

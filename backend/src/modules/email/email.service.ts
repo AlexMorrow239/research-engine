@@ -1,13 +1,15 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
+import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
-import { ApplicationStatus } from '@common/enums';
-import { ErrorHandler } from '@/common/utils/error-handler.util';
-import { DownloadUrlService } from '@/modules/file-storage/download-url.service';
-import { Application } from '../applications/schemas/applications.schema';
-import { EmailConfigService } from './config/email.config';
-import { EmailTemplateService } from './email-template.service';
+import * as nodemailer from "nodemailer";
+
+import { ErrorHandler } from "@/common/utils/error-handler.util";
+import { DownloadUrlService } from "@/modules/file-storage/download-url.service";
+import { ApplicationStatus } from "@common/enums";
+
+import { Application } from "../applications/schemas/applications.schema";
+import { EmailConfigService } from "./config/email.config";
+import { EmailTemplateService } from "./email-template.service";
 
 @Injectable()
 export class EmailService {
@@ -20,58 +22,73 @@ export class EmailService {
     private readonly emailTemplateService: EmailTemplateService,
     private readonly configService: ConfigService,
     private readonly downloadUrlService: DownloadUrlService,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
     const config = this.emailConfigService.getEmailConfig();
     this.transporter = nodemailer.createTransport(config);
   }
 
-  async sendApplicationConfirmation(application: Application, projectTitle: string): Promise<void> {
+  async sendApplicationConfirmation(
+    application: Application,
+    projectTitle: string
+  ): Promise<void> {
     try {
-      const { subject, text, html } = this.emailTemplateService.getApplicationConfirmationTemplate(
-        projectTitle,
-        application.studentInfo.name,
-      );
+      const { subject, text, html } =
+        this.emailTemplateService.getApplicationConfirmationTemplate(
+          projectTitle,
+          application.studentInfo.name
+        );
 
-      await this.sendEmailWithRetry(application.studentInfo.email, subject, text, html);
+      await this.sendEmailWithRetry(
+        application.studentInfo.email,
+        subject,
+        text,
+        html
+      );
     } catch (error) {
-      ErrorHandler.handleServiceError(this.logger, error, 'send application confirmation', {
-        applicationId: application.id,
-        projectTitle,
-      });
+      ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        "send application confirmation",
+        {
+          applicationId: application.id,
+          projectTitle,
+        }
+      );
     }
   }
 
   async sendProfessorNewApplication(
     professorEmail: string,
     application: Application,
-    projectTitle: string,
+    projectTitle: string
   ): Promise<void> {
     try {
       const projectId = String(application.project._id || application.project);
       const professorId = String(
-        application.project.professor._id || application.project.professor,
+        application.project.professor._id || application.project.professor
       );
 
       const resumeDownloadUrl = await this.getResumeDownloadUrl(
         projectId,
         application.id,
-        professorId,
+        professorId
       );
 
-      const { subject, text, html } = this.emailTemplateService.getProfessorNotificationTemplate(
-        projectTitle,
-        application,
-        resumeDownloadUrl,
-      );
+      const { subject, text, html } =
+        this.emailTemplateService.getProfessorNotificationTemplate(
+          projectTitle,
+          application,
+          resumeDownloadUrl
+        );
 
       await this.sendEmailWithRetry(professorEmail, subject, text, html);
     } catch (error) {
       ErrorHandler.handleServiceError(
         this.logger,
         error,
-        'send professor new application notification',
-        { applicationId: application.id, professorEmail, projectTitle },
+        "send professor new application notification",
+        { applicationId: application.id, professorEmail, projectTitle }
       );
     }
   }
@@ -79,29 +96,39 @@ export class EmailService {
   private async getResumeDownloadUrl(
     projectId: string,
     applicationId: string,
-    professorId: string,
+    professorId: string
   ): Promise<string> {
-    return this.downloadUrlService.generateDownloadUrl(projectId, applicationId, professorId);
+    return this.downloadUrlService.generateDownloadUrl(
+      projectId,
+      applicationId,
+      professorId
+    );
   }
 
   async sendApplicationStatusUpdate(
     studentEmail: string,
     projectTitle: string,
-    status: ApplicationStatus,
+    status: ApplicationStatus
   ): Promise<void> {
     try {
-      const { subject, text, html } = this.emailTemplateService.getApplicationStatusUpdateTemplate(
-        projectTitle,
-        status,
-      );
+      const { subject, text, html } =
+        this.emailTemplateService.getApplicationStatusUpdateTemplate(
+          projectTitle,
+          status
+        );
 
       await this.sendEmailWithRetry(studentEmail, subject, text, html);
     } catch (error) {
-      ErrorHandler.handleServiceError(this.logger, error, 'send application status update', {
-        studentEmail,
-        projectTitle,
-        status,
-      });
+      ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        "send application status update",
+        {
+          studentEmail,
+          projectTitle,
+          status,
+        }
+      );
     }
   }
 
@@ -110,7 +137,7 @@ export class EmailService {
     subject: string,
     text: string,
     html: string,
-    retryCount = 0,
+    retryCount = 0
   ): Promise<void> {
     try {
       const config = this.emailConfigService.getEmailConfig();
@@ -127,13 +154,13 @@ export class EmailService {
     } catch (error) {
       if (retryCount < this.MAX_RETRIES) {
         this.logger.warn(
-          `Failed to send email to ${to}, retrying... (${retryCount + 1}/${this.MAX_RETRIES})`,
+          `Failed to send email to ${to}, retrying... (${retryCount + 1}/${this.MAX_RETRIES})`
         );
         await new Promise((resolve) => setTimeout(resolve, this.RETRY_DELAY));
         return this.sendEmailWithRetry(to, subject, text, html, retryCount + 1);
       }
 
-      ErrorHandler.handleServiceError(this.logger, error, 'send email', {
+      ErrorHandler.handleServiceError(this.logger, error, "send email", {
         to,
         subject,
         retryCount,
@@ -141,35 +168,49 @@ export class EmailService {
     }
   }
 
-  async sendProjectClosedNotification(studentEmail: string, projectTitle: string): Promise<void> {
+  async sendProjectClosedNotification(
+    studentEmail: string,
+    projectTitle: string
+  ): Promise<void> {
     try {
       const { subject, text, html } =
         this.emailTemplateService.getProjectClosedTemplate(projectTitle);
 
       await this.sendEmailWithRetry(studentEmail, subject, text, html);
     } catch (error) {
-      ErrorHandler.handleServiceError(this.logger, error, 'send project closed notification', {
-        studentEmail,
-        projectTitle,
-      });
+      ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        "send project closed notification",
+        {
+          studentEmail,
+          projectTitle,
+        }
+      );
     }
   }
 
   async sendPasswordResetEmail(
     email: string,
     firstName: string,
-    resetToken: string,
+    resetToken: string
   ): Promise<void> {
     try {
-      const { subject, text, html } = this.emailTemplateService.getPasswordResetTemplate(
-        firstName,
-        resetToken,
-      );
+      const { subject, text, html } =
+        this.emailTemplateService.getPasswordResetTemplate(
+          firstName,
+          resetToken
+        );
 
       await this.sendEmailWithRetry(email, subject, text, html);
       this.logger.log(`Password reset email sent to ${email}`);
     } catch (error) {
-      ErrorHandler.handleServiceError(this.logger, error, 'send password reset email', { email });
+      ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        "send password reset email",
+        { email }
+      );
     }
   }
 }

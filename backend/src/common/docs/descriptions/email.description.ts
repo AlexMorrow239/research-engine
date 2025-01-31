@@ -1,6 +1,6 @@
 export const EmailDescriptions = {
   trackClick: {
-    summary: 'Track email click',
+    summary: "Track email click",
     description: `
       Track when a recipient clicks an email link and record analytics.
       
@@ -14,7 +14,7 @@ export const EmailDescriptions = {
     `,
   },
   createTestToken: {
-    summary: 'Create test tracking token',
+    summary: "Create test tracking token",
     description: `
       Create a test tracking token for development purposes.
       Only available in non-production environments.
@@ -26,7 +26,7 @@ export const EmailDescriptions = {
     `,
   },
   getStats: {
-    summary: 'Get email tracking statistics',
+    summary: "Get email tracking statistics",
     description: `
       Retrieve global email tracking statistics including:
       - Total emails sent
@@ -42,11 +42,11 @@ export const EmailDescriptions = {
     `,
   },
   responses: {
-    tracked: 'Email click tracked successfully',
-    tokenCreated: 'Test tracking token created successfully',
-    statsRetrieved: 'Email statistics retrieved successfully',
-    invalidToken: 'Invalid tracking token',
-    unauthorized: 'Authentication required',
-    notFound: 'Resource not found',
+    tracked: "Email click tracked successfully",
+    tokenCreated: "Test tracking token created successfully",
+    statsRetrieved: "Email statistics retrieved successfully",
+    invalidToken: "Invalid tracking token",
+    unauthorized: "Authentication required",
+    notFound: "Resource not found",
   },
 };

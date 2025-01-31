@@ -1,19 +1,19 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { applyDecorators, HttpStatus } from "@nestjs/common";
 import {
   ApiBearerAuth,
+  ApiBody,
+  ApiNotFoundResponse,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiUnauthorizedResponse,
-  ApiNotFoundResponse,
-  ApiBody,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { CreateTestTokenDto } from '@/common/dto/email/create-test-token.dto';
-import { EmailTrackingResponseDto } from '@/common/dto/email/email-tracking-response.dto';
-import { GlobalStatsDto } from '@/common/dto/email/global-stats.dto';
+import { CreateTestTokenDto } from "@/common/dto/email/create-test-token.dto";
+import { EmailTrackingResponseDto } from "@/common/dto/email/email-tracking-response.dto";
+import { GlobalStatsDto } from "@/common/dto/email/global-stats.dto";
 
-import { EmailDescriptions } from '../descriptions/email.description';
+import { EmailDescriptions } from "../descriptions/email.description";
 
 export const ApiTrackEmailClick = () =>
   applyDecorators(
@@ -22,9 +22,9 @@ export const ApiTrackEmailClick = () =>
       description: EmailDescriptions.trackClick.description,
     }),
     ApiParam({
-      name: 'token',
-      description: 'Email tracking token',
-      example: 'abc123-def456',
+      name: "token",
+      description: "Email tracking token",
+      example: "abc123-def456",
     }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -33,7 +33,7 @@ export const ApiTrackEmailClick = () =>
     }),
     ApiNotFoundResponse({
       description: EmailDescriptions.responses.invalidToken,
-    }),
+    })
   );
 
 export const ApiCreateTestToken = () =>
@@ -51,7 +51,7 @@ export const ApiCreateTestToken = () =>
     }),
     ApiUnauthorizedResponse({
       description: EmailDescriptions.responses.unauthorized,
-    }),
+    })
   );
 
 export const ApiGetEmailStats = () =>
@@ -68,5 +68,5 @@ export const ApiGetEmailStats = () =>
     }),
     ApiUnauthorizedResponse({
       description: EmailDescriptions.responses.unauthorized,
-    }),
+    })
   );

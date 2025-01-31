@@ -1,15 +1,20 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
-import { Application } from '../../applications/schemas/applications.schema';
-import { Project } from '../../projects/schemas/projects.schema';
+import { Document, Schema as MongooseSchema } from "mongoose";
+
+import { Application } from "../../applications/schemas/applications.schema";
+import { Project } from "../../projects/schemas/projects.schema";
 
 @Schema({ timestamps: true })
 export class EmailTracking extends Document {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Application', required: true })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: "Application",
+    required: true,
+  })
   application: Application;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Project', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Project", required: true })
   project: Project;
 
   @Prop({ required: true })

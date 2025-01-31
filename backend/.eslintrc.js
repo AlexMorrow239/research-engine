@@ -4,6 +4,8 @@ module.exports = {
     project: 'tsconfig.json',
     tsconfigRootDir: __dirname,
     sourceType: 'module',
+    ecmaVersion: 'latest',
+    createDefaultProgram: true,
   },
   plugins: ['@typescript-eslint/eslint-plugin', 'import', 'prettier'],
   extends: [
@@ -17,7 +19,14 @@ module.exports = {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js', 'dist', 'node_modules', 'coverage'],
+  ignorePatterns: [
+    '.eslintrc.js',
+    'dist',
+    'node_modules',
+    'coverage',
+    '*.config.js',
+    '*.config.ts',
+  ],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -30,32 +39,20 @@ module.exports = {
         varsIgnorePattern: '^_',
       },
     ],
-    'import/order': [
+    '@typescript-eslint/ban-types': [
       'error',
       {
-        groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
-        pathGroups: [
-          { pattern: '@nestjs/**', group: 'external', position: 'before' },
-          { pattern: '@decorators/**', group: 'external', position: 'after' },
-          { pattern: '@common/**', group: 'internal', position: 'before' },
-          { pattern: '@modules/**', group: 'internal', position: 'after' },
-          { pattern: '@filters/**', group: 'internal', position: 'after' },
-          { pattern: '@pipes/**', group: 'internal', position: 'after' },
-          { pattern: '@swagger/**', group: 'internal', position: 'after' },
-          { pattern: '@validators/**', group: 'internal', position: 'after' },
-          // Handle relative imports explicitly
-          { pattern: './**', group: 'sibling', position: 'after' },
-          { pattern: '../**', group: 'parent', position: 'after' },
-        ],
-        ignore: ['^@/'],
-        pathGroupsExcludedImportTypes: ['@nestjs', '@decorators'],
-        'newlines-between': 'always',
-        alphabetize: {
-          order: 'asc',
-          caseInsensitive: true,
+        types: {
+          Function: false,
         },
+        extendDefaults: true,
       },
     ],
+    '@typescript-eslint/no-unsafe-declaration-merging': 'off',
+    'import/order': 'off',
+    'sort-imports': 'off',
+    //ensure ESLint respects Prettier's formatting
+    'prettier/prettier': ['error', {}, { usePrettierrc: true }],
     'import/no-unresolved': 'error',
     'import/prefer-default-export': 'off',
     'prettier/prettier': ['error', {}, { usePrettierrc: true }],
@@ -69,7 +66,6 @@ module.exports = {
       typescript: {
         alwaysTryTypes: true,
         project: './tsconfig.json',
-        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
       },
       node: {
         paths: ['.'],

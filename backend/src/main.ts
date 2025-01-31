@@ -3,34 +3,33 @@
  * Configures and initializes the NestJS application with necessary middleware,
  * validation pipes, Swagger documentation, and error handling.
  */
+import { Logger, ValidationPipe } from "@nestjs/common";
+import { NestFactory } from "@nestjs/core";
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
-import { Logger, ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { CreateApplicationDto } from "@common/dto/applications/create-application.dto";
 
-import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { ErrorHandlingInterceptor } from './common/interceptors/error-handling.interceptor';
+import { AppModule } from "./app.module";
+import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
+import { ErrorHandlingInterceptor } from "./common/interceptors/error-handling.interceptor";
 
-import { CreateApplicationDto } from '@common/dto/applications/create-application.dto';
-
-const logger = new Logger('Bootstrap');
+const logger = new Logger("Bootstrap");
 
 /**
  * Bootstrap the NestJS application with all necessary configurations
  * @throws {Error} If application fails to start
  */
 async function bootstrap() {
-  logger.log('Starting application bootstrap...');
+  logger.log("Starting application bootstrap...");
 
   try {
     // Initialize NestJS application with detailed logging
     const app = await NestFactory.create(AppModule, {
-      logger: ['error', 'warn', 'log', 'debug'],
+      logger: ["error", "warn", "log", "debug"],
     });
 
     logger.log(
-      `Configuring CORS with frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:5173'}`,
+      `Configuring CORS with frontend URL: ${process.env.FRONTEND_URL || "http://localhost:5173"}`
     );
 
     // Configure global middleware
@@ -39,12 +38,12 @@ async function bootstrap() {
     // Add request logging middleware
     app.use((req, res, next) => {
       logger.debug(`Incoming ${req.method} request to ${req.url}`);
-      logger.debug('Request headers:', req.headers);
+      logger.debug("Request headers:", req.headers);
 
       // Capture response headers after they're set
       const oldEnd = res.end;
       res.end = function (...args) {
-        logger.debug('Response headers:', res.getHeaders());
+        logger.debug("Response headers:", res.getHeaders());
         return oldEnd.apply(res, args);
       };
       next();
@@ -53,13 +52,13 @@ async function bootstrap() {
     // Enable CORS with specific configuration
     app.enableCors({
       origin: [
-        process.env.FRONTEND_URL || 'http://localhost:5173',
+        process.env.FRONTEND_URL || "http://localhost:5173",
         /^http:\/\/192\.168\.1\.\d{1,3}:\d+$/,
-        'http://100.65.62.87:5173',
+        "http://100.65.62.87:5173",
       ],
-      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-      allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
-      exposedHeaders: ['Content-Disposition'],
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+      allowedHeaders: ["Content-Type", "Accept", "Authorization"],
+      exposedHeaders: ["Content-Disposition"],
       credentials: true,
       preflightContinue: false,
       optionsSuccessStatus: 204,
@@ -70,7 +69,7 @@ async function bootstrap() {
 
     // Start the server on specified port with explicit host binding
     const port = process.env.PORT ?? 3000;
-    const host = '0.0.0.0'; // This will bind to all network interfaces
+    const host = "0.0.0.0"; // This will bind to all network interfaces
     await app.listen(port, host);
 
     // Get the actual URL and log it
@@ -79,9 +78,11 @@ async function bootstrap() {
     logger.log(`Alternative URLs:`);
     logger.log(` - Local IPv6: ${serverUrl}`);
     logger.log(` - Local IPv4: http://127.0.0.1:${port}`);
-    logger.log(`Swagger documentation available at http://localhost:${port}/api`);
+    logger.log(
+      `Swagger documentation available at http://localhost:${port}/api`
+    );
   } catch (error) {
-    logger.error('Failed to start application:', error);
+    logger.error("Failed to start application:", error);
     process.exit(1);
   }
 }
@@ -91,14 +92,14 @@ async function bootstrap() {
  * @param app NestJS application instance
  */
 function configureGlobalMiddleware(app: any) {
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix("api");
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       transformOptions: {
         enableImplicitConversion: true,
       },
-    }),
+    })
   );
   app.useGlobalInterceptors(new ErrorHandlingInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -110,20 +111,20 @@ function configureGlobalMiddleware(app: any) {
  */
 function setupSwagger(app: any) {
   const config = new DocumentBuilder()
-    .setTitle('Research Engine API')
-    .setDescription('University of Miami Research Engine API')
-    .setVersion('1.0')
+    .setTitle("Research Engine API")
+    .setDescription("University of Miami Research Engine API")
+    .setVersion("1.0")
     .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
     extraModels: [CreateApplicationDto],
   });
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup("api", app, document);
 }
 
 // Handle unhandled bootstrap errors
 bootstrap().catch((error) => {
-  logger.error('Unhandled bootstrap error:', error);
+  logger.error("Unhandled bootstrap error:", error);
   process.exit(1);
 });

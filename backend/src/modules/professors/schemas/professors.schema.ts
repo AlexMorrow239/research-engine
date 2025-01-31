@@ -1,6 +1,6 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
-import { Document } from 'mongoose';
+import { Document } from "mongoose";
 
 export class Publication {
   @Prop({ required: true })

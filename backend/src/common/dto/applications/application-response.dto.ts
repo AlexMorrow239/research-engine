@@ -1,14 +1,14 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
-import { ApplicationStatus } from '@/common/enums';
+import { ApplicationStatus } from "@/common/enums";
 
-import { AdditionalInfoDto } from './additional-info.dto';
-import { AvailabilityDto } from './student-availability.dto';
-import { StudentInfoDto } from './student-info.dto';
-import { ProjectResponseDto } from '../projects/project-response.dto';
+import { ProjectResponseDto } from "../projects/project-response.dto";
+import { AdditionalInfoDto } from "./additional-info.dto";
+import { AvailabilityDto } from "./student-availability.dto";
+import { StudentInfoDto } from "./student-info.dto";
 
 export class ApplicationResponseDto {
-  @ApiProperty({ example: '507f1f77bcf86cd799439011' })
+  @ApiProperty({ example: "507f1f77bcf86cd799439011" })
   id: string;
 
   @ApiProperty({ type: () => ProjectResponseDto })
@@ -23,13 +23,13 @@ export class ApplicationResponseDto {
   @ApiProperty({ type: () => AdditionalInfoDto })
   additionalInfo: AdditionalInfoDto;
 
-  @ApiProperty({ example: 'resume-123456.pdf' })
+  @ApiProperty({ example: "resume-123456.pdf" })
   resumeFile: string;
 
   @ApiProperty({
     enum: ApplicationStatus,
     example: ApplicationStatus.PENDING,
-    description: 'Current status of the application',
+    description: "Current status of the application",
   })
   status: ApplicationStatus;
 

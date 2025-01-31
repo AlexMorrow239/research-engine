@@ -1,4 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
+
 class ApplicationFunnelStats {
   @ApiProperty({ example: 100 })
   totalApplications: number;
@@ -17,6 +18,6 @@ export class AnalyticsDto {
   @ApiProperty()
   applicationFunnel: ApplicationFunnelStats;
 
-  @ApiProperty({ example: '2024-03-15' })
+  @ApiProperty({ example: "2024-03-15" })
   lastUpdated: Date;
 }

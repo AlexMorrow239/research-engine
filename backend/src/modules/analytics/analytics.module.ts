@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { Module } from "@nestjs/common";
+import { MongooseModule } from "@nestjs/mongoose";
 
-import { AnalyticsController } from './analytics.controller';
-import { AnalyticsService } from './analytics.service';
+import { AnalyticsController } from "./analytics.controller";
+import { AnalyticsService } from "./analytics.service";
 import {
   ApplicationAnalytics,
   ApplicationAnalyticsSchema,
-} from './schemas/application-analytics.schema';
+} from "./schemas/application-analytics.schema";
 
 @Module({
   imports: [

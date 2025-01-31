@@ -1,30 +1,31 @@
 import {
-  Injectable,
+  BadRequestException,
   ConflictException,
+  Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
-  BadRequestException,
-  Logger,
-} from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { InjectModel } from '@nestjs/mongoose';
-import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
+} from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { InjectModel } from "@nestjs/mongoose";
 
-import { ErrorHandler } from '@/common/utils/error-handler.util';
+import * as bcrypt from "bcrypt";
+import { Model } from "mongoose";
 
-import { InvalidEmailDomainException } from './exceptions/invalid-email-domain.exception';
-import { InvalidPasswordFormatException } from './exceptions/invalid-password-format.exception';
-import { InvalidAdminPasswordException } from './exceptions/password.exception';
-import { Professor } from './schemas/professors.schema';
+import { ErrorHandler } from "@/common/utils/error-handler.util";
+import { PasswordValidator } from "@/common/validators/password.validator";
+
 import {
   CreateProfessorDto,
   RegisterProfessorDto,
-} from '../../common/dto/professors/create-professor.dto';
-import { ProfessorResponseDto } from '../../common/dto/professors/professor-response.dto';
-import { ReactivateAccountDto } from '../../common/dto/professors/reactivate-account.dto';
-import { UpdateProfessorDto } from '../../common/dto/professors/update-professor.dto';
-import { PasswordValidator } from '@/common/validators/password.validator';
+} from "../../common/dto/professors/create-professor.dto";
+import { ProfessorResponseDto } from "../../common/dto/professors/professor-response.dto";
+import { ReactivateAccountDto } from "../../common/dto/professors/reactivate-account.dto";
+import { UpdateProfessorDto } from "../../common/dto/professors/update-professor.dto";
+import { InvalidEmailDomainException } from "./exceptions/invalid-email-domain.exception";
+import { InvalidPasswordFormatException } from "./exceptions/invalid-password-format.exception";
+import { InvalidAdminPasswordException } from "./exceptions/password.exception";
+import { Professor } from "./schemas/professors.schema";
 
 @Injectable()
 export class ProfessorsService {
@@ -32,13 +33,19 @@ export class ProfessorsService {
 
   constructor(
     @InjectModel(Professor.name) private professorModel: Model<Professor>,
-    private configService: ConfigService,
+    private configService: ConfigService
   ) {}
 
-  async create(createProfessorDto: CreateProfessorDto): Promise<ProfessorResponseDto> {
+  async create(
+    createProfessorDto: CreateProfessorDto
+  ): Promise<ProfessorResponseDto> {
     try {
-      const validDomains = ['@miami.edu', '@med.miami.edu', '@cd.miami.edu'];
-      if (!validDomains.some((domain) => createProfessorDto.email.endsWith(domain))) {
+      const validDomains = ["@miami.edu", "@med.miami.edu", "@cd.miami.edu"];
+      if (
+        !validDomains.some((domain) =>
+          createProfessorDto.email.endsWith(domain)
+        )
+      ) {
         throw new InvalidEmailDomainException();
       }
 
@@ -47,11 +54,13 @@ export class ProfessorsService {
       });
 
       if (existingProfessor) {
-        throw new ConflictException('Email already exists');
+        throw new ConflictException("Email already exists");
       }
 
       if (!PasswordValidator.validate(createProfessorDto.password)) {
-        throw new InvalidPasswordFormatException(PasswordValidator.getRequirements());
+        throw new InvalidPasswordFormatException(
+          PasswordValidator.getRequirements()
+        );
       }
 
       const hashedPassword = await bcrypt.hash(createProfessorDto.password, 10);
@@ -68,27 +77,31 @@ export class ProfessorsService {
       ErrorHandler.handleServiceError(
         this.logger,
         error,
-        'create professor account',
+        "create professor account",
         { email: createProfessorDto.email },
-        [InvalidEmailDomainException, InvalidPasswordFormatException, ConflictException],
+        [
+          InvalidEmailDomainException,
+          InvalidPasswordFormatException,
+          ConflictException,
+        ]
       );
     }
   }
 
   async updateProfile(
     professorId: string,
-    updateProfileDto: UpdateProfessorDto,
+    updateProfileDto: UpdateProfessorDto
   ): Promise<ProfessorResponseDto> {
     try {
       const professor = await this.professorModel.findById(professorId);
       if (!professor) {
-        throw new NotFoundException('Professor not found');
+        throw new NotFoundException("Professor not found");
       }
 
       const updatedProfessor = await this.professorModel.findByIdAndUpdate(
         professorId,
         { $set: updateProfileDto },
-        { new: true },
+        { new: true }
       );
 
       const { password: _, ...result } = updatedProfessor.toObject();
@@ -97,9 +110,9 @@ export class ProfessorsService {
       ErrorHandler.handleServiceError(
         this.logger,
         error,
-        'update professor profile',
+        "update professor profile",
         { professorId },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -107,26 +120,36 @@ export class ProfessorsService {
   async changePassword(
     professorId: string,
     currentPassword: string,
-    newPassword: string,
+    newPassword: string
   ): Promise<void> {
     try {
       const professor = await this.professorModel.findById(professorId);
       if (!professor) {
-        throw new NotFoundException('Professor not found');
+        throw new NotFoundException("Professor not found");
       }
 
-      const isPasswordValid = await bcrypt.compare(currentPassword, professor.password);
+      const isPasswordValid = await bcrypt.compare(
+        currentPassword,
+        professor.password
+      );
       if (!isPasswordValid) {
-        throw new UnauthorizedException('Current password is incorrect');
+        throw new UnauthorizedException("Current password is incorrect");
       }
 
-      const isSamePassword = await bcrypt.compare(newPassword, professor.password);
+      const isSamePassword = await bcrypt.compare(
+        newPassword,
+        professor.password
+      );
       if (isSamePassword) {
-        throw new BadRequestException('New password must be different from current password');
+        throw new BadRequestException(
+          "New password must be different from current password"
+        );
       }
 
       if (!PasswordValidator.validate(newPassword)) {
-        throw new InvalidPasswordFormatException(PasswordValidator.getRequirements());
+        throw new InvalidPasswordFormatException(
+          PasswordValidator.getRequirements()
+        );
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -137,14 +160,14 @@ export class ProfessorsService {
       ErrorHandler.handleServiceError(
         this.logger,
         error,
-        'change professor password',
+        "change professor password",
         { professorId },
         [
           NotFoundException,
           UnauthorizedException,
           BadRequestException,
           InvalidPasswordFormatException,
-        ],
+        ]
       );
     }
   }
@@ -153,7 +176,7 @@ export class ProfessorsService {
     try {
       const professor = await this.professorModel.findById(professorId);
       if (!professor) {
-        throw new NotFoundException('Professor not found');
+        throw new NotFoundException("Professor not found");
       }
 
       const { password: _, ...result } = professor.toObject();
@@ -162,9 +185,9 @@ export class ProfessorsService {
       ErrorHandler.handleServiceError(
         this.logger,
         error,
-        'get professor profile',
+        "get professor profile",
         { professorId },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -173,60 +196,74 @@ export class ProfessorsService {
     try {
       const professor = await this.professorModel.findById(professorId);
       if (!professor) {
-        throw new NotFoundException('Professor not found');
+        throw new NotFoundException("Professor not found");
       }
 
       await this.professorModel.findByIdAndUpdate(professorId, {
         isActive: false,
       });
 
-      this.logger.log(`Successfully deactivated account for professor: ${professorId}`);
+      this.logger.log(
+        `Successfully deactivated account for professor: ${professorId}`
+      );
     } catch (error) {
       ErrorHandler.handleServiceError(
         this.logger,
         error,
-        'deactivate professor account',
+        "deactivate professor account",
         { professorId },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
 
-  async reactivateAccount(reactivateAccountDto: ReactivateAccountDto): Promise<void> {
+  async reactivateAccount(
+    reactivateAccountDto: ReactivateAccountDto
+  ): Promise<void> {
     try {
       const { email, password, adminPassword } = reactivateAccountDto;
 
-      const correctAdminPassword = this.configService.get<string>('ADMIN_PASSWORD');
+      const correctAdminPassword =
+        this.configService.get<string>("ADMIN_PASSWORD");
       if (adminPassword !== correctAdminPassword) {
         throw new InvalidAdminPasswordException();
       }
 
       const professor = await this.professorModel.findOne({ email });
       if (!professor) {
-        throw new UnauthorizedException('Invalid credentials');
+        throw new UnauthorizedException("Invalid credentials");
       }
 
-      const isPasswordValid = await bcrypt.compare(password, professor.password);
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        professor.password
+      );
       if (!isPasswordValid) {
-        throw new UnauthorizedException('Invalid credentials');
+        throw new UnauthorizedException("Invalid credentials");
       }
 
       if (professor.isActive) {
-        throw new BadRequestException('Account is already active');
+        throw new BadRequestException("Account is already active");
       }
 
       await this.professorModel.findByIdAndUpdate(professor.id, {
         isActive: true,
       });
 
-      this.logger.log(`Successfully reactivated account for professor: ${email}`);
+      this.logger.log(
+        `Successfully reactivated account for professor: ${email}`
+      );
     } catch (error) {
       ErrorHandler.handleServiceError(
         this.logger,
         error,
-        'reactivate professor account',
+        "reactivate professor account",
         { email: reactivateAccountDto.email },
-        [InvalidAdminPasswordException, UnauthorizedException, BadRequestException],
+        [
+          InvalidAdminPasswordException,
+          UnauthorizedException,
+          BadRequestException,
+        ]
       );
     }
   }

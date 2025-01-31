@@ -3,6 +3,6 @@
  * Simplifies imports by providing a single entry point
  */
 
-export * from './application.enums';
-export * from './status.enums';
-export * from './campus.enum';
+export * from "./application.enums";
+export * from "./status.enums";
+export * from "./campus.enum";

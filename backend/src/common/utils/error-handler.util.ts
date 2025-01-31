@@ -2,7 +2,6 @@
  * Utility class for standardized error handling across services
  * Provides centralized error processing, logging, and transformation
  */
-
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -10,8 +9,9 @@ import {
   NotFoundException,
   Type,
   UnauthorizedException,
-} from '@nestjs/common';
-import { MongoServerError } from 'mongodb';
+} from "@nestjs/common";
+
+import { MongoServerError } from "mongodb";
 
 export class ErrorHandler {
   /**
@@ -42,7 +42,7 @@ export class ErrorHandler {
     error: Error,
     context: string,
     details?: Record<string, any>,
-    knownErrors: Type<Error>[] = [NotFoundException, UnauthorizedException],
+    knownErrors: Type<Error>[] = [NotFoundException, UnauthorizedException]
   ): never {
     // Log the error with context and details
     logger.error(
@@ -52,13 +52,13 @@ export class ErrorHandler {
         error: error.message,
         stack: error.stack,
       },
-      error.constructor.name,
+      error.constructor.name
     );
 
     // Handle JWT token expiration
-    if (error.name === 'TokenExpiredError') {
+    if (error.name === "TokenExpiredError") {
       throw new UnauthorizedException({
-        message: 'Your session has expired',
+        message: "Your session has expired",
         expired: true,
       });
     }
@@ -69,9 +69,9 @@ export class ErrorHandler {
       if (
         error instanceof UnauthorizedException &&
         error.getResponse() &&
-        typeof error.getResponse() === 'object' &&
+        typeof error.getResponse() === "object" &&
         error.getResponse() !== null &&
-        'expired' in (error.getResponse() as object)
+        "expired" in (error.getResponse() as object)
       ) {
         throw error;
       }
@@ -81,7 +81,9 @@ export class ErrorHandler {
     // Handle MongoDB specific errors
     if (error instanceof MongoServerError) {
       if (error.code === 11000) {
-        throw new BadRequestException('A record with this information already exists');
+        throw new BadRequestException(
+          "A record with this information already exists"
+        );
       }
     }
 

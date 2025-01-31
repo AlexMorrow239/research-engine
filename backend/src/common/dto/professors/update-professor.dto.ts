@@ -1,9 +1,16 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsString, IsOptional, ValidateNested, MaxLength, IsArray } from 'class-validator';
+import { ApiPropertyOptional } from "@nestjs/swagger";
 
-import { PublicationDto } from './create-professor.dto';
-import { NameDto } from '../base/name.dto';
+import { Type } from "class-transformer";
+import {
+  IsArray,
+  IsOptional,
+  IsString,
+  MaxLength,
+  ValidateNested,
+} from "class-validator";
+
+import { NameDto } from "../base/name.dto";
+import { PublicationDto } from "./create-professor.dto";
 
 export class UpdateProfessorDto {
   @ApiPropertyOptional()
@@ -32,8 +39,8 @@ export class UpdateProfessorDto {
     type: [PublicationDto],
     example: [
       {
-        title: 'Machine Learning in Healthcare',
-        link: 'https://doi.org/10.1234/example',
+        title: "Machine Learning in Healthcare",
+        link: "https://doi.org/10.1234/example",
       },
     ],
   })

@@ -8,8 +8,8 @@ import {
   Patch,
   Post,
   UseGuards,
-} from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+} from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
 import {
   ApiChangePassword,
@@ -17,67 +17,74 @@ import {
   ApiGetProfile,
   ApiReactivateAccount,
   ApiUpdateProfile,
-} from '@/common/docs/decorators/professors.decorator';
+} from "@/common/docs/decorators/professors.decorator";
 import {
   ChangePasswordDto,
   ProfessorResponseDto,
   ReactivateAccountDto,
   UpdateProfessorDto,
-} from '@/common/dto/professors';
-import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard';
-import { GetProfessor } from '@/modules/professors/decorators/get-professor.decorator';
-import { ProfessorsService } from '@/modules/professors/professors.service';
-import { Professor } from '@/modules/professors/schemas/professors.schema';
+} from "@/common/dto/professors";
+import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
+import { GetProfessor } from "@/modules/professors/decorators/get-professor.decorator";
+import { ProfessorsService } from "@/modules/professors/professors.service";
+import { Professor } from "@/modules/professors/schemas/professors.schema";
 
-@ApiTags('Professors')
-@Controller('professors')
+@ApiTags("Professors")
+@Controller("professors")
 @ApiBearerAuth()
 export class ProfessorsController {
   constructor(private readonly professorsService: ProfessorsService) {}
 
-  @Get('profile')
+  @Get("profile")
   @UseGuards(JwtAuthGuard)
   @ApiGetProfile()
-  async getProfile(@GetProfessor() professor: Professor): Promise<ProfessorResponseDto> {
+  async getProfile(
+    @GetProfessor() professor: Professor
+  ): Promise<ProfessorResponseDto> {
     return await this.professorsService.getProfile(professor.id);
   }
 
-  @Patch('profile')
+  @Patch("profile")
   @UseGuards(JwtAuthGuard)
   @ApiUpdateProfile()
   async updateProfile(
     @GetProfessor() professor: Professor,
-    @Body() updateProfileDto: UpdateProfessorDto,
+    @Body() updateProfileDto: UpdateProfessorDto
   ): Promise<ProfessorResponseDto> {
-    return await this.professorsService.updateProfile(professor.id, updateProfileDto);
+    return await this.professorsService.updateProfile(
+      professor.id,
+      updateProfileDto
+    );
   }
 
-  @Post('change-password')
+  @Post("change-password")
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiChangePassword()
   async changePassword(
     @GetProfessor() professor: Professor,
-    @Body() changePasswordDto: ChangePasswordDto,
+    @Body() changePasswordDto: ChangePasswordDto
   ): Promise<void> {
     await this.professorsService.changePassword(
       professor.id,
       changePasswordDto.currentPassword,
-      changePasswordDto.newPassword,
+      changePasswordDto.newPassword
     );
   }
 
-  @Delete('deactivate')
+  @Delete("deactivate")
   @UseGuards(JwtAuthGuard)
   @ApiDeactivateAccount()
   async deactivateAccount(@GetProfessor() professor: Professor): Promise<void> {
     await this.professorsService.deactivateAccount(professor.id);
   }
 
-  @Post('reactivate')
+  @Post("reactivate")
   @HttpCode(HttpStatus.OK)
   @ApiReactivateAccount()
-  async reactivateAccount(@Body() reactivateAccountDto: ReactivateAccountDto): Promise<void> {
+  async reactivateAccount(
+    @Body() reactivateAccountDto: ReactivateAccountDto
+  ): Promise<void> {
     await this.professorsService.reactivateAccount(reactivateAccountDto);
   }
 }

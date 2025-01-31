@@ -1,19 +1,20 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 import {
-  IsString,
-  IsNotEmpty,
-  IsDate,
-  IsNumber,
   IsArray,
-  Min,
+  IsDate,
   IsEnum,
+  IsNotEmpty,
+  IsNumber,
   IsOptional,
-} from 'class-validator';
+  IsString,
+  Min,
+} from "class-validator";
 
-import { ProjectStatus } from '../../../modules/projects/schemas/projects.schema';
-import { IsFutureDate } from '../../validators/date.validator';
-import { Campus } from '@/common/enums';
+import { Campus } from "@/common/enums";
+
+import { ProjectStatus } from "../../../modules/projects/schemas/projects.schema";
+import { IsFutureDate } from "../../validators/date.validator";
 
 const getDefaultDeadlineExample = () => {
   const date = new Date();
@@ -22,24 +23,24 @@ const getDefaultDeadlineExample = () => {
 };
 export class CreateProjectDto {
   @ApiProperty({
-    description: 'Project title',
-    example: 'Machine Learning Research Assistant',
+    description: "Project title",
+    example: "Machine Learning Research Assistant",
   })
   @IsString()
   @IsNotEmpty()
   title: string;
 
   @ApiProperty({
-    description: 'Project description',
-    example: 'Detailed project description...',
+    description: "Project description",
+    example: "Detailed project description...",
   })
   @IsString()
   @IsNotEmpty()
   description: string;
 
   @ApiProperty({
-    description: 'Research categories',
-    example: ['Machine Learning', 'Data Science'],
+    description: "Research categories",
+    example: ["Machine Learning", "Data Science"],
   })
   @IsArray()
   @IsString({ each: true })
@@ -47,8 +48,8 @@ export class CreateProjectDto {
   researchCategories: string[];
 
   @ApiProperty({
-    description: 'Project requirements',
-    example: ['Python programming', 'Statistics background'],
+    description: "Project requirements",
+    example: ["Python programming", "Statistics background"],
   })
   @IsArray()
   @IsString({ each: true })
@@ -56,7 +57,7 @@ export class CreateProjectDto {
   requirements: string[];
 
   @ApiProperty({
-    description: 'Number of available positions',
+    description: "Number of available positions",
     example: 2,
     minimum: 1,
   })
@@ -65,7 +66,7 @@ export class CreateProjectDto {
   positions: number;
 
   @ApiProperty({
-    description: 'Project status',
+    description: "Project status",
     enum: ProjectStatus,
     example: ProjectStatus.DRAFT,
   })
@@ -75,14 +76,14 @@ export class CreateProjectDto {
   @ApiProperty({
     enum: Campus,
     example: Campus.CORAL_GABLES,
-    description: 'Campus where the research project is located',
+    description: "Campus where the research project is located",
   })
-  @IsEnum(Campus, { message: 'Invalid campus selection' })
-  @IsNotEmpty({ message: 'Campus is required' })
+  @IsEnum(Campus, { message: "Invalid campus selection" })
+  @IsNotEmpty({ message: "Campus is required" })
   campus: Campus;
 
   @ApiProperty({
-    description: 'Application deadline',
+    description: "Application deadline",
     example: getDefaultDeadlineExample(),
   })
   @IsDate()

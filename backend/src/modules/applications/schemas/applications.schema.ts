@@ -1,10 +1,14 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema } from "mongoose";
 
-import { Project } from '../../projects/schemas/projects.schema';
+import {
+  ApplicationStatus,
+  ProjectLength,
+  WeeklyAvailability,
+} from "@/common/enums";
 
-import { ApplicationStatus, ProjectLength, WeeklyAvailability } from '@/common/enums';
+import { Project } from "../../projects/schemas/projects.schema";
 
 @Schema()
 export class StudentInfo {
@@ -122,7 +126,7 @@ export class AdditionalInfo {
 
 @Schema({ timestamps: true })
 export class Application extends Document {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Project', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Project", required: true })
   project: Project;
 
   @Prop({ type: StudentInfo, required: true })
@@ -137,7 +141,11 @@ export class Application extends Document {
   @Prop({ type: String })
   resumePath: string;
 
-  @Prop({ type: String, enum: ApplicationStatus, default: ApplicationStatus.PENDING })
+  @Prop({
+    type: String,
+    enum: ApplicationStatus,
+    default: ApplicationStatus.PENDING,
+  })
   status: ApplicationStatus;
 
   createdAt: Date;

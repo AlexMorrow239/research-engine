@@ -1,6 +1,6 @@
-import { IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString } from "class-validator";
 
-import { WeeklyAvailability, ProjectLength } from '@common/enums';
+import { ProjectLength, WeeklyAvailability } from "@common/enums";
 
 export class AvailabilityDto {
   @IsEnum(WeeklyAvailability)

@@ -1,8 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { S3 } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { Injectable, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+
+import { GetObjectCommand, ListObjectsV2Command, S3 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 @Injectable()
 export class DownloadUrlService {
@@ -11,15 +11,17 @@ export class DownloadUrlService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
-    this.bucketName = this.configService.getOrThrow<string>('AWS_BUCKET_NAME');
+    this.bucketName = this.configService.getOrThrow<string>("AWS_BUCKET_NAME");
 
     this.s3Client = new S3({
-      region: this.configService.getOrThrow<string>('AWS_REGION'),
+      region: this.configService.getOrThrow<string>("AWS_REGION"),
       credentials: {
-        accessKeyId: this.configService.getOrThrow<string>('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: this.configService.getOrThrow<string>('AWS_SECRET_ACCESS_KEY'),
+        accessKeyId: this.configService.getOrThrow<string>("AWS_ACCESS_KEY_ID"),
+        secretAccessKey: this.configService.getOrThrow<string>(
+          "AWS_SECRET_ACCESS_KEY"
+        ),
       },
     });
   }
@@ -27,7 +29,7 @@ export class DownloadUrlService {
   async generateDownloadUrl(
     projectId: string,
     applicationId: string,
-    professorId: string,
+    professorId: string
   ): Promise<string> {
     try {
       const prefix = `applications/${projectId}/cv/`;
@@ -42,8 +44,8 @@ export class DownloadUrlService {
       const response = await this.s3Client.send(listCommand);
 
       this.logger.debug(
-        'Found files:',
-        response.Contents?.map((obj) => obj.Key),
+        "Found files:",
+        response.Contents?.map((obj) => obj.Key)
       );
 
       // Get the most recent file in the directory
@@ -54,13 +56,15 @@ export class DownloadUrlService {
       })[0];
 
       if (!mostRecentFile?.Key) {
-        this.logger.error('No resume file found:', {
+        this.logger.error("No resume file found:", {
           projectId,
           applicationId,
           prefix,
           foundFiles: response.Contents?.map((obj) => obj.Key),
         });
-        throw new Error(`No resume file found for application ${applicationId}`);
+        throw new Error(
+          `No resume file found for application ${applicationId}`
+        );
       }
 
       this.logger.debug(`Found file: ${mostRecentFile.Key}`);
@@ -76,10 +80,12 @@ export class DownloadUrlService {
         expiresIn: 7 * 24 * 60 * 60, // 7 days in seconds
       });
 
-      this.logger.debug(`Generated download URL successfully for file: ${mostRecentFile.Key}`);
+      this.logger.debug(
+        `Generated download URL successfully for file: ${mostRecentFile.Key}`
+      );
       return url;
     } catch (error) {
-      this.logger.error('Failed to generate download URL:', {
+      this.logger.error("Failed to generate download URL:", {
         error: error.message,
         projectId,
         applicationId,

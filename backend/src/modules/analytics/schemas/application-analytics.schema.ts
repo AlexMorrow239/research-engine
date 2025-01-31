@@ -1,10 +1,10 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema } from "mongoose";
 
 @Schema({ timestamps: true })
 export class ApplicationAnalytics extends Document {
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Project', required: true })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: "Project", required: true })
   project: MongooseSchema.Types.ObjectId;
 
   @Prop({ default: 0 })
@@ -37,4 +37,5 @@ export class ApplicationAnalytics extends Document {
   updatedAt: Date;
 }
 
-export const ApplicationAnalyticsSchema = SchemaFactory.createForClass(ApplicationAnalytics);
+export const ApplicationAnalyticsSchema =
+  SchemaFactory.createForClass(ApplicationAnalytics);

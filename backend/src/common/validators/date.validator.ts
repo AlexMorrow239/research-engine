@@ -2,8 +2,11 @@
  * Custom date validation decorators for class-validator
  * Provides validators for future dates and date comparisons
  */
-
-import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
+import {
+  registerDecorator,
+  ValidationArguments,
+  ValidationOptions,
+} from "class-validator";
 
 /**
  * Validates that a date field is in the future (today or later)
@@ -20,7 +23,7 @@ import { registerDecorator, ValidationArguments, ValidationOptions } from 'class
 export function IsFutureDate(validationOptions?: ValidationOptions) {
   return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({
-      name: 'isFutureDate',
+      name: "isFutureDate",
       target: object.constructor,
       propertyName: propertyName,
       options: validationOptions,
@@ -35,18 +38,22 @@ export function IsFutureDate(validationOptions?: ValidationOptions) {
           const now = new Date();
           const dateToCheck = new Date(value);
 
-          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          const today = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+          );
           const checkDate = new Date(
             dateToCheck.getFullYear(),
             dateToCheck.getMonth(),
-            dateToCheck.getDate(),
+            dateToCheck.getDate()
           );
 
           return checkDate >= today;
         },
 
         defaultMessage(): string {
-          return '${property} must be a future date';
+          return "${property} must be a future date";
         },
       },
     });
@@ -70,10 +77,13 @@ export function IsFutureDate(validationOptions?: ValidationOptions) {
  *   endDate: Date;
  * }
  */
-export function IsAfterDate(property: string, validationOptions?: ValidationOptions) {
+export function IsAfterDate(
+  property: string,
+  validationOptions?: ValidationOptions
+) {
   return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({
-      name: 'isAfterDate',
+      name: "isAfterDate",
       target: object.constructor,
       propertyName: propertyName,
       constraints: [property],

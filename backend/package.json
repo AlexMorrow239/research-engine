@@ -49,7 +49,15 @@
     "uuid": "^11.0.3"
   },
   "devDependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.4.0",
+    "@babel/core": "^7.26.7",
+    "@babel/eslint-parser": "^7.26.5",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-decorators": "^7.25.9",
+    "@babel/plugin-syntax-decorators": "^7.25.9",
+    "@babel/plugin-transform-runtime": "^7.25.9",
+    "@babel/preset-env": "^7.26.7",
+    "@babel/preset-typescript": "^7.26.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.4.1",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",

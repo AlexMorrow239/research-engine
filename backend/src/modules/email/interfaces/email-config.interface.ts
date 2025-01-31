@@ -9,7 +9,7 @@ export interface EmailConfig {
   from: string;
   replyTo: string;
   headers?: {
-    'Auto-Submitted'?: string;
-    'X-Auto-Response-Suppress'?: string;
+    "Auto-Submitted"?: string;
+    "X-Auto-Response-Suppress"?: string;
   };
 }

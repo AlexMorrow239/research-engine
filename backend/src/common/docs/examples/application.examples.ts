@@ -3,15 +3,15 @@
  */
 export const updateStatusExamples = {
   accept: {
-    summary: 'Accept Application',
+    summary: "Accept Application",
     value: {
-      status: 'ACCEPTED',
+      status: "ACCEPTED",
     },
   },
   reject: {
-    summary: 'Reject Application',
+    summary: "Reject Application",
     value: {
-      status: 'REJECTED',
+      status: "REJECTED",
     },
   },
 };

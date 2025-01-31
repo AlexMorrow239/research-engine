@@ -28,5 +28,6 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src/**/*", ".eslintrc.js", "test"]
+  "include": ["src/**/*", ".eslintrc.js", "test"],
+  "exclude": ["node_modules", "dist"]
 }

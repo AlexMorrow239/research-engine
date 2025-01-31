@@ -11,10 +11,10 @@ import {
   InternalServerErrorException,
   Logger,
   NestInterceptor,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, throwError } from "rxjs";
+import { catchError } from "rxjs/operators";
 
 @Injectable()
 export class ErrorHandlingInterceptor implements NestInterceptor {
@@ -31,19 +31,21 @@ export class ErrorHandlingInterceptor implements NestInterceptor {
       catchError((error) => {
         // Handle unexpected or internal server errors
         if (!error.status || error.status === 500) {
-          this.logger.error('Unexpected error occurred', {
+          this.logger.error("Unexpected error occurred", {
             error: error.message,
             stack: error.stack,
           });
 
           // Mask internal error details in production
-          if (process.env.NODE_ENV === 'production') {
-            error = new InternalServerErrorException('An unexpected error occurred');
+          if (process.env.NODE_ENV === "production") {
+            error = new InternalServerErrorException(
+              "An unexpected error occurred"
+            );
           }
         }
 
         return throwError(() => error);
-      }),
+      })
     );
   }
 }

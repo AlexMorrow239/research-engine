@@ -1,85 +1,85 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { applyDecorators, HttpStatus } from "@nestjs/common";
 import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
   ApiConsumes,
+  ApiNotFoundResponse,
   ApiOperation,
+  ApiParam,
   ApiResponse,
   ApiUnauthorizedResponse,
-  ApiNotFoundResponse,
-  ApiBadRequestResponse,
-  ApiBody,
-  ApiBearerAuth,
-  ApiParam,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { ApplicationDescriptions } from '../descriptions/applications.description';
+import { ApplicationDescriptions } from "../descriptions/applications.description";
 
 export const ApiCreateApplication = () =>
   applyDecorators(
     ApiOperation(ApplicationDescriptions.create),
-    ApiConsumes('multipart/form-data'),
+    ApiConsumes("multipart/form-data"),
     ApiBody({
       schema: {
-        type: 'object',
-        required: ['application', 'resume'],
+        type: "object",
+        required: ["application", "resume"],
         properties: {
           application: {
-            type: 'string',
-            format: 'json',
+            type: "string",
+            format: "json",
             example: {
               studentInfo: {
                 name: {
-                  firstName: 'John',
-                  lastName: 'Doe',
+                  firstName: "John",
+                  lastName: "Doe",
                 },
-                email: 'john.doe@miami.edu',
-                cNumber: 'C12345678',
-                phoneNumber: '305-123-4567',
-                racialEthnicGroups: ['Hispanic/Latino'],
-                citizenship: 'US_CITIZEN',
-                academicStanding: 'JUNIOR',
-                graduationDate: '2025-05-15',
-                major1College: 'ARTS_AND_SCIENCES',
-                major1: 'Computer Science',
+                email: "john.doe@miami.edu",
+                cNumber: "C12345678",
+                phoneNumber: "305-123-4567",
+                racialEthnicGroups: ["Hispanic/Latino"],
+                citizenship: "US_CITIZEN",
+                academicStanding: "JUNIOR",
+                graduationDate: "2025-05-15",
+                major1College: "ARTS_AND_SCIENCES",
+                major1: "Computer Science",
                 hasAdditionalMajor: false,
                 isPreHealth: false,
                 gpa: 3.5,
               },
               availability: {
-                weeklyHours: '9-11',
-                desiredProjectLength: '3',
-                mondayAvailability: '9AM-5PM',
-                tuesdayAvailability: '9AM-5PM',
-                wednesdayAvailability: '9AM-5PM',
-                thursdayAvailability: '9AM-5PM',
-                fridayAvailability: '9AM-5PM',
+                weeklyHours: "9-11",
+                desiredProjectLength: "3",
+                mondayAvailability: "9AM-5PM",
+                tuesdayAvailability: "9AM-5PM",
+                wednesdayAvailability: "9AM-5PM",
+                thursdayAvailability: "9AM-5PM",
+                fridayAvailability: "9AM-5PM",
               },
               additionalInfo: {
                 hasPrevResearchExperience: true,
                 prevResearchExperience:
                   "Worked in Dr. Smith's lab on machine learning research for 2 semesters",
                 researchInterestDescription:
-                  'Interested in artificial intelligence and its applications in healthcare',
+                  "Interested in artificial intelligence and its applications in healthcare",
                 hasFederalWorkStudy: false,
                 speaksOtherLanguages: true,
-                additionalLanguages: ['Spanish', 'French'],
+                additionalLanguages: ["Spanish", "French"],
                 comfortableWithAnimals: true,
               },
             },
           },
           resume: {
-            type: 'string',
-            format: 'binary',
-            description: 'PDF resume file (max 5MB)',
+            type: "string",
+            format: "binary",
+            description: "PDF resume file (max 5MB)",
           },
         },
       },
-    }),
+    })
   );
 
 export const ApiGetResume = () =>
   applyDecorators(
     ApiOperation({
-      summary: 'Download application resume',
+      summary: "Download application resume",
       description: `
           Download the resume file for a specific application.
           
@@ -96,42 +96,43 @@ export const ApiGetResume = () =>
     ApiBearerAuth(),
     ApiResponse({
       status: HttpStatus.OK,
-      description: 'Resume file download',
+      description: "Resume file download",
       content: {
-        'application/pdf': {
+        "application/pdf": {
           schema: {
-            type: 'string',
-            format: 'binary',
+            type: "string",
+            format: "binary",
           },
         },
-        'application/msword': {
+        "application/msword": {
           schema: {
-            type: 'string',
-            format: 'binary',
+            type: "string",
+            format: "binary",
           },
         },
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document': {
-          schema: {
-            type: 'string',
-            format: 'binary',
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+          {
+            schema: {
+              type: "string",
+              format: "binary",
+            },
           },
-        },
       },
     }),
     ApiUnauthorizedResponse({
-      description: 'Unauthorized - Valid JWT token required',
+      description: "Unauthorized - Valid JWT token required",
     }),
     ApiNotFoundResponse({
-      description: 'Application not found or professor does not have access',
+      description: "Application not found or professor does not have access",
     }),
     ApiParam({
-      name: 'projectId',
-      description: 'ID of the project',
-      type: 'string',
+      name: "projectId",
+      description: "ID of the project",
+      type: "string",
     }),
     ApiParam({
-      name: 'applicationId',
-      description: 'ID of the application',
-      type: 'string',
-    }),
+      name: "applicationId",
+      description: "ID of the application",
+      type: "string",
+    })
   );

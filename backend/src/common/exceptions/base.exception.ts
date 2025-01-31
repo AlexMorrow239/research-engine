@@ -2,8 +2,7 @@
  * Base exception class for custom application exceptions
  * Extends NestJS HttpException with additional properties for error handling
  */
-
-import { HttpException } from '@nestjs/common';
+import { HttpException } from "@nestjs/common";
 
 export class BaseException extends HttpException {
   /**
@@ -17,7 +16,7 @@ export class BaseException extends HttpException {
     response: string | Record<string, any>,
     status: number,
     public readonly code?: string,
-    public readonly details?: Record<string, any>,
+    public readonly details?: Record<string, any>
   ) {
     super(response, status);
   }

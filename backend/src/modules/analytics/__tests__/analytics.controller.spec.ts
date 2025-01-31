@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from "@nestjs/testing";
 
-import { AnalyticsController } from '../analytics.controller';
-import { AnalyticsService } from '../analytics.service';
+import { AnalyticsController } from "../analytics.controller";
+import { AnalyticsService } from "../analytics.service";
 
-describe('AnalyticsController', () => {
+describe("AnalyticsController", () => {
   let controller: AnalyticsController;
   let service: AnalyticsService;
 
@@ -27,8 +27,8 @@ describe('AnalyticsController', () => {
     service = module.get<AnalyticsService>(AnalyticsService);
   });
 
-  describe('getProjectAnalytics', () => {
-    it('should return project analytics', async () => {
+  describe("getProjectAnalytics", () => {
+    it("should return project analytics", async () => {
       const mockAnalytics = {
         emailEngagement: {
           totalEmails: 100,
@@ -48,15 +48,15 @@ describe('AnalyticsController', () => {
 
       mockAnalyticsService.getProjectAnalytics.mockResolvedValue(mockAnalytics);
 
-      const result = await controller.getProjectAnalytics('project123');
+      const result = await controller.getProjectAnalytics("project123");
 
       expect(result).toBe(mockAnalytics);
-      expect(service.getProjectAnalytics).toHaveBeenCalledWith('project123');
+      expect(service.getProjectAnalytics).toHaveBeenCalledWith("project123");
     });
   });
 
-  describe('getGlobalAnalytics', () => {
-    it('should return global analytics', async () => {
+  describe("getGlobalAnalytics", () => {
+    it("should return global analytics", async () => {
       const mockGlobalAnalytics = {
         emailEngagement: {
           totalEmails: 1000,
@@ -74,7 +74,9 @@ describe('AnalyticsController', () => {
         lastUpdated: new Date(),
       };
 
-      mockAnalyticsService.getGlobalAnalytics.mockResolvedValue(mockGlobalAnalytics);
+      mockAnalyticsService.getGlobalAnalytics.mockResolvedValue(
+        mockGlobalAnalytics
+      );
 
       const result = await controller.getGlobalAnalytics();
 

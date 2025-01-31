@@ -1,6 +1,6 @@
 export const ProjectDescriptions = {
   create: {
-    summary: 'Create a new research project',
+    summary: "Create a new research project",
     description: `
       Create a new research project with the following requirements:
       - Must be authenticated as a professor
@@ -19,7 +19,7 @@ export const ProjectDescriptions = {
     `,
   },
   findAll: {
-    summary: 'Find all research projects',
+    summary: "Find all research projects",
     description: `
       Retrieve a paginated list of research projects with optional filters:
       - Page and limit for pagination (default: page 1, limit 10)
@@ -51,7 +51,7 @@ export const ProjectDescriptions = {
     `,
   },
   findOne: {
-    summary: 'Find project by ID',
+    summary: "Find project by ID",
     description: `
       Retrieve detailed information about a specific project including:
       - Project details and requirements
@@ -68,7 +68,7 @@ export const ProjectDescriptions = {
     `,
   },
   update: {
-    summary: 'Update project',
+    summary: "Update project",
     description: `
       Update an existing project. Only the project owner can perform updates.
       
@@ -84,7 +84,7 @@ export const ProjectDescriptions = {
     `,
   },
   remove: {
-    summary: 'Delete project',
+    summary: "Delete project",
     description: `
       Permanently delete a project. Only the project owner can delete their projects.
       
@@ -100,7 +100,7 @@ export const ProjectDescriptions = {
     `,
   },
   uploadFile: {
-    summary: 'Upload project file',
+    summary: "Upload project file",
     description: `
       Upload a file attachment for the project (placeholder implementation).
       
@@ -113,7 +113,7 @@ export const ProjectDescriptions = {
     `,
   },
   deleteFile: {
-    summary: 'Delete project file',
+    summary: "Delete project file",
     description: `
       Remove a file attachment from the project (placeholder implementation).
       
@@ -125,7 +125,7 @@ export const ProjectDescriptions = {
     `,
   },
   closeProject: {
-    summary: 'Close project',
+    summary: "Close project",
     description: `
       Close a project and notify all pending applicants.
       
@@ -143,19 +143,19 @@ export const ProjectDescriptions = {
   },
   responses: {
     // Success Responses
-    created: 'Project successfully created',
-    retrieved: 'Project(s) successfully retrieved',
-    updated: 'Project successfully updated',
-    deleted: 'Project successfully deleted',
-    fileUploaded: 'File upload acknowledged (placeholder)',
-    fileDeleted: 'File deletion acknowledged (placeholder)',
-    closed: 'Project closed and applicants notified',
+    created: "Project successfully created",
+    retrieved: "Project(s) successfully retrieved",
+    updated: "Project successfully updated",
+    deleted: "Project successfully deleted",
+    fileUploaded: "File upload acknowledged (placeholder)",
+    fileDeleted: "File deletion acknowledged (placeholder)",
+    closed: "Project closed and applicants notified",
 
     // Error Responses
     notFound: "Project not found or you don't have permission to access it",
     unauthorized: "You don't have permission to perform this action",
-    invalidData: 'Invalid project data provided',
-    invalidFile: 'Invalid file type or size',
-    serverError: 'An unexpected error occurred while processing the request',
+    invalidData: "Invalid project data provided",
+    invalidFile: "Invalid file type or size",
+    serverError: "An unexpected error occurred while processing the request",
   },
 };

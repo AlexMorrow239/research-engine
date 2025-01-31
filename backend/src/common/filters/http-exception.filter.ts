@@ -4,11 +4,17 @@
  * Includes logging for both client and server errors with contextual information
  */
 
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  Logger,
+} from "@nestjs/common";
 
-import { Request, Response } from 'express';
+import { Request, Response } from "express";
 
-import { BaseException } from '../exceptions/base.exception';
+import { BaseException } from "../exceptions/base.exception";
 
 interface ErrorResponse {
   statusCode: number;
@@ -44,7 +50,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       path: request.url,
       method: request.method,
       ...this.getErrorResponse(exception),
-      requestId: (request.headers['x-request-id'] as string) || undefined,
+      requestId: (request.headers["x-request-id"] as string) || undefined,
     };
 
     // Log error with context and send response
@@ -62,13 +68,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     if (exception instanceof BaseException) {
       return {
-        message: exceptionResponse['message'] || exceptionResponse,
+        message: exceptionResponse["message"] || exceptionResponse,
         code: exception.code,
         details: exception.details,
       };
     }
 
-    return typeof exceptionResponse === 'object'
+    return typeof exceptionResponse === "object"
       ? exceptionResponse
       : { message: exceptionResponse };
   }
@@ -79,7 +85,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
    * @param error Formatted error response
    * @param exception Original exception
    */
-  private logError(request: Request, error: ErrorResponse, exception: HttpException): void {
+  private logError(
+    request: Request,
+    error: ErrorResponse,
+    exception: HttpException
+  ): void {
     const errorLog = {
       ...error,
       stack: exception.stack,
@@ -89,9 +99,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
     };
 
     if (error.statusCode >= 500) {
-      this.logger.error(`Server Error: ${request.method} ${request.url}`, errorLog);
+      this.logger.error(
+        `Server Error: ${request.method} ${request.url}`,
+        errorLog
+      );
     } else {
-      this.logger.warn(`Client Error: ${request.method} ${request.url}`, errorLog);
+      this.logger.warn(
+        `Client Error: ${request.method} ${request.url}`,
+        errorLog
+      );
     }
   }
 }

@@ -1,25 +1,25 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { applyDecorators, HttpStatus } from "@nestjs/common";
 import {
   ApiBearerAuth,
+  ApiNotFoundResponse,
   ApiOperation,
   ApiParam,
   ApiResponse,
   ApiUnauthorizedResponse,
-  ApiNotFoundResponse,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { AnalyticsDto } from '@/common/dto/analytics/analytics.dto';
+import { AnalyticsDto } from "@/common/dto/analytics/analytics.dto";
 
-import { AnalyticsDescriptions } from '../descriptions/analytics.description';
+import { AnalyticsDescriptions } from "../descriptions/analytics.description";
 
 export const ApiGetProjectAnalytics = () =>
   applyDecorators(
     ApiBearerAuth(),
     ApiOperation(AnalyticsDescriptions.getProjectAnalytics),
     ApiParam({
-      name: 'projectId',
-      description: 'Project identifier',
-      example: '507f1f77bcf86cd799439011',
+      name: "projectId",
+      description: "Project identifier",
+      example: "507f1f77bcf86cd799439011",
     }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -31,7 +31,7 @@ export const ApiGetProjectAnalytics = () =>
     }),
     ApiNotFoundResponse({
       description: AnalyticsDescriptions.responses.notFound,
-    }),
+    })
   );
 
 export const ApiGetGlobalAnalytics = () =>
@@ -45,5 +45,5 @@ export const ApiGetGlobalAnalytics = () =>
     }),
     ApiUnauthorizedResponse({
       description: AnalyticsDescriptions.responses.unauthorized,
-    }),
+    })
   );

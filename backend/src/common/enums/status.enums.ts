@@ -9,9 +9,9 @@
  */
 export enum ApplicationStatus {
   /** Initial state when application is submitted */
-  PENDING = 'PENDING',
+  PENDING = "PENDING",
   /** Final state when application process is complete */
-  CLOSED = 'CLOSED',
+  CLOSED = "CLOSED",
 }
 
 /**
@@ -20,9 +20,9 @@ export enum ApplicationStatus {
  */
 export enum ProjectStatus {
   /** Initial state when project is being created */
-  DRAFT = 'DRAFT',
+  DRAFT = "DRAFT",
   /** Project is visible and accepting applications */
-  PUBLISHED = 'PUBLISHED',
+  PUBLISHED = "PUBLISHED",
   /** Project is no longer accepting applications */
-  CLOSED = 'CLOSED',
+  CLOSED = "CLOSED",
 }

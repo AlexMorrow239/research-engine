@@ -1,20 +1,23 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
+import { applyDecorators, HttpStatus } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
   ApiBody,
   ApiOperation,
   ApiResponse,
   ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
-import { LoginResponseDto } from '@/common/dto/auth/login-response.dto';
-import { LoginDto } from '@/common/dto/auth/login.dto';
-import { CreateProfessorDto, RegisterProfessorDto } from '@/common/dto/professors';
+import { ForgotPasswordDto } from "@/common/dto/auth/forgot-password.dto";
+import { LoginResponseDto } from "@/common/dto/auth/login-response.dto";
+import { LoginDto } from "@/common/dto/auth/login.dto";
+import { ResetPasswordDto } from "@/common/dto/auth/reset-password.dto";
+import {
+  CreateProfessorDto,
+  RegisterProfessorDto,
+} from "@/common/dto/professors";
 
-import { AuthDescriptions } from '../descriptions/auth.description';
-import { loginExamples, registerExamples } from '../examples/auth.examples';
-import { ForgotPasswordDto } from '@/common/dto/auth/forgot-password.dto';
-import { ResetPasswordDto } from '@/common/dto/auth/reset-password.dto';
+import { AuthDescriptions } from "../descriptions/auth.description";
+import { loginExamples, registerExamples } from "../examples/auth.examples";
 
 export const ApiLogin = () =>
   applyDecorators(
@@ -35,7 +38,7 @@ export const ApiLogin = () =>
     ApiResponse({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       description: AuthDescriptions.responses.serverError,
-    }),
+    })
   );
 
 export const ApiRegister = () =>
@@ -53,7 +56,7 @@ export const ApiRegister = () =>
     ApiResponse({
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       description: AuthDescriptions.responses.serverError,
-    }),
+    })
   );
 
 export const ApiForgotPassword = () =>
@@ -66,7 +69,7 @@ export const ApiForgotPassword = () =>
     }),
     ApiBadRequestResponse({
       description: AuthDescriptions.responses.invalidPasswordFormat,
-    }),
+    })
   );
 
 export const ApiResetPassword = () =>
@@ -82,5 +85,5 @@ export const ApiResetPassword = () =>
     }),
     ApiUnauthorizedResponse({
       description: AuthDescriptions.responses.invalidResetToken,
-    }),
+    })
   );
