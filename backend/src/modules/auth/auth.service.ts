@@ -1,25 +1,38 @@
-import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 
 import { LoginResponseDto } from '@/common/dto/auth/login-response.dto';
-import {
-  ProfessorResponseDto,
-  ReactivateAccountDto,
-  RegisterProfessorDto,
-} from '@/common/dto/professors';
+import { ProfessorResponseDto, RegisterProfessorDto } from '@/common/dto/professors';
 import { ErrorHandler } from '@/common/utils/error-handler.util';
-
 import { EmailService } from '../email/email.service';
 import { ProfessorsService } from '../professors/professors.service';
 import { Professor } from '../professors/schemas/professors.schema';
 import { CustomLogger } from '@/common/services/logger.service';
 import { InvalidAdminPasswordException } from './exceptions/password.exception';
 
+/**
+ * Service handling authentication and authorization operations.
+ * Manages the complete authentication lifecycle including:
+ * - User registration with admin approval
+ * - Login and JWT token generation
+ * - Password management (reset, forgot password)
+ * - Admin password validation
+ *
+ * Security Features:
+ * - Bcrypt password hashing
+ * - JWT token-based authentication
+ * - Time-limited password reset tokens
+ * - Admin password validation for sensitive operations
+ *
+ * Integration Points:
+ * - Works with ProfessorsService for user management
+ * - Uses EmailService for password reset communications
+ * - Leverages JWT for token generation and validation
+ */
 @Injectable()
 export class AuthService {
   constructor(
@@ -31,6 +44,21 @@ export class AuthService {
     private readonly logger: CustomLogger,
   ) {}
 
+  //#region Account Registration and Login
+
+  /**
+   * Registers a new professor account with admin validation.
+   * Requires admin password for registration to prevent unauthorized access.
+   *
+   * Process:
+   * 1. Validates admin password
+   * 2. Creates professor account
+   * 3. Generates login credentials
+   *
+   * @param registerProfessorDto - Registration data including admin password
+   * @returns LoginResponseDto containing access token and professor info
+   * @throws UnauthorizedException if admin password is invalid
+   */
   async register(registerProfessorDto: RegisterProfessorDto): Promise<LoginResponseDto> {
     try {
       // Validate admin password
@@ -54,6 +82,14 @@ export class AuthService {
     }
   }
 
+  /**
+   * Authenticates a professor and generates login credentials.
+   *
+   * @param email - Professor's email address
+   * @param password - Professor's password
+   * @returns LoginResponseDto containing access token and professor info
+   * @throws UnauthorizedException for invalid credentials or inactive account
+   */
   async login(email: string, password: string): Promise<LoginResponseDto> {
     try {
       const professor = await this.validateProfessor(email, password);
@@ -65,6 +101,14 @@ export class AuthService {
     }
   }
 
+  /**
+   * Validates professor credentials and account status.
+   *
+   * @param email - Professor's email address
+   * @param password - Professor's password
+   * @returns Professor document if validation successful
+   * @throws UnauthorizedException for invalid credentials or inactive account
+   */
   async validateProfessor(email: string, password: string): Promise<Professor> {
     try {
       const professor = await this.professorModel.findOne({ email });
@@ -92,6 +136,17 @@ export class AuthService {
     }
   }
 
+  //#endregion
+
+  //#region Token Generation
+
+  /**
+   * Generates JWT token and formats login response.
+   * Handles both Mongoose documents and DTO objects.
+   *
+   * @param professor - Professor document or DTO
+   * @returns LoginResponseDto containing access token and professor info
+   */
   private generateLoginResponse(
     professor: Professor | ProfessorResponseDto,
   ): Promise<LoginResponseDto> {
@@ -117,6 +172,22 @@ export class AuthService {
     });
   }
 
+  //#endregion
+
+  //#region Password Management
+
+  /**
+   * Initiates password reset process for forgotten passwords.
+   * Generates time-limited reset token and sends reset email.
+   *
+   * Security features:
+   * - Hashed token storage
+   * - 1-hour expiration
+   * - Email confirmation
+   * - Silent failure for non-existent emails (prevents enumeration)
+   *
+   * @param email - Professor's email address
+   */
   async forgotPassword(email: string): Promise<void> {
     try {
       const professor = await this.professorModel.findOne({ email });
@@ -148,6 +219,19 @@ export class AuthService {
     }
   }
 
+  /**
+   * Completes password reset process using reset token.
+   * Validates token and updates password.
+   *
+   * Validation steps:
+   * 1. Verifies JWT token
+   * 2. Checks token expiration
+   * 3. Validates stored hashed token
+   *
+   * @param token - Password reset token
+   * @param newPassword - New password to set
+   * @throws UnauthorizedException for invalid or expired tokens
+   */
   async resetPassword(token: string, newPassword: string): Promise<void> {
     try {
       const payload = this.jwtService.verify(token);
@@ -180,6 +264,18 @@ export class AuthService {
     }
   }
 
+  //#endregion
+
+  //#region Admin Validation
+
+  /**
+   * Validates admin password for protected operations.
+   * Used as a security check for sensitive administrative actions.
+   *
+   * @param email - Professor's email (for logging purposes)
+   * @param adminPassword - Admin password to validate
+   * @throws InvalidAdminPasswordException if password is incorrect
+   */
   async validateAdminPassword(email: string, adminPassword: string): Promise<void> {
     try {
       this.logger.logObject('debug', { email }, 'Validating admin password');
@@ -206,4 +302,6 @@ export class AuthService {
       );
     }
   }
+
+  //#endregion
 }
