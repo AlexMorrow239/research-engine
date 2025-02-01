@@ -12,7 +12,6 @@ import { ApplicationStatus, ProjectStatus } from '@/common/enums';
 import { ApplicationDeadlinePassedException } from '@/common/exceptions/application.exception';
 import { AwsS3Service } from '@/common/services/aws-s3.service';
 import { ErrorHandler } from '@/common/utils/error-handler.util';
-import { AnalyticsService } from '@/modules/analytics/analytics.service';
 import { CreateApplicationDto } from '../../common/dto/applications/create-application.dto';
 import { EmailService } from '../email/email.service';
 import { ProjectsService } from '../projects/projects.service';
@@ -26,12 +25,10 @@ import { CustomLogger } from '@/common/services/logger.service';
  * - Resume file handling with AWS S3
  * - Application status management
  * - Email notifications
- * - Analytics tracking
  *
  * Integration Points:
  * - AWS S3 for resume storage
  * - Email service for notifications
- * - Analytics service for metrics
  * - Projects service for validation
  *
  * Security Features:
@@ -46,7 +43,6 @@ export class ApplicationsService {
     @Inject(forwardRef(() => ProjectsService))
     private readonly projectsService: ProjectsService,
     private readonly emailService: EmailService,
-    private readonly analyticsService: AnalyticsService,
     private readonly s3Service: AwsS3Service,
     private readonly logger: CustomLogger,
   ) {}
@@ -149,7 +145,6 @@ export class ApplicationsService {
    * - Duplicate prevention
    * - Resume upload
    * - Email notifications
-   * - Analytics tracking
    *
    * @param createApplicationDto - Application data
    * @param resume - Resume file
@@ -268,13 +263,6 @@ export class ApplicationsService {
         },
       });
 
-      // Track analytics
-      await this.analyticsService.updateApplicationMetrics(
-        savedApplication.project.toString(),
-        null,
-        ApplicationStatus.PENDING,
-      );
-
       // Send notifications
       try {
         await this.emailService.sendApplicationConfirmation(savedApplication, project.title);
@@ -314,7 +302,6 @@ export class ApplicationsService {
   /**
    * Updates application status and handles related operations.
    * - Verifies professor ownership
-   * - Updates analytics
    * - Sends email notifications
    *
    * @param professorId - ID of professor updating status
@@ -369,20 +356,6 @@ export class ApplicationsService {
       const updatedApplication = await this.applicationModel
         .findByIdAndUpdate(applicationId, { status }, { new: true })
         .populate('project');
-
-      // Update analytics
-      try {
-        await this.analyticsService.updateApplicationMetrics(
-          application.project.id,
-          oldStatus,
-          status,
-        );
-
-        this.logger.debug(`Analytics updated for application ${applicationId}`, 'AnalyticsUpdate');
-      } catch (analyticsError) {
-        // Non-critical error - log but don't throw
-        this.logger.error('Failed to update analytics', analyticsError.stack, 'AnalyticsUpdate');
-      }
 
       // Send email notification
       try {
