@@ -1,19 +1,11 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
-import { Type } from "class-transformer";
-import {
-  IsArray,
-  IsDate,
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from "class-validator";
+import { Type } from 'class-transformer';
+import { IsArray, IsDate, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
-import { Campus } from "@/common/enums";
+import { Campus } from '@/common/enums';
 
-import { ProjectStatus } from "../../../modules/projects/schemas/projects.schema";
+import { ProjectStatus } from '@/common/enums';
 
 export class UpdateProjectDto {
   @ApiPropertyOptional()
@@ -29,10 +21,10 @@ export class UpdateProjectDto {
   @ApiPropertyOptional({
     enum: Campus,
     example: Campus.CORAL_GABLES,
-    description: "Campus where the research project is located",
+    description: 'Campus where the research project is located',
     required: false,
   })
-  @IsEnum(Campus, { message: "Invalid campus selection" })
+  @IsEnum(Campus, { message: 'Invalid campus selection' })
   @IsOptional()
   campus?: Campus;
 

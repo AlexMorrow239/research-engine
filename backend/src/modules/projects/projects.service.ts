@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { ApplicationStatus } from '@/common/enums';
+import { ApplicationStatus, ProjectStatus } from '@/common/enums';
 import { ErrorHandler } from '@/common/utils/error-handler.util';
 import { ApplicationsService } from '@/modules/applications/applications.service';
 import { EmailService } from '@/modules/email/email.service';
@@ -12,7 +12,7 @@ import {
   UpdateProjectDto,
 } from '@common/dto/projects';
 import { Professor } from '@modules/professors/schemas/professors.schema';
-import { Project, ProjectStatus } from './schemas/projects.schema';
+import { Project } from './schemas/projects.schema';
 import { CustomLogger } from '@/common/services/logger.service';
 
 /**

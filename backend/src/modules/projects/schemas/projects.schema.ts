@@ -1,16 +1,11 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { Document, Schema as MongooseSchema } from "mongoose";
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
-import { Campus } from "@/common/enums/campus.enum";
+import { Campus } from '@/common/enums/campus.enum';
 
-import { Professor } from "../../professors/schemas/professors.schema";
-
-export enum ProjectStatus {
-  DRAFT = "DRAFT",
-  PUBLISHED = "PUBLISHED",
-  CLOSED = "CLOSED",
-}
+import { Professor } from '../../professors/schemas/professors.schema';
+import { ProjectStatus } from '@/common/enums';
 
 @Schema({ timestamps: true })
 export class ProjectFile {
@@ -40,7 +35,7 @@ export class Project extends Document {
 
   @Prop({
     type: MongooseSchema.Types.ObjectId,
-    ref: "Professor",
+    ref: 'Professor',
     required: true,
   })
   professor: Professor;

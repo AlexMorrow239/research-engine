@@ -1,4 +1,4 @@
-import { applyDecorators, HttpStatus } from "@nestjs/common";
+import { applyDecorators, HttpStatus } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -11,21 +11,18 @@ import {
   ApiResponse,
   ApiUnauthorizedResponse,
   getSchemaPath,
-} from "@nestjs/swagger";
+} from '@nestjs/swagger';
 
 import {
   CreateProjectDto,
   ProjectFileDto,
   ProjectResponseDto,
   UpdateProjectDto,
-} from "@/common/dto/projects";
-import { ProjectStatus } from "@/modules/projects/schemas/projects.schema";
+} from '@/common/dto/projects';
+import { ProjectStatus } from '@/common/enums';
 
-import { ProjectDescriptions } from "../descriptions/projects.description";
-import {
-  createProjectExamples,
-  updateProjectExamples,
-} from "../examples/project.examples";
+import { ProjectDescriptions } from '../descriptions/projects.description';
+import { createProjectExamples, updateProjectExamples } from '../examples/project.examples';
 
 export const ApiCreateProject = () =>
   applyDecorators(
@@ -45,65 +42,65 @@ export const ApiCreateProject = () =>
     }),
     ApiBadRequestResponse({
       description: ProjectDescriptions.responses.invalidData,
-    })
+    }),
   );
 
 export const ApiFindAllProjects = () =>
   applyDecorators(
     ApiOperation(ProjectDescriptions.findAll),
     ApiQuery({
-      name: "page",
+      name: 'page',
       required: false,
       type: Number,
-      description: "Page number (default: 1)",
+      description: 'Page number (default: 1)',
       example: 1,
     }),
     ApiQuery({
-      name: "limit",
+      name: 'limit',
       required: false,
       type: Number,
-      description: "Items per page (default: 10)",
+      description: 'Items per page (default: 10)',
       example: 10,
     }),
     ApiQuery({
-      name: "departments",
+      name: 'departments',
       required: false,
       type: String,
-      description: "Filter by professor departments (comma-separated)",
-      example: "Computer Science,Electrical Engineering",
+      description: 'Filter by professor departments (comma-separated)',
+      example: 'Computer Science,Electrical Engineering',
     }),
     ApiQuery({
-      name: "campus",
+      name: 'campus',
       required: false,
       type: String,
-      description: "Filter by campus",
+      description: 'Filter by campus',
     }),
     ApiQuery({
-      name: "search",
+      name: 'search',
       required: false,
       type: String,
-      description: "Search in title and description",
-      example: "machine learning",
+      description: 'Search in title and description',
+      example: 'machine learning',
     }),
     ApiQuery({
-      name: "researchCategories",
+      name: 'researchCategories',
       required: false,
       type: [String],
       isArray: true,
-      description: "Filter by research categories",
-      example: ["Machine Learning", "Computer Vision"],
+      description: 'Filter by research categories',
+      example: ['Machine Learning', 'Computer Vision'],
     }),
     ApiQuery({
-      name: "sortBy",
+      name: 'sortBy',
       required: false,
-      enum: ["createdAt", "applicationDeadline"],
-      description: "Sort field (default: createdAt)",
+      enum: ['createdAt', 'applicationDeadline'],
+      description: 'Sort field (default: createdAt)',
     }),
     ApiQuery({
-      name: "sortOrder",
+      name: 'sortOrder',
       required: false,
-      enum: ["asc", "desc"],
-      description: "Sort order (default: desc)",
+      enum: ['asc', 'desc'],
+      description: 'Sort order (default: desc)',
     }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -111,17 +108,17 @@ export const ApiFindAllProjects = () =>
       schema: {
         properties: {
           projects: {
-            type: "array",
+            type: 'array',
             items: { $ref: getSchemaPath(ProjectResponseDto) },
           },
           total: {
-            type: "number",
+            type: 'number',
             example: 50,
-            description: "Total number of projects matching the criteria",
+            description: 'Total number of projects matching the criteria',
           },
         },
       },
-    })
+    }),
   );
 
 export const ApiFindProfessorProjects = () =>
@@ -129,10 +126,10 @@ export const ApiFindProfessorProjects = () =>
     ApiBearerAuth(),
     ApiOperation(ProjectDescriptions.findProfessorProjects),
     ApiQuery({
-      name: "status",
+      name: 'status',
       required: false,
       enum: ProjectStatus,
-      description: "Filter by project status",
+      description: 'Filter by project status',
     }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -141,16 +138,16 @@ export const ApiFindProfessorProjects = () =>
     }),
     ApiUnauthorizedResponse({
       description: ProjectDescriptions.responses.unauthorized,
-    })
+    }),
   );
 
 export const ApiFindOneProject = () =>
   applyDecorators(
     ApiOperation(ProjectDescriptions.findOne),
     ApiParam({
-      name: "id",
-      description: "Project ID",
-      example: "507f1f77bcf86cd799439011",
+      name: 'id',
+      description: 'Project ID',
+      example: '507f1f77bcf86cd799439011',
     }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -159,7 +156,7 @@ export const ApiFindOneProject = () =>
     }),
     ApiNotFoundResponse({
       description: ProjectDescriptions.responses.notFound,
-    })
+    }),
   );
 
 export const ApiUpdateProject = () =>
@@ -167,9 +164,9 @@ export const ApiUpdateProject = () =>
     ApiBearerAuth(),
     ApiOperation(ProjectDescriptions.update),
     ApiParam({
-      name: "id",
-      description: "Project ID",
-      example: "507f1f77bcf86cd799439011",
+      name: 'id',
+      description: 'Project ID',
+      example: '507f1f77bcf86cd799439011',
     }),
     ApiBody({
       type: UpdateProjectDto,
@@ -188,7 +185,7 @@ export const ApiUpdateProject = () =>
     }),
     ApiBadRequestResponse({
       description: ProjectDescriptions.responses.invalidData,
-    })
+    }),
   );
 
 export const ApiRemoveProject = () =>
@@ -196,9 +193,9 @@ export const ApiRemoveProject = () =>
     ApiBearerAuth(),
     ApiOperation(ProjectDescriptions.remove),
     ApiParam({
-      name: "id",
-      description: "Project ID",
-      example: "507f1f77bcf86cd799439011",
+      name: 'id',
+      description: 'Project ID',
+      example: '507f1f77bcf86cd799439011',
     }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
@@ -209,27 +206,27 @@ export const ApiRemoveProject = () =>
     }),
     ApiNotFoundResponse({
       description: ProjectDescriptions.responses.notFound,
-    })
+    }),
   );
 
 export const ApiUploadProjectFile = () =>
   applyDecorators(
     ApiBearerAuth(),
-    ApiConsumes("multipart/form-data"),
+    ApiConsumes('multipart/form-data'),
     ApiOperation(ProjectDescriptions.uploadFile),
     ApiParam({
-      name: "id",
-      description: "Project ID",
-      example: "507f1f77bcf86cd799439011",
+      name: 'id',
+      description: 'Project ID',
+      example: '507f1f77bcf86cd799439011',
     }),
     ApiBody({
       schema: {
-        type: "object",
+        type: 'object',
         properties: {
           file: {
-            type: "string",
-            format: "binary",
-            description: "File to upload (PDF, DOC, or DOCX)",
+            type: 'string',
+            format: 'binary',
+            description: 'File to upload (PDF, DOC, or DOCX)',
           },
         },
       },
@@ -247,7 +244,7 @@ export const ApiUploadProjectFile = () =>
     }),
     ApiBadRequestResponse({
       description: ProjectDescriptions.responses.invalidFile,
-    })
+    }),
   );
 
 export const ApiDeleteProjectFile = () =>
@@ -255,14 +252,14 @@ export const ApiDeleteProjectFile = () =>
     ApiBearerAuth(),
     ApiOperation(ProjectDescriptions.deleteFile),
     ApiParam({
-      name: "id",
-      description: "Project ID",
-      example: "507f1f77bcf86cd799439011",
+      name: 'id',
+      description: 'Project ID',
+      example: '507f1f77bcf86cd799439011',
     }),
     ApiParam({
-      name: "fileName",
-      description: "Name of the file to delete",
-      example: "project-description.pdf",
+      name: 'fileName',
+      description: 'Name of the file to delete',
+      example: 'project-description.pdf',
     }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
@@ -273,7 +270,7 @@ export const ApiDeleteProjectFile = () =>
     }),
     ApiNotFoundResponse({
       description: ProjectDescriptions.responses.notFound,
-    })
+    }),
   );
 
 export const ApiCloseProject = () =>
@@ -281,9 +278,9 @@ export const ApiCloseProject = () =>
     ApiBearerAuth(),
     ApiOperation(ProjectDescriptions.closeProject),
     ApiParam({
-      name: "id",
-      description: "Project ID",
-      example: "507f1f77bcf86cd799439011",
+      name: 'id',
+      description: 'Project ID',
+      example: '507f1f77bcf86cd799439011',
     }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -294,5 +291,5 @@ export const ApiCloseProject = () =>
     }),
     ApiNotFoundResponse({
       description: ProjectDescriptions.responses.notFound,
-    })
+    }),
   );
