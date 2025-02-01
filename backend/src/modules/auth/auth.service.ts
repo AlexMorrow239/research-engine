@@ -1,4 +1,4 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -7,13 +7,18 @@ import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 
 import { LoginResponseDto } from '@/common/dto/auth/login-response.dto';
-import { ProfessorResponseDto, RegisterProfessorDto } from '@/common/dto/professors';
+import {
+  ProfessorResponseDto,
+  ReactivateAccountDto,
+  RegisterProfessorDto,
+} from '@/common/dto/professors';
 import { ErrorHandler } from '@/common/utils/error-handler.util';
 
 import { EmailService } from '../email/email.service';
 import { ProfessorsService } from '../professors/professors.service';
 import { Professor } from '../professors/schemas/professors.schema';
 import { CustomLogger } from '@/common/services/logger.service';
+import { InvalidAdminPasswordException } from './exceptions/password.exception';
 
 @Injectable()
 export class AuthService {
@@ -36,7 +41,7 @@ export class AuthService {
 
       // Remove admin password before creating professor
       const { adminPassword: _, ...createProfessorDto } = registerProfessorDto;
-      const professor = await this.professorsService.create(createProfessorDto);
+      const professor = await this.professorsService.createProfessor(createProfessorDto);
       return await this.generateLoginResponse(professor);
     } catch (error) {
       ErrorHandler.handleServiceError(
@@ -172,6 +177,33 @@ export class AuthService {
       ErrorHandler.handleServiceError(this.logger, error, 'reset password', {}, [
         UnauthorizedException,
       ]);
+    }
+  }
+
+  async validateAdminPassword(email: string, adminPassword: string): Promise<void> {
+    try {
+      this.logger.logObject('debug', { email }, 'Validating admin password');
+
+      const correctAdminPassword = this.configService.get<string>('ADMIN_PASSWORD');
+      if (adminPassword !== correctAdminPassword) {
+        throw ErrorHandler.handleServiceError(
+          this.logger,
+          new InvalidAdminPasswordException(),
+          'validate admin password',
+          { email },
+          [InvalidAdminPasswordException],
+        );
+      }
+
+      this.logger.logObject('debug', { email }, 'Admin password validated successfully');
+    } catch (error) {
+      throw ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        'validate admin password',
+        { email },
+        [InvalidAdminPasswordException],
+      );
     }
   }
 }
