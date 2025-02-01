@@ -541,7 +541,7 @@ export class ProjectsService {
    * Run periodically by a scheduled task.
    * Notifies all applicants with pending applications.
    */
-  async closeExpiredProjects(): Promise<void> {
+  async closeExpiredProjects(): Promise<number> {
     try {
       const now = new Date();
       this.logger.debug('Starting expired projects cleanup');
@@ -621,6 +621,7 @@ export class ProjectsService {
         },
         'Completed expired projects cleanup',
       );
+      return expiredProjects.length;
     } catch (error) {
       throw ErrorHandler.handleServiceError(this.logger, error, 'close expired projects');
     }
