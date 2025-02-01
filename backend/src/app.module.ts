@@ -26,6 +26,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { EmailModule } from './modules/email/email.module';
 import { ProfessorsModule } from './modules/professors/professors.module';
 import { ProjectsModule } from './modules/projects/projects.module';
+import { CustomLogger } from './common/services/logger.service';
 
 @Module({
   imports: [
@@ -91,6 +92,6 @@ import { ProjectsModule } from './modules/projects/projects.module';
     AnalyticsModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CustomLogger],
 })
 export class AppModule {}

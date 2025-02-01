@@ -16,17 +16,17 @@ import {
 import { Professor } from '@modules/professors/schemas/professors.schema';
 
 import { Project, ProjectStatus } from './schemas/projects.schema';
+import { CustomLogger } from '@/common/services/logger.service';
 
 // Handles research project business logic and data operations
 @Injectable()
 export class ProjectsService {
-  private readonly logger = new Logger(ProjectsService.name);
-
   constructor(
     @InjectModel(Project.name) private projectModel: Model<Project>,
     @Inject(forwardRef(() => ApplicationsService))
     private readonly applicationsService: ApplicationsService,
     private readonly emailService: EmailService,
+    private readonly logger: CustomLogger,
   ) {}
 
   // Transforms project data to response format

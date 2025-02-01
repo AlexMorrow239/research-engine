@@ -1,26 +1,26 @@
-import { Injectable, Logger } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
+import { Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 
-import { Model } from "mongoose";
+import { Model } from 'mongoose';
 
-import { AnalyticsDto } from "@/common/dto/analytics/analytics.dto";
-import { ApplicationStatus } from "@/common/enums";
+import { AnalyticsDto } from '@/common/dto/analytics/analytics.dto';
+import { ApplicationStatus } from '@/common/enums';
 
-import { ApplicationAnalytics } from "./schemas/application-analytics.schema";
+import { ApplicationAnalytics } from './schemas/application-analytics.schema';
+import { CustomLogger } from '@/common/services/logger.service';
 
 @Injectable()
 export class AnalyticsService {
-  private readonly logger = new Logger(AnalyticsService.name);
-
   constructor(
     @InjectModel(ApplicationAnalytics.name)
-    private analyticsModel: Model<ApplicationAnalytics>
+    private analyticsModel: Model<ApplicationAnalytics>,
+    private readonly logger: CustomLogger,
   ) {}
 
   async updateApplicationMetrics(
     projectId: string,
     oldStatus: ApplicationStatus | null,
-    newStatus: ApplicationStatus
+    newStatus: ApplicationStatus,
   ) {
     try {
       const analytics = await this.analyticsModel.findOne({
@@ -65,10 +65,7 @@ export class AnalyticsService {
         await this.analyticsModel.updateOne({ project: projectId }, update);
       }
     } catch (error) {
-      this.logger.error(
-        `Failed to update analytics for project ${projectId}`,
-        error.stack
-      );
+      this.logger.error(`Failed to update analytics for project ${projectId}`, error.stack);
     }
   }
   async getProjectAnalytics(projectId: string): Promise<AnalyticsDto> {
@@ -79,10 +76,7 @@ export class AnalyticsService {
 
       return this.formatAnalytics(applicationMetrics);
     } catch (error) {
-      this.logger.error(
-        `Failed to get analytics for project ${projectId}`,
-        error.stack
-      );
+      this.logger.error(`Failed to get analytics for project ${projectId}`, error.stack);
       throw error;
     }
   }
@@ -93,16 +87,16 @@ export class AnalyticsService {
         {
           $group: {
             _id: null,
-            totalApplications: { $sum: "$totalApplications" },
-            pendingApplications: { $sum: "$pendingApplications" },
-            closedApplications: { $sum: "$closedApplications" },
+            totalApplications: { $sum: '$totalApplications' },
+            pendingApplications: { $sum: '$pendingApplications' },
+            closedApplications: { $sum: '$closedApplications' },
           },
         },
       ]);
 
       return this.formatAnalytics(applicationTotals[0] || {});
     } catch (error) {
-      this.logger.error("Failed to get global analytics", error.stack);
+      this.logger.error('Failed to get global analytics', error.stack);
       throw error;
     }
   }
@@ -119,10 +113,7 @@ export class AnalyticsService {
         totalApplications,
         pendingApplications,
         closedApplications,
-        closeRate:
-          totalApplications > 0
-            ? (closedApplications / totalApplications) * 100
-            : 0,
+        closeRate: totalApplications > 0 ? (closedApplications / totalApplications) * 100 : 0,
       },
       lastUpdated: new Date(),
     };

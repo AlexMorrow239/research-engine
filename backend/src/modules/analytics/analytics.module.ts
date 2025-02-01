@@ -1,12 +1,13 @@
-import { Module } from "@nestjs/common";
-import { MongooseModule } from "@nestjs/mongoose";
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 
-import { AnalyticsController } from "./analytics.controller";
-import { AnalyticsService } from "./analytics.service";
+import { AnalyticsController } from './analytics.controller';
+import { AnalyticsService } from './analytics.service';
 import {
   ApplicationAnalytics,
   ApplicationAnalyticsSchema,
-} from "./schemas/application-analytics.schema";
+} from './schemas/application-analytics.schema';
+import { CustomLogger } from '@/common/services/logger.service';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import {
       { name: ApplicationAnalytics.name, schema: ApplicationAnalyticsSchema },
     ]),
   ],
-  providers: [AnalyticsService],
+  providers: [AnalyticsService, CustomLogger],
   controllers: [AnalyticsController],
   exports: [AnalyticsService],
 })

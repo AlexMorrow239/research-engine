@@ -7,7 +7,6 @@ import {
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
-  Logger,
   MaxFileSizeValidator,
   NotFoundException,
   Param,
@@ -19,50 +18,44 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
-} from "@nestjs/common";
-import { FileInterceptor } from "@nestjs/platform-express";
-import { ApiParam, ApiTags } from "@nestjs/swagger";
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 
-import { Response } from "express";
-import { memoryStorage } from "multer";
+import { Response } from 'express';
+import { memoryStorage } from 'multer';
 
 import {
   ApiCreateApplication,
   ApiGetResume,
-} from "@/common/docs/decorators/applications.decorator";
-import {
-  CreateApplicationDto,
-  UpdateApplicationStatusDto,
-} from "@/common/dto/applications";
-import { ApplicationStatus } from "@/common/enums";
-import { ParseFormJsonPipe } from "@/common/pipes/parse-form-json.pipe";
+} from '@/common/docs/decorators/applications.decorator';
+import { CreateApplicationDto, UpdateApplicationStatusDto } from '@/common/dto/applications';
+import { ApplicationStatus } from '@/common/enums';
+import { ParseFormJsonPipe } from '@/common/pipes/parse-form-json.pipe';
 
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { GetProfessor } from "../professors/decorators/get-professor.decorator";
-import { Professor } from "../professors/schemas/professors.schema";
-import { ApplicationsService } from "./applications.service";
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { GetProfessor } from '../professors/decorators/get-professor.decorator';
+import { Professor } from '../professors/schemas/professors.schema';
+import { ApplicationsService } from './applications.service';
 
-@ApiTags("Applications")
-@Controller("projects/:projectId/applications")
+@ApiTags('Applications')
+@Controller('projects/:projectId/applications')
 export class ApplicationsController {
-  constructor(
-    private readonly applicationsService: ApplicationsService,
-    private readonly logger: Logger
-  ) {}
+  constructor(private readonly applicationsService: ApplicationsService) {}
 
   @Post()
   @UseInterceptors(
-    FileInterceptor("resume", {
+    FileInterceptor('resume', {
       storage: memoryStorage(),
       limits: {
         fileSize: 5 * 1024 * 1024, // 5MB
       },
-    })
+    }),
   )
   @ApiCreateApplication()
   async create(
-    @Param("projectId") projectId: string,
-    @Body("application", new ParseFormJsonPipe()) applicationData: any,
+    @Param('projectId') projectId: string,
+    @Body('application', new ParseFormJsonPipe()) applicationData: any,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -73,9 +66,9 @@ export class ApplicationsController {
             maxSize: 5 * 1024 * 1024, // 5MB
           }),
         ],
-      })
+      }),
     )
-    resume: Express.Multer.File
+    resume: Express.Multer.File,
   ) {
     // Create the DTO with the project ID from the URL
     const createApplicationDto: CreateApplicationDto = {
@@ -85,61 +78,44 @@ export class ApplicationsController {
       additionalInfo: applicationData.additionalInfo,
     };
 
-    this.logger.debug("Processing application request", {
-      projectId,
-      applicationData: createApplicationDto,
-      resumeFile: {
-        filename: resume?.originalname,
-        mimetype: resume?.mimetype,
-        size: resume?.size,
-      },
-    });
-
     return await this.applicationsService.create(createApplicationDto, resume);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   async findAll(
-    @Param("projectId") projectId: string,
+    @Param('projectId') projectId: string,
     @GetProfessor() professor: Professor,
-    @Query("status") status?: ApplicationStatus
+    @Query('status') status?: ApplicationStatus,
   ) {
-    return await this.applicationsService.findProjectApplications(
-      professor.id,
-      projectId,
-      status
-    );
+    return await this.applicationsService.findProjectApplications(professor.id, projectId, status);
   }
 
-  @Patch(":applicationId/status")
+  @Patch(':applicationId/status')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async updateStatus(
-    @Param("applicationId") applicationId: string,
+    @Param('applicationId') applicationId: string,
     @GetProfessor() professor: Professor,
-    @Body() updateStatusDto: UpdateApplicationStatusDto
+    @Body() updateStatusDto: UpdateApplicationStatusDto,
   ) {
     return await this.applicationsService.updateStatus(
       professor.id,
       applicationId,
-      updateStatusDto.status
+      updateStatusDto.status,
     );
   }
 
-  @Get(":applicationId/resume")
+  @Get(':applicationId/resume')
   @UseGuards(JwtAuthGuard)
   @ApiGetResume()
   async downloadResume(
-    @Param("applicationId") applicationId: string,
+    @Param('applicationId') applicationId: string,
     @GetProfessor() professor: Professor,
-    @Res() res: Response
+    @Res() res: Response,
   ) {
     try {
-      const fileData = await this.applicationsService.getResume(
-        professor.id,
-        applicationId
-      );
+      const fileData = await this.applicationsService.getResume(professor.id, applicationId);
 
       // Instead of redirecting, proxy the request to S3
       const response = await fetch(fileData.url);
@@ -147,17 +123,14 @@ export class ApplicationsController {
 
       res
         .status(HttpStatus.OK)
-        .setHeader("Content-Type", fileData.mimeType)
-        .setHeader(
-          "Content-Disposition",
-          `attachment; filename="${fileData.fileName}"`
-        )
+        .setHeader('Content-Type', fileData.mimeType)
+        .setHeader('Content-Disposition', `attachment; filename="${fileData.fileName}"`)
         .send(Buffer.from(buffer));
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
       }
-      throw new InternalServerErrorException("Error downloading resume");
+      throw new InternalServerErrorException('Error downloading resume');
     }
   }
 }

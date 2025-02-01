@@ -5,94 +5,79 @@ import {
   Injectable,
   Logger,
   NotFoundException,
-} from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 
-import { Model } from "mongoose";
+import { Model } from 'mongoose';
 
-import { ApplicationStatus, ProjectStatus } from "@/common/enums";
-import { ApplicationDeadlinePassedException } from "@/common/exceptions/application.exception";
-import { AwsS3Service } from "@/common/services/aws-s3.service";
-import { ErrorHandler } from "@/common/utils/error-handler.util";
-import { AnalyticsService } from "@/modules/analytics/analytics.service";
+import { ApplicationStatus, ProjectStatus } from '@/common/enums';
+import { ApplicationDeadlinePassedException } from '@/common/exceptions/application.exception';
+import { AwsS3Service } from '@/common/services/aws-s3.service';
+import { ErrorHandler } from '@/common/utils/error-handler.util';
+import { AnalyticsService } from '@/modules/analytics/analytics.service';
 
-import { CreateApplicationDto } from "../../common/dto/applications/create-application.dto";
-import { EmailService } from "../email/email.service";
-import { ProjectsService } from "../projects/projects.service";
-import { Application } from "./schemas/applications.schema";
+import { CreateApplicationDto } from '../../common/dto/applications/create-application.dto';
+import { EmailService } from '../email/email.service';
+import { ProjectsService } from '../projects/projects.service';
+import { Application } from './schemas/applications.schema';
+import { CustomLogger } from '@/common/services/logger.service';
 
 @Injectable()
 export class ApplicationsService {
-  private readonly logger = new Logger(ApplicationsService.name);
-
   constructor(
     @InjectModel(Application.name) private applicationModel: Model<Application>,
     @Inject(forwardRef(() => ProjectsService))
     private readonly projectsService: ProjectsService,
     private readonly emailService: EmailService,
     private readonly analyticsService: AnalyticsService,
-    private readonly s3Service: AwsS3Service
+    private readonly s3Service: AwsS3Service,
+    private readonly logger: CustomLogger,
   ) {}
 
   private generateResumeKey(projectId: string, originalName: string): string {
-    const sanitizedName = originalName.replace(/[^a-zA-Z0-9.]/g, "_");
+    const sanitizedName = originalName.replace(/[^a-zA-Z0-9.]/g, '_');
     const timestamp = Date.now();
     return `applications/${projectId}/cv/${timestamp}-${sanitizedName}`;
   }
 
-  async create(
-    createApplicationDto: CreateApplicationDto,
-    resume: Express.Multer.File
-  ) {
+  async create(createApplicationDto: CreateApplicationDto, resume: Express.Multer.File) {
     try {
       // Validate project exists and is accepting applications
-      const project = await this.projectsService.findOne(
-        createApplicationDto.projectId
-      );
+      const project = await this.projectsService.findOne(createApplicationDto.projectId);
 
       if (!project) {
-        throw new NotFoundException("Project not found");
+        throw new NotFoundException('Project not found');
       }
 
       // Check if project is still accepting applications
       if (project.status !== ProjectStatus.PUBLISHED) {
-        throw new BadRequestException("Project is not accepting applications");
+        throw new BadRequestException('Project is not accepting applications');
       }
 
       // Check application deadline if set
-      if (
-        project.applicationDeadline &&
-        new Date() > new Date(project.applicationDeadline)
-      ) {
-        throw new ApplicationDeadlinePassedException(
-          new Date(project.applicationDeadline)
-        );
+      if (project.applicationDeadline && new Date() > new Date(project.applicationDeadline)) {
+        throw new ApplicationDeadlinePassedException(new Date(project.applicationDeadline));
       }
 
       // Check if user has already applied
       const existingApplication = await this.applicationModel.findOne({
         project: createApplicationDto.projectId,
-        "studentInfo.cNumber": createApplicationDto.studentInfo.cNumber,
+        'studentInfo.cNumber': createApplicationDto.studentInfo.cNumber,
       });
 
       if (existingApplication) {
-        throw new BadRequestException(
-          "You have already applied to this project"
-        );
+        throw new BadRequestException('You have already applied to this project');
       }
 
       // Generate resume key and upload file
-      const resumeKey = this.generateResumeKey(
-        createApplicationDto.projectId,
-        resume.originalname
-      );
-      this.logger.debug("Uploading resume", { key: resumeKey });
+      const resumeKey = this.generateResumeKey(createApplicationDto.projectId, resume.originalname);
+      this.logger.debug(`Uploading resume with key: ${resumeKey}`);
 
       try {
         await this.s3Service.uploadFile(resume, resumeKey);
       } catch (error) {
-        this.logger.error("Failed to upload resume", { error });
-        throw new BadRequestException("Failed to upload resume");
+        this.logger.error(`Failed to upload resume: ${error.message}`);
+        throw new BadRequestException('Failed to upload resume');
       }
 
       // Create the application
@@ -112,15 +97,15 @@ export class ApplicationsService {
 
       if (!savedApplication) {
         await this.s3Service.deleteFile(resumeKey);
-        throw new Error("Failed to save application");
+        throw new Error('Failed to save application');
       }
 
       // Populate the saved application with project details
       const populatedApplication = await savedApplication.populate({
-        path: "project",
+        path: 'project',
         populate: {
-          path: "professor",
-          select: "email name",
+          path: 'professor',
+          select: 'email name',
         },
       });
 
@@ -128,42 +113,48 @@ export class ApplicationsService {
       await this.analyticsService.updateApplicationMetrics(
         savedApplication.project.toString(),
         null,
-        ApplicationStatus.PENDING
+        ApplicationStatus.PENDING,
       );
 
       // Send confirmation emails
       try {
         // Send confirmation to student
-        await this.emailService.sendApplicationConfirmation(
-          savedApplication,
-          project.title
-        );
+        await this.emailService.sendApplicationConfirmation(savedApplication, project.title);
 
         // Send notification to professor
         await this.emailService.sendProfessorNewApplication(
           project.professor.email,
           savedApplication,
-          project.title
+          project.title,
         );
       } catch (emailError) {
-        this.logger.error("Failed to send confirmation emails", {
-          error: emailError.message,
-          applicationId: savedApplication.id,
-        });
+        this.logger.error(
+          'Failed to send confirmation emails',
+          JSON.stringify({
+            error: emailError.message,
+            applicationId: savedApplication.id,
+          }),
+        );
         // Don't throw error here - application was still created successfully
       }
 
-      this.logger.debug("Application created successfully", {
-        applicationId: savedApplication.id,
-        resumePath: resumeKey,
-      });
+      this.logger.debug(
+        'Application created successfully',
+        JSON.stringify({
+          applicationId: savedApplication.id,
+          resumePath: resumeKey,
+        }),
+      );
 
       return populatedApplication;
     } catch (error) {
-      this.logger.error("Failed to create application", {
-        error: error.message,
-        stack: error.stack,
-      });
+      this.logger.error(
+        'Failed to create application',
+        JSON.stringify({
+          error: error.message,
+          stack: error.stack,
+        }),
+      );
 
       // Re-throw specific exceptions
       if (
@@ -174,66 +165,60 @@ export class ApplicationsService {
         throw error;
       }
 
-      throw new BadRequestException(
-        `Failed to create application: ${error.message}`
-      );
+      throw new BadRequestException(`Failed to create application: ${error.message}`);
     }
   }
 
   async updateStatus(
     professorId: string,
     applicationId: string,
-    status: ApplicationStatus
+    status: ApplicationStatus,
   ): Promise<Application> {
     try {
-      const application = await this.applicationModel
-        .findById(applicationId)
-        .populate({
-          path: "project",
-          populate: {
-            path: "professor",
-            select: "id email name",
-          },
-        });
+      const application = await this.applicationModel.findById(applicationId).populate({
+        path: 'project',
+        populate: {
+          path: 'professor',
+          select: 'id email name',
+        },
+      });
 
       if (!application) {
-        throw new NotFoundException("Application not found");
+        throw new NotFoundException('Application not found');
       }
 
       // Add this check to verify professor ownership
       if (application.project.professor.toString() !== professorId) {
-        throw new NotFoundException("Application not found");
+        throw new NotFoundException('Application not found');
       }
 
       const oldStatus = application.status;
       const updatedApplication = await this.applicationModel
         .findByIdAndUpdate(applicationId, { status }, { new: true })
-        .populate("project");
+        .populate('project');
 
       // Update analytics for status change
       await this.analyticsService.updateApplicationMetrics(
         application.project.id,
         oldStatus,
-        status
+        status,
       );
 
       await this.emailService.sendApplicationStatusUpdate(
         application.studentInfo.email,
         application.project.title,
-        status
+        status,
       );
 
-      this.logger.log(
-        `Application ${applicationId} status updated to ${status}`
-      );
+      this.logger.log(`Application ${applicationId} status updated to ${status}`);
       return updatedApplication;
     } catch (error) {
       ErrorHandler.handleServiceError(
         this.logger,
         error,
-        "update application status",
+        'update application status',
         { applicationId, professorId, status },
-        [NotFoundException]
+        [NotFoundException],
       );
     }
   }
@@ -241,13 +226,13 @@ export class ApplicationsService {
   async findProjectApplications(
     professorId: string,
     projectId: string,
-    status?: ApplicationStatus
+    status?: ApplicationStatus,
   ): Promise<Application[]> {
     try {
       const project = await this.projectsService.findOne(projectId);
 
       if (project.professor.id.toString() !== professorId) {
-        throw new NotFoundException("Project not found");
+        throw new NotFoundException('Project not found');
       }
 
       const filter: any = { project: projectId };
@@ -257,49 +242,45 @@ export class ApplicationsService {
 
       const applications = await this.applicationModel
         .find(filter)
-        .populate("project")
+        .populate('project')
         .sort({ createdAt: -1 });
 
-      this.logger.log(
-        `Retrieved ${applications.length} applications for project ${projectId}`
-      );
+      this.logger.log(`Retrieved ${applications.length} applications for project ${projectId}`);
       return applications;
     } catch (error) {
       ErrorHandler.handleServiceError(
         this.logger,
         error,
-        "fetch project applications",
+        'fetch project applications',
         { projectId, professorId, status },
-        [NotFoundException]
+        [NotFoundException],
       );
     }
   }
 
   async getResume(
     professorId: string,
-    applicationId: string
+    applicationId: string,
   ): Promise<{ url: string; fileName: string; mimeType: string }> {
     try {
-      const application = await this.applicationModel
-        .findById(applicationId)
-        .populate({
-          path: "project",
-          select: "professor",
-        });
+      const application = await this.applicationModel.findById(applicationId).populate({
+        path: 'project',
+        select: 'professor',
+      });
 
       if (!application) {
-        throw new NotFoundException("Application not found");
+        throw new NotFoundException('Application not found');
       }
 
       if (application.project.professor.toString() !== professorId) {
-        throw new NotFoundException("Application not found");
+        throw new NotFoundException('Application not found');
       }
 
       if (!application.resumePath) {
-        throw new NotFoundException("Resume not found");
+        throw new NotFoundException('Resume not found');
       }
 
-      const fileName = application.resumePath.split("/").pop();
+      const fileName = application.resumePath.split('/').pop();
       const mimeType = this.getMimeType(fileName);
 
       // Generate a pre-signed URL for temporary access to the file
@@ -315,44 +296,45 @@ export class ApplicationsService {
       ErrorHandler.handleServiceError(
         this.logger,
         error,
-        "retrieve resume",
+        'retrieve resume',
         { applicationId, professorId },
-        [NotFoundException]
+        [NotFoundException],
       );
     }
   }
 
   private getMimeType(fileName: string): string {
     if (!fileName) {
-      return "application/octet-stream";
+      return 'application/octet-stream';
     }
 
     try {
-      const extension = fileName.split(".").pop()?.toLowerCase();
+      const extension = fileName.split('.').pop()?.toLowerCase();
       switch (extension) {
-        case "pdf":
-          return "application/pdf";
-        case "doc":
-          return "application/msword";
-        case "docx":
-          return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        case 'pdf':
+          return 'application/pdf';
+        case 'doc':
+          return 'application/msword';
+        case 'docx':
+          return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
         default:
-          return "application/octet-stream";
+          return 'application/octet-stream';
       }
     } catch (error) {
-      this.logger.error("Failed to determine mime type", {
-        fileName,
-        error: error.message,
-      });
-      return "application/octet-stream";
+      this.logger.error(
+        'Failed to determine mime type',
+        JSON.stringify({
+          fileName,
+          error: error.message,
+        }),
+      );
+      return 'application/octet-stream';
     }
   }
 
   async closeProjectApplications(projectId: string): Promise<void> {
     try {
-      this.logger.log(
-        `Closing all pending applications for project ${projectId}`
-      );
+      this.logger.log(`Closing all pending applications for project ${projectId}`);
 
       const result = await this.applicationModel.updateMany(
         {
@@ -361,42 +343,32 @@ export class ApplicationsService {
         },
         {
           status: ApplicationStatus.CLOSED,
-        }
+        },
       );
 
       this.logger.log(
-        `Successfully closed ${result.modifiedCount} pending applications for project ${projectId}`
+        `Successfully closed ${result.modifiedCount} pending applications for project ${projectId}`,
       );
     } catch (error) {
-      ErrorHandler.handleServiceError(
-        this.logger,
-        error,
-        "close project applications",
-        {
-          projectId,
-        }
-      );
+      ErrorHandler.handleServiceError(this.logger, error, 'close project applications', {
+        projectId,
+      });
     }
   }
 
-  async deleteApplication(
-    professorId: string,
-    applicationId: string
-  ): Promise<void> {
+  async deleteApplication(professorId: string, applicationId: string): Promise<void> {
     try {
-      const application = await this.applicationModel
-        .findById(applicationId)
-        .populate({
-          path: "project",
-          select: "professor",
-        });
+      const application = await this.applicationModel.findById(applicationId).populate({
+        path: 'project',
+        select: 'professor',
+      });
 
       if (!application) {
-        throw new NotFoundException("Application not found");
+        throw new NotFoundException('Application not found');
       }
 
       if (application.project.professor.toString() !== professorId) {
-        throw new NotFoundException("Application not found");
+        throw new NotFoundException('Application not found');
       }
 
       // Delete resume from S3 if it exists
@@ -410,9 +382,9 @@ export class ApplicationsService {
       ErrorHandler.handleServiceError(
         this.logger,
         error,
-        "delete application",
+        'delete application',
         { applicationId, professorId },
-        [NotFoundException]
+        [NotFoundException],
       );
     }
   }
