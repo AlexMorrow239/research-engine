@@ -7,7 +7,7 @@ import { EmailModule } from '@/modules/email/email.module';
 
 import { ProfessorsModule } from '../professors/professors.module';
 import { ProjectsController } from './projects.controller';
-import { ProjectsSchedulerService } from './projects.scheduler.service';
+import { ProjectsSchedulerService } from './services/projects.scheduler.service';
 import { ProjectsService } from './projects.service';
 import { Project, ProjectSchema } from './schemas/projects.schema';
 import { CustomLogger } from '@/common/services/logger.service';

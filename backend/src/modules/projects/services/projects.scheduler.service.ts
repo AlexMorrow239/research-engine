@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { CustomLogger } from '@/common/services/logger.service';
-import { ProjectsService } from './projects.service';
+import { ProjectsService } from '../projects.service';
 
 /**
  * Service responsible for handling scheduled tasks related to projects.

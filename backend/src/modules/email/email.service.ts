@@ -1,15 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable } from '@nestjs/common';
 
 import * as nodemailer from 'nodemailer';
 
 import { ErrorHandler } from '@/common/utils/error-handler.util';
-import { DownloadUrlService } from '@/modules/file-storage/download-url.service';
+import { DownloadUrlService } from './services/download-url.service';
 import { ApplicationStatus } from '@common/enums';
 
 import { Application } from '../applications/schemas/applications.schema';
 import { EmailConfigService } from './config/email.config';
-import { EmailTemplateService } from './email-template.service';
+import { EmailTemplateService } from './services/email-template.service';
 import { CustomLogger } from '@/common/services/logger.service';
 
 @Injectable()

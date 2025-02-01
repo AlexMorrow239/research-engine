@@ -1,22 +1,19 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 
-import { Model } from "mongoose";
-import { v4 as uuidv4 } from "uuid";
+import { Model } from 'mongoose';
+import { v4 as uuidv4 } from 'uuid';
 
-import { EmailTracking } from "./schemas/email-tracking.schema";
+import { EmailTracking } from '../schemas/email-tracking.schema';
 
 @Injectable()
 export class EmailTrackingService {
   constructor(
     @InjectModel(EmailTracking.name)
-    private emailTrackingModel: Model<EmailTracking>
+    private emailTrackingModel: Model<EmailTracking>,
   ) {}
 
-  async createTrackingToken(
-    applicationId: string,
-    projectId: string
-  ): Promise<string> {
+  async createTrackingToken(applicationId: string, projectId: string): Promise<string> {
     const token = uuidv4();
 
     await this.emailTrackingModel.create({
@@ -31,10 +28,10 @@ export class EmailTrackingService {
 
   async createTestTrackingToken(
     applicationId: string,
-    projectId: string
+    projectId: string,
   ): Promise<{ token: string; tracking: EmailTracking }> {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("Test endpoints are not available in production");
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('Test endpoints are not available in production');
     }
 
     const token = uuidv4();
@@ -60,11 +57,11 @@ export class EmailTrackingService {
         $push: { clickTimestamps: new Date() },
         $setOnInsert: { firstClickedAt: new Date() },
       },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!result) {
-      throw new NotFoundException("Invalid tracking token");
+      throw new NotFoundException('Invalid tracking token');
     }
   }
 
@@ -85,24 +82,24 @@ export class EmailTrackingService {
     const stats = await this.emailTrackingModel.aggregate([
       {
         $lookup: {
-          from: "projects",
-          localField: "project",
-          foreignField: "_id",
-          as: "projectData",
+          from: 'projects',
+          localField: 'project',
+          foreignField: '_id',
+          as: 'projectData',
         },
       },
       {
         $group: {
           _id: null,
           totalEmails: { $sum: 1 },
-          totalClicks: { $sum: "$clicks" },
-          totalViewed: { $sum: { $cond: ["$hasBeenViewed", 1, 0] } },
+          totalClicks: { $sum: '$clicks' },
+          totalViewed: { $sum: { $cond: ['$hasBeenViewed', 1, 0] } },
           projectStats: {
             $push: {
-              projectId: "$project",
-              title: { $first: "$projectData.title" },
-              clicks: "$clicks",
-              viewed: "$hasBeenViewed",
+              projectId: '$project',
+              title: { $first: '$projectData.title' },
+              clicks: '$clicks',
+              viewed: '$hasBeenViewed',
             },
           },
         },
@@ -114,9 +111,9 @@ export class EmailTrackingService {
           totalClicks: 1,
           totalViewed: 1,
           viewRate: {
-            $multiply: [{ $divide: ["$totalViewed", "$totalEmails"] }, 100],
+            $multiply: [{ $divide: ['$totalViewed', '$totalEmails'] }, 100],
           },
-          averageClicksPerEmail: { $divide: ["$totalClicks", "$totalEmails"] },
+          averageClicksPerEmail: { $divide: ['$totalClicks', '$totalEmails'] },
           projectStats: 1,
         },
       },
