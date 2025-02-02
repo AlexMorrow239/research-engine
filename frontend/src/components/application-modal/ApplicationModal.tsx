@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import { AdditionalInfoStep } from "./additional-info-step/AdditionalInfo";
 import "./ApplicationModal.scss";
 import { AvailabilityStep } from "./availability-step/AvailabilityStep";
-import { ProgressStep } from "./progress-step/ProgressStep";
+import { ProgressBar } from "./progress-bar/ProgressBar";
 import { StudentInfoStep } from "./student-info-step/StudentInfo";
 import { useApplicationForm } from "./useApplicationForm";
 
@@ -53,7 +53,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({
             </button>
           </div>
 
-          <ProgressStep currentStep={currentStep} />
+          <ProgressBar currentStep={currentStep} />
 
           <form
             onSubmit={(e) => {

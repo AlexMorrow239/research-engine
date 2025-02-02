@@ -1,8 +1,8 @@
 import React from "react";
 
-import "./ProgressStep.scss";
+import "./ProgressBar.scss";
 
-interface ProgressStepProps {
+interface ProgressBarProps {
   currentStep: number;
 }
 
@@ -12,7 +12,7 @@ const STEPS = [
   { step: 3, label: "Additional Info" },
 ] as const;
 
-export const ProgressStep: React.FC<ProgressStepProps> = ({ currentStep }) => {
+export const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep }) => {
   return (
     <div className="progress">
       <div className="progress__labels">

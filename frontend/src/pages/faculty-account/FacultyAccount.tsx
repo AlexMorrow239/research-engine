@@ -196,6 +196,7 @@ export const FacultyAccount = (): JSX.Element => {
             />
 
             <ArrayField
+              formType="generic"
               form={form}
               name="researchAreas"
               label="Research Areas"

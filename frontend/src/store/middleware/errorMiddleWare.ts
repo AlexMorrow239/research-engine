@@ -7,9 +7,21 @@ import { logout } from "../features/auth/authSlice";
 import { addToast, type ToastType } from "../features/ui/uiSlice";
 import type { AppDispatch } from "../index";
 
+// Constants for error handling
+const ERROR_CONSTANTS = {
+  DEFAULT_DURATION: 5000,
+  SESSION_EXPIRED_MESSAGE: "Your session has expired. Please log in again.",
+  UNEXPECTED_ERROR_MESSAGE: "An unexpected error occurred",
+} as const;
+
 // Helper to check if action is an auth-related action
 const isAuthAction = (actionType: string): boolean => {
-  const authActions = ["auth/login", "auth/registerFaculty"];
+  const authActions = [
+    "auth/login",
+    "auth/registerFaculty",
+    "auth/requestPasswordReset",
+    "auth/resetPassword",
+  ];
   return authActions.some((action) => actionType.startsWith(action));
 };
 
@@ -19,9 +31,9 @@ const handleSessionExpiration = (store: { dispatch: AppDispatch }): void => {
   store.dispatch(logout());
   store.dispatch(
     addToast({
-      message: "Your session has expired. Please log in again.",
+      message: ERROR_CONSTANTS.SESSION_EXPIRED_MESSAGE,
       type: "warning",
-      duration: 5000,
+      duration: ERROR_CONSTANTS.DEFAULT_DURATION,
     })
   );
 };
@@ -32,18 +44,31 @@ const createErrorToast = (
 ): { message: string; type: ToastType; duration: number } => ({
   message: error.message,
   type: error.toastType,
-  duration: error.toastDuration,
+  duration: error.toastDuration || ERROR_CONSTANTS.DEFAULT_DURATION,
 });
 
-export const errorMiddleware: Middleware =
-  (store) => (next) => (action: unknown) => {
-    if (!isRejectedWithValue(action)) {
-      return next(action);
-    }
+// Helper to create generic error toast
+const createGenericErrorToast = (
+  message: string = ERROR_CONSTANTS.UNEXPECTED_ERROR_MESSAGE
+) => ({
+  message,
+  type: "error" as ToastType,
+  duration: ERROR_CONSTANTS.DEFAULT_DURATION,
+});
 
-    const payload = action.payload;
-
-    // Enhanced error logging
+// Helper to log error details in development
+const logError = (
+  action: {
+    type: string;
+    error?: unknown;
+    meta?: {
+      arg?: unknown;
+      [key: string]: unknown;
+    };
+  },
+  payload: unknown
+): void => {
+  if (process.env.NODE_ENV !== "production") {
     console.error("Redux Error:", {
       type: action.type,
       payload,
@@ -51,38 +76,38 @@ export const errorMiddleware: Middleware =
       meta: action.meta,
       arg: action.meta?.arg,
     });
+  }
+};
 
-    if (payload instanceof ApiError) {
-      // Log API errors with details
-      console.error("API Error:", {
-        message: payload.message,
-        status: payload.status,
-        data: payload.data,
-      });
+export const errorMiddleware: Middleware = (store) => (next) => (action) => {
+  if (!isRejectedWithValue(action)) {
+    return next(action);
+  }
 
-      // Handle authentication errors first
-      if (payload.status === 401 && !isAuthAction(action.type)) {
-        handleSessionExpiration(store);
-        return next(action);
-      }
+  const payload = action.payload;
+  logError(action, payload);
 
-      // Only show toast for non-401 errors since handleSessionExpiration already shows a toast
-      if (payload.status !== 401) {
-        store.dispatch(addToast(createErrorToast(payload)));
-      }
-    } else {
-      // Handle non-ApiError rejections
-      store.dispatch(
-        addToast({
-          message:
-            typeof payload === "string"
-              ? payload
-              : "An unexpected error occurred",
-          type: "error",
-          duration: 5000,
-        })
-      );
+  if (payload instanceof ApiError) {
+    // Handle authentication errors first
+    if (payload.status === 401 && !isAuthAction(action.type)) {
+      handleSessionExpiration(store);
+      return next(action);
     }
 
-    return next(action);
-  };
+    // Show toast for non-401 errors
+    if (payload.status !== 401) {
+      store.dispatch(addToast(createErrorToast(payload)));
+    }
+  } else {
+    // Handle non-ApiError rejections
+    store.dispatch(
+      addToast(
+        createGenericErrorToast(
+          typeof payload === "string" ? payload : undefined
+        )
+      )
+    );
+  }
+
+  return next(action);
+};

@@ -2,10 +2,10 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import FacultyLogin from "@/pages/auth/faculty-login/FacultyLogin";
 import FacultyRegistration from "@/pages/auth/faculty-registration/FacultyRegistration";
+import { ResetPassword } from "@/pages/auth/reset-password/ResetPassword";
 import { FacultyAccount } from "@/pages/faculty-account/FacultyAccount";
 import ProjectDashboard from "@/pages/projects/project-dashboard/ProjectDashboard";
 import { ProjectForm } from "@/pages/projects/project-form/ProjectForm";
-import { ResetPassword } from "@/pages/reset-password/ResetPassword";
 import { useAppSelector } from "@/store";
 
 import { ProtectedLayout } from "./ProtectedLayout";

@@ -1,0 +1,32 @@
+@use "../../styles/abstracts" as *;
+
+.konami-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-toast);
+  background-color: color-alpha($color-gray-900, 0.5);
+  backdrop-filter: blur(4px);
+
+  @include flex-center;
+}
+
+.konami-message {
+  font-size: var(--font-size-4xl);
+  color: white;
+  text-align: center;
+  animation: bounce 1s infinite alternate ease-in-out;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+  @include respond-to("md") {
+    font-size: var(--font-size-5xl);
+  }
+}
+
+@keyframes bounce {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-20px);
+  }
+}
