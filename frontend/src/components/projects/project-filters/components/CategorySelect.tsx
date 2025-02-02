@@ -6,7 +6,7 @@ import { setFilters } from "@/store/features/projects/projectsSlice";
 
 import type { RootState } from "@/store";
 
-import { FilterDropdown } from "./FilterDropdown";
+import { FilterDropdown } from "../../../common/filter-dropdown/FilterDropdown";
 
 export const CategorySelect: React.FC = () => {
   const dispatch = useDispatch();
@@ -48,7 +48,7 @@ export const CategorySelect: React.FC = () => {
   );
 
   return (
-    <div className="project-filters__select-group">
+    <>
       <label>Research Categories</label>
       <FilterDropdown
         isOpen={isOpen}
@@ -62,6 +62,6 @@ export const CategorySelect: React.FC = () => {
         placeholder="Select categories"
         searchPlaceholder="Search categories..."
       />
-    </div>
+    </>
   );
 };

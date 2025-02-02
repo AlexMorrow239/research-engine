@@ -2,6 +2,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { setFilters } from "@/store/features/projects/projectsSlice";
 
+import { FormField } from "@/components/common/form-field/FormField";
+
 import { Campus } from "@/common/enums";
 
 import type { RootState } from "@/store";
@@ -20,25 +22,24 @@ export const CampusSelect: React.FC = () => {
   );
 
   const handleCampusChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<
+      HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement
+    >
   ): void => {
     dispatch(setFilters({ campus: event.target.value }));
   };
 
   return (
-    <div className="project-filters__select-group">
-      <label htmlFor="campus-select">Campus</label>
-      <select
-        id="campus-select"
-        value={selectedCampus}
+    <>
+      <FormField
+        formType="generic"
+        name="campus"
+        label="Campus"
+        options={CAMPUS_OPTIONS}
+        required={false}
         onChange={handleCampusChange}
-      >
-        {CAMPUS_OPTIONS.map(({ value, label }) => (
-          <option key={value || "all"} value={value}>
-            {label}
-          </option>
-        ))}
-      </select>
-    </div>
+        value={selectedCampus}
+      />
+    </>
   );
 };

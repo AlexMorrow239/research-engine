@@ -3,6 +3,8 @@ import { useEffect, useRef } from "react";
 import classNames from "classnames";
 import { ChevronDown, Search } from "lucide-react";
 
+import "./FilterDropDown.scss";
+
 interface FilterDropdownProps {
   isOpen: boolean;
   selected: string[];

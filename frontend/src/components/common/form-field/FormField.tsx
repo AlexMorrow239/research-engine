@@ -27,7 +27,13 @@ interface BaseFormFieldProps<T> {
   disabled?: boolean;
   rows?: number;
   defaultValue?: T;
+  value?: string | number | readonly string[];
   autocomplete?: string;
+  onChange?: (
+    event: React.ChangeEvent<
+      HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement
+    >
+  ) => void;
 }
 
 interface ApplicationFormFieldProps extends BaseFormFieldProps<string> {
@@ -40,7 +46,7 @@ interface GenericFormFieldProps<T extends Record<string, unknown>>
   extends BaseFormFieldProps<PathValue<T, Path<T>>> {
   formType: "generic";
   name: Path<T>;
-  form: UseFormReturn<T>;
+  form?: UseFormReturn<T>;
 }
 
 type FormFieldProps<T extends Record<string, unknown>> =
@@ -62,18 +68,21 @@ export function FormField<T extends Record<string, unknown>>({
   rows,
   formType,
   defaultValue,
+  value,
   autocomplete,
+  onChange,
 }: FormFieldProps<T>): JSX.Element {
-  const {
-    formState: { errors },
-  } = form;
+  const errors = form?.formState?.errors;
 
-  const registerField =
-    formType === "application"
+  const registerField = form
+    ? formType === "application"
       ? form.register(name)
-      : form.register(name, { value: defaultValue });
+      : form.register(name, { value: defaultValue })
+    : { onChange, name };
 
   const getError = (): Record<string, unknown> | FieldError | undefined => {
+    if (!errors) return undefined;
+
     const parts = name.split(".");
     let currentErrors: Record<string, unknown> | FieldError | undefined =
       errors;
@@ -105,6 +114,7 @@ export function FormField<T extends Record<string, unknown>>({
           {...registerField}
           className={inputClassName}
           disabled={disabled}
+          value={value}
         >
           <option value="">Select {label.toLowerCase()}</option>
           {options.map(({ value, label }) => (

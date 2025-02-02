@@ -8,7 +8,7 @@ import { Department } from "@/common/enums";
 
 import type { RootState } from "@/store";
 
-import { FilterDropdown } from "./FilterDropdown";
+import { FilterDropdown } from "../../../common/filter-dropdown/FilterDropdown";
 
 export const DepartmentSelect: React.FC = () => {
   const dispatch = useDispatch();
@@ -48,7 +48,7 @@ export const DepartmentSelect: React.FC = () => {
   );
 
   return (
-    <div className="project-filters__select-group">
+    <>
       <label>Departments</label>
       <FilterDropdown
         isOpen={isOpen}
@@ -62,6 +62,6 @@ export const DepartmentSelect: React.FC = () => {
         placeholder="Select departments"
         searchPlaceholder="Search departments..."
       />
-    </div>
+    </>
   );
 };

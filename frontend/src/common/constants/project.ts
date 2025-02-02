@@ -1,3 +1,5 @@
+import { SortOption } from "@/types";
+
 import { Campus, ProjectLength, ProjectStatus } from "../enums";
 
 export const PROJECT_STATUS_OPTIONS = [
@@ -20,6 +22,13 @@ export const CAMPUS_OPTIONS = [
   { value: Campus.MEDICAL, label: "Miller Medical Campus" },
   { value: Campus.MARINE, label: "Rosenstiel Marine Campus" },
 ] as const;
+
+export const SORT_OPTIONS: SortOption[] = [
+  { value: "createdAt", label: "Newest First", order: "desc" },
+  { value: "createdAt", label: "Oldest First", order: "asc" },
+  { value: "applicationDeadline", label: "Deadline (Soonest)", order: "asc" },
+  { value: "applicationDeadline", label: "Deadline (Latest)", order: "desc" },
+];
 
 // Helper function to get a user-friendly status label that considers project expiration
 export const getProjectStatusLabel = (
