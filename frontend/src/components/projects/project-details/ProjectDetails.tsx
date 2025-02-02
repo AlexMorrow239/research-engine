@@ -10,7 +10,7 @@ import { isDeadlineExpired, isDeadlineSoon } from "@/utils/dateUtils";
 import "./ProjectDetails.scss";
 
 interface ProjectDetailsProps {
-  project: Project;
+  project: Project | null;
 }
 
 export const ProjectDetails = memo(function ProjectDetails({

@@ -22,9 +22,9 @@ import type { Campus } from "@/common/enums";
 import type { AppDispatch, RootState } from "@/store";
 import type { Project, ProjectsState } from "@/types";
 
-import "./Listings.scss";
+import "./ProjectPositions.scss";
 
-export default function Listings(): JSX.Element {
+export default function ProjectPositions(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
   const navigate = useNavigate();
@@ -259,10 +259,6 @@ export default function Listings(): JSX.Element {
                 ? {
                     ...currentProject,
                     campus: currentProject.campus as Campus,
-                    files: currentProject.files.map((file) => ({
-                      fileName: file,
-                      originalName: file,
-                    })),
                   }
                 : null
             }
