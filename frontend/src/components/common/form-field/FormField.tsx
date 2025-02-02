@@ -27,6 +27,7 @@ interface BaseFormFieldProps<T> {
   disabled?: boolean;
   rows?: number;
   defaultValue?: T;
+  autocomplete?: string;
 }
 
 interface ApplicationFormFieldProps extends BaseFormFieldProps<string> {
@@ -61,6 +62,7 @@ export function FormField<T extends Record<string, unknown>>({
   rows,
   formType,
   defaultValue,
+  autocomplete,
 }: FormFieldProps<T>): JSX.Element {
   const {
     formState: { errors },
@@ -128,6 +130,7 @@ export function FormField<T extends Record<string, unknown>>({
           min={min}
           max={max}
           disabled={disabled}
+          autoComplete={autocomplete}
         />
       )}
       {help && <span className="form-field__help">{help}</span>}

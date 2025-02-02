@@ -71,6 +71,7 @@ export function PasswordField<T extends Record<string, unknown>>({
           className={inputClassName}
           placeholder={placeholder}
           disabled={disabled}
+          autoComplete="current-password"
         />
         <button
           type="button"

@@ -180,6 +180,7 @@ export default function FacultyRegistration(): JSX.Element {
               label="Miami Email Address"
               type="email"
               placeholder="username@miami.edu"
+              autocomplete="username"
             />
 
             <PasswordField

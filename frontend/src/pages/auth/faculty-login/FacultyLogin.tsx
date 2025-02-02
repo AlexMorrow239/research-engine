@@ -79,6 +79,7 @@ export default function FacultyLogin(): JSX.Element {
               label="Miami Email Address"
               type="email"
               placeholder="username@miami.edu"
+              autocomplete="username"
             />
 
             <PasswordField
