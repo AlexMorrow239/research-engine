@@ -308,6 +308,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
           />
 
           <ArrayField
+            formType="generic"
             form={form}
             name="researchCategories"
             label="Research Categories"
@@ -318,6 +319,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
           />
 
           <ArrayField
+            formType="generic"
             form={form}
             name="requirements"
             label="Requirements"

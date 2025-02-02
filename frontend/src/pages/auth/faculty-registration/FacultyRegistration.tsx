@@ -233,6 +233,7 @@ export default function FacultyRegistration(): JSX.Element {
             />
 
             <ArrayField
+              formType="generic"
               form={form}
               name="researchAreas"
               label="Research Areas"

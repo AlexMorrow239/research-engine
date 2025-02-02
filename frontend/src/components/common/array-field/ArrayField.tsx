@@ -2,14 +2,18 @@ import { useEffect } from "react";
 
 import type { Path, PathValue, UseFormReturn } from "react-hook-form";
 
+import type { ApplicationFormData } from "@/types";
+
 import "./ArrayField.scss";
 
-interface ArrayFieldProps<T extends Record<string, unknown>> {
+type ApplicationFormPaths =
+  | `studentInfo.${keyof ApplicationFormData["studentInfo"]}`
+  | `studentInfo.name.${"firstName" | "lastName"}`
+  | `availability.${keyof ApplicationFormData["availability"]}`
+  | `additionalInfo.${keyof ApplicationFormData["additionalInfo"]}`;
+
+interface BaseArrayFieldProps {
   label: string;
-  name: Path<T>;
-  form: UseFormReturn<T>;
-  value: string[];
-  setValue: (values: string[]) => void;
   placeholder?: string;
   required?: boolean;
   help?: string;
@@ -17,6 +21,27 @@ interface ArrayFieldProps<T extends Record<string, unknown>> {
   addButtonText?: string;
   defaultValue?: string[];
 }
+
+interface ApplicationArrayFieldProps extends BaseArrayFieldProps {
+  formType: "application";
+  name: ApplicationFormPaths;
+  form: UseFormReturn<ApplicationFormData>;
+  value: string[];
+  setValue: (values: string[]) => void;
+}
+
+interface GenericArrayFieldProps<T extends Record<string, unknown>>
+  extends BaseArrayFieldProps {
+  formType: "generic";
+  name: Path<T>;
+  form: UseFormReturn<T>;
+  value: string[];
+  setValue: (values: string[]) => void;
+}
+
+type ArrayFieldProps<T extends Record<string, unknown>> =
+  | ApplicationArrayFieldProps
+  | GenericArrayFieldProps<T>;
 
 export function ArrayField<T extends Record<string, unknown>>({
   label,
@@ -30,43 +55,127 @@ export function ArrayField<T extends Record<string, unknown>>({
   minItems = 1,
   addButtonText = "Add Item",
   defaultValue,
+  formType,
 }: ArrayFieldProps<T>): JSX.Element {
   const {
     formState: { errors },
     setValue: setFormValue,
+    trigger,
   } = form;
 
   useEffect(() => {
     if (defaultValue) {
       setValue(defaultValue);
-      setFormValue(name, defaultValue as PathValue<T, Path<T>>);
+      if (formType === "application") {
+        (setFormValue as UseFormReturn<ApplicationFormData>["setValue"])(
+          name,
+          defaultValue as PathValue<ApplicationFormData, ApplicationFormPaths>,
+          { shouldValidate: true }
+        );
+      } else {
+        (setFormValue as UseFormReturn<T>["setValue"])(
+          name as Path<T>,
+          defaultValue as PathValue<T, Path<T>>,
+          { shouldValidate: true }
+        );
+      }
     }
-  }, [defaultValue, name, setValue, setFormValue]);
+  }, [defaultValue, name, setValue, setFormValue, formType]);
 
-  const handleChange = (index: number, newValue: string): void => {
+  const handleChange = async (
+    index: number,
+    newValue: string
+  ): Promise<void> => {
     const newValues = [...value];
     newValues[index] = newValue;
     setValue(newValues);
-    setFormValue(name, newValues as PathValue<T, Path<T>>);
+    if (formType === "application") {
+      (setFormValue as UseFormReturn<ApplicationFormData>["setValue"])(
+        name,
+        newValues as PathValue<ApplicationFormData, ApplicationFormPaths>,
+        { shouldValidate: true }
+      );
+    } else {
+      (setFormValue as UseFormReturn<T>["setValue"])(
+        name as Path<T>,
+        newValues as PathValue<T, Path<T>>,
+        { shouldValidate: true }
+      );
+    }
+
+    // Trigger validation after value update
+    if (formType === "application") {
+      await (trigger as UseFormReturn<ApplicationFormData>["trigger"])(name);
+    } else {
+      await (trigger as UseFormReturn<T>["trigger"])(name as Path<T>);
+    }
   };
 
-  const handleRemove = (index: number): void => {
+  const handleRemove = async (index: number): Promise<void> => {
     const newValues = [...value];
     newValues.splice(index, 1);
     setValue(newValues);
-    setFormValue(name, newValues as PathValue<T, Path<T>>);
+    if (formType === "application") {
+      (setFormValue as UseFormReturn<ApplicationFormData>["setValue"])(
+        name,
+        newValues as PathValue<ApplicationFormData, ApplicationFormPaths>,
+        { shouldValidate: true }
+      );
+    } else {
+      (setFormValue as UseFormReturn<T>["setValue"])(
+        name as Path<T>,
+        newValues as PathValue<T, Path<T>>,
+        { shouldValidate: true }
+      );
+    }
+
+    // Trigger validation after value update
+    if (formType === "application") {
+      await (trigger as UseFormReturn<ApplicationFormData>["trigger"])(name);
+    } else {
+      await (trigger as UseFormReturn<T>["trigger"])(name as Path<T>);
+    }
   };
 
-  const handleAdd = (): void => {
-    setValue([...value, ""]);
+  const handleAdd = async (): Promise<void> => {
+    const newValues = [...value, ""];
+    setValue(newValues);
+    if (formType === "application") {
+      (setFormValue as UseFormReturn<ApplicationFormData>["setValue"])(
+        name,
+        newValues as PathValue<ApplicationFormData, ApplicationFormPaths>,
+        { shouldValidate: true }
+      );
+    } else {
+      (setFormValue as UseFormReturn<T>["setValue"])(
+        name as Path<T>,
+        newValues as PathValue<T, Path<T>>,
+        { shouldValidate: true }
+      );
+    }
+    // Trigger validation after value update
+    if (formType === "application") {
+      await (trigger as UseFormReturn<ApplicationFormData>["trigger"])(name);
+    } else {
+      await (trigger as UseFormReturn<T>["trigger"])(name as Path<T>);
+    }
   };
 
-  // Get nested error using the name path
-  const error = name
-    .split(".")
-    .reduce<
-      Record<string, unknown>
-    >((obj, key) => (obj?.[key] || {}) as Record<string, unknown>, errors as Record<string, unknown>);
+  const getError = (): Record<string, unknown> | undefined => {
+    const parts = name.split(".");
+    let currentErrors: Record<string, unknown> | undefined = errors;
+
+    for (const part of parts) {
+      if (!currentErrors || typeof currentErrors !== "object") return undefined;
+      currentErrors = (currentErrors as Record<string, unknown>)[part] as
+        | Record<string, unknown>
+        | undefined;
+    }
+
+    return currentErrors;
+  };
+
+  const error = getError();
 
   return (
     <div className="array-field">

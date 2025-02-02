@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 
 import type { UseFormReturn } from "react-hook-form";
 
+import { ArrayField } from "@/components/common/array-field/ArrayField";
+import { FormField } from "@/components/common/form-field/FormField";
+
 import type { ApplicationFormData } from "@/types";
 
 import "./AdditionalInfo.scss";
@@ -14,7 +17,6 @@ export const AdditionalInfoStep: React.FC<AdditionalInfoStepProps> = ({
   form,
 }) => {
   const {
-    register,
     watch,
     setValue,
     formState: { errors },
@@ -40,18 +42,6 @@ export const AdditionalInfoStep: React.FC<AdditionalInfoStepProps> = ({
       setLanguages(watchedLanguages);
     }
   }, [speaksOtherLangs, watchedLanguages]);
-
-  // Input classname helper with proper error handling
-  const getInputClassName = (
-    fieldName: string,
-    baseClass = "form-group__input"
-  ): string => {
-    const fieldError =
-      errors.additionalInfo?.[
-        fieldName as keyof ApplicationFormData["additionalInfo"]
-      ];
-    return `${baseClass} ${fieldError ? "form-group__input--error" : ""}`;
-  };
 
   // Radio group component with improved error handling
   const RadioGroup = ({
@@ -129,42 +119,6 @@ export const AdditionalInfoStep: React.FC<AdditionalInfoStepProps> = ({
     );
   };
 
-  // Language input handlers
-  const handleLanguageChange = async (
-    index: number,
-    value: string
-  ): Promise<void> => {
-    const newLanguages = [...languages];
-    newLanguages[index] = value;
-    setLanguages(newLanguages);
-
-    // Filter out empty strings before setting the value
-    const validLanguages = newLanguages.filter((lang) => lang.trim() !== "");
-    setValue("additionalInfo.additionalLanguages", validLanguages, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    await trigger("additionalInfo.additionalLanguages");
-  };
-
-  const handleAddLanguage = (): void => {
-    setLanguages([...languages, ""]);
-  };
-
-  const handleRemoveLanguage = async (index: number): Promise<void> => {
-    const newLanguages = [...languages];
-    newLanguages.splice(index, 1);
-    setLanguages(newLanguages);
-
-    // Update form value and validate
-    const validLanguages = newLanguages.filter((lang) => lang.trim() !== "");
-    setValue("additionalInfo.additionalLanguages", validLanguages, {
-      shouldValidate: true,
-      shouldDirty: true,
-    });
-    await trigger("additionalInfo.additionalLanguages");
-  };
-
   return (
     <div className="modal__step">
       <h3>Additional Information</h3>
@@ -180,39 +134,29 @@ export const AdditionalInfoStep: React.FC<AdditionalInfoStepProps> = ({
 
         {hasPrevResearch && (
           <div className="form-group form-group--full">
-            <label className="form-group__label">
-              Please describe your previous research experience{" "}
-              <span className="required">*</span>
-            </label>
-            <textarea
-              {...register("additionalInfo.prevResearchExperience")}
-              className={getInputClassName("prevResearchExperience")}
+            <FormField
+              formType="application"
+              form={form}
+              name="additionalInfo.prevResearchExperience"
+              label="Please describe your previous research experience"
+              type="textarea"
               placeholder="Please provide details about your research experience, including the duration, topic, and your role"
+              required
             />
-            {errors.additionalInfo?.prevResearchExperience && (
-              <span className="form-group__error">
-                {errors.additionalInfo.prevResearchExperience.message}
-              </span>
-            )}
           </div>
         )}
 
         {/* Research Interests Section */}
         <div className="form-group form-group--full">
-          <label className="form-group__label">
-            What are your research interests?{" "}
-            <span className="required">*</span>
-          </label>
-          <textarea
-            {...register("additionalInfo.researchInterestDescription")}
-            className={getInputClassName("researchInterestDescription")}
+          <FormField
+            formType="application"
+            form={form}
+            name="additionalInfo.researchInterestDescription"
+            label="What are your research interests?"
+            type="textarea"
             placeholder="Describe your research interests, including specific areas or topics you'd like to explore"
+            required
           />
-          {errors.additionalInfo?.researchInterestDescription && (
-            <span className="form-group__error">
-              {errors.additionalInfo.researchInterestDescription.message}
-            </span>
-          )}
         </div>
 
         {/* Other Qualifications Section */}
@@ -237,45 +181,19 @@ export const AdditionalInfoStep: React.FC<AdditionalInfoStepProps> = ({
           />
 
           {speaksOtherLangs && (
-            <div className="languages-container">
-              <label className="form-group__label">
-                Please list the languages you speak{" "}
-                <span className="required">*</span>
-              </label>
-              {languages.map((language, index) => (
-                <div key={index} className="array-input">
-                  <input
-                    type="text"
-                    value={language}
-                    onChange={(e) =>
-                      void handleLanguageChange(index, e.target.value)
-                    }
-                    className={getInputClassName("additionalLanguages")}
-                    placeholder="e.g., Spanish, French, Mandarin"
-                  />
-                  {languages.length > 1 && (
-                    <button
-                      type="button"
-                      className="button button--secondary button--sm"
-                      onClick={() => void handleRemoveLanguage(index)}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={handleAddLanguage}
-                className="button button--secondary button--sm"
-              >
-                Add Language
-              </button>
-              {errors.additionalInfo?.additionalLanguages && (
-                <span className="form-group__error">
-                  {errors.additionalInfo.additionalLanguages.message}
-                </span>
-              )}
+            <div className="form-group form-group--full">
+              <ArrayField
+                formType="application"
+                label="Please list the languages you speak"
+                name="additionalInfo.additionalLanguages"
+                form={form}
+                value={languages}
+                setValue={setLanguages}
+                placeholder="e.g., Spanish, French, Mandarin"
+                required
+                minItems={1}
+                addButtonText="Add Language"
+              />
             </div>
           )}
         </div>
