@@ -185,7 +185,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
     try {
       const formattedData: Omit<
         Project,
-        "id" | "professor" | "files" | "isVisible" | "createdAt" | "updatedAt"
+        "id" | "professor" | "files" | "createdAt" | "updatedAt"
       > = {
         ...data,
         status,

@@ -1,7 +1,16 @@
-import { forwardRef, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+
 import mongoose, { Model } from 'mongoose';
+
 import { ApplicationStatus, ProjectStatus } from '@/common/enums';
+import { CustomLogger } from '@/common/services/logger.service';
 import { ErrorHandler } from '@/common/utils/error-handler.util';
 import { ApplicationsService } from '@/modules/applications/applications.service';
 import { EmailService } from '@/modules/email/email.service';
@@ -12,8 +21,8 @@ import {
   UpdateProjectDto,
 } from '@common/dto/projects';
 import { Professor } from '@modules/professors/schemas/professors.schema';
+
 import { Project } from './schemas/projects.schema';
-import { CustomLogger } from '@/common/services/logger.service';
 
 /**
  * Service responsible for managing research projects in the system.
@@ -36,7 +45,7 @@ export class ProjectsService {
     @Inject(forwardRef(() => ApplicationsService))
     private readonly applicationsService: ApplicationsService,
     private readonly emailService: EmailService,
-    private readonly logger: CustomLogger,
+    private readonly logger: CustomLogger
   ) {
     this.logger.setContext('ProjectsService');
   }
@@ -75,10 +84,13 @@ export class ProjectsService {
         applicationDeadline: project.applicationDeadline,
         createdAt: project.createdAt,
         updatedAt: project.updatedAt,
-        isVisible: true,
       };
 
-      this.logger.logObject('debug', { projectId: project._id }, 'Transformed project response');
+      this.logger.logObject(
+        'debug',
+        { projectId: project._id },
+        'Transformed project response'
+      );
       return response;
     } catch (error) {
       this.logger.error('Failed to transform project response', error);
@@ -96,7 +108,7 @@ export class ProjectsService {
    */
   async create(
     professor: Professor,
-    createProjectDto: CreateProjectDto,
+    createProjectDto: CreateProjectDto
   ): Promise<ProjectResponseDto> {
     try {
       this.logger.log(`Creating new project for professor ${professor._id}`);
@@ -105,14 +117,17 @@ export class ProjectsService {
         professor: professor._id,
       });
 
-      const populatedProject = await project.populate('professor', 'name email department');
+      const populatedProject = await project.populate(
+        'professor',
+        'name email department'
+      );
       this.logger.logObject(
         'debug',
         {
           projectId: project._id,
           professorId: professor._id,
         },
-        'Project created successfully',
+        'Project created successfully'
       );
       return this.transformToProjectResponse(populatedProject);
     } catch (error) {
@@ -121,7 +136,7 @@ export class ProjectsService {
         error,
         'create project',
         { professorId: professor._id },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -133,7 +148,7 @@ export class ProjectsService {
   async update(
     professorId: string,
     projectId: string,
-    updateProjectDto: UpdateProjectDto,
+    updateProjectDto: UpdateProjectDto
   ): Promise<ProjectResponseDto> {
     try {
       this.logger.logObject(
@@ -143,22 +158,28 @@ export class ProjectsService {
           professorId,
           updates: updateProjectDto,
         },
-        'Attempting to update project',
+        'Attempting to update project'
       );
 
       const updatedProject = await this.projectModel
-        .findOneAndUpdate({ _id: projectId, professor: professorId }, updateProjectDto, {
-          new: true,
-        })
+        .findOneAndUpdate(
+          { _id: projectId, professor: professorId },
+          updateProjectDto,
+          {
+            new: true,
+          }
+        )
         .populate('professor', 'name department email');
 
       if (!updatedProject) {
         this.logger.logObject(
           'warn',
           { projectId, professorId },
-          'Project not found or unauthorized',
+          'Project not found or unauthorized'
         );
-        throw new NotFoundException("Project not found or you don't have permission to update it");
+        throw new NotFoundException(
+          "Project not found or you don't have permission to update it"
+        );
       }
 
       this.logger.logObject(
@@ -167,7 +188,7 @@ export class ProjectsService {
           projectId,
           professorId,
         },
-        'Project updated successfully',
+        'Project updated successfully'
       );
 
       return this.transformToProjectResponse(updatedProject);
@@ -177,7 +198,7 @@ export class ProjectsService {
         error,
         'update project',
         { projectId, professorId },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -190,7 +211,11 @@ export class ProjectsService {
    */
   async remove(professorId: string, projectId: string): Promise<void> {
     try {
-      this.logger.logObject('debug', { projectId, professorId }, 'Attempting to delete project');
+      this.logger.logObject(
+        'debug',
+        { projectId, professorId },
+        'Attempting to delete project'
+      );
 
       const project = await this.projectModel
         .findOneAndDelete({
@@ -203,20 +228,26 @@ export class ProjectsService {
         this.logger.logObject(
           'warn',
           { projectId, professorId },
-          'Project not found or unauthorized for deletion',
+          'Project not found or unauthorized for deletion'
         );
-        throw new NotFoundException("Project not found or you don't have permission to delete it");
+        throw new NotFoundException(
+          "Project not found or you don't have permission to delete it"
+        );
       }
 
       // TODO: Implement file cleanup when file storage is implemented
-      this.logger.logObject('debug', { projectId, professorId }, 'Project deleted successfully');
+      this.logger.logObject(
+        'debug',
+        { projectId, professorId },
+        'Project deleted successfully'
+      );
     } catch (error) {
       throw ErrorHandler.handleServiceError(
         this.logger,
         error,
         'delete project',
         { projectId, professorId },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -242,7 +273,12 @@ export class ProjectsService {
     try {
       this.logger.logObject('debug', { query }, 'Fetching projects with query');
 
-      const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc' } = query;
+      const {
+        page = 1,
+        limit = 10,
+        sortBy = 'createdAt',
+        sortOrder = 'desc',
+      } = query;
 
       const filter = await this.buildFilterConditions(query);
       const sortOptions = this.buildSortOptions(sortBy, sortOrder);
@@ -263,17 +299,24 @@ export class ProjectsService {
       this.logger.logObject(
         'debug',
         { count: projects.length, total, filter },
-        'Projects fetched successfully',
+        'Projects fetched successfully'
       );
 
       return {
-        projects: projects.map((project) => this.transformToProjectResponse(project)),
+        projects: projects.map((project) =>
+          this.transformToProjectResponse(project)
+        ),
         total,
       };
     } catch (error) {
-      throw ErrorHandler.handleServiceError(this.logger, error, 'fetch projects', {
-        query,
-      });
+      throw ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        'fetch projects',
+        {
+          query,
+        }
+      );
     }
   }
 
@@ -283,7 +326,11 @@ export class ProjectsService {
    */
   async findOne(id: string): Promise<ProjectResponseDto> {
     try {
-      this.logger.logObject('debug', { projectId: id }, 'Fetching project by ID');
+      this.logger.logObject(
+        'debug',
+        { projectId: id },
+        'Fetching project by ID'
+      );
 
       const project = await this.projectModel
         .findById(id)
@@ -301,7 +348,7 @@ export class ProjectsService {
           projectId: id,
           professorId: project.professor._id,
         },
-        'Project found successfully',
+        'Project found successfully'
       );
 
       return this.transformToProjectResponse(project);
@@ -311,7 +358,7 @@ export class ProjectsService {
         error,
         'fetch project',
         { projectId: id },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -322,10 +369,14 @@ export class ProjectsService {
    */
   async findProfessorProjects(
     professorId: string,
-    status?: ProjectStatus,
+    status?: ProjectStatus
   ): Promise<ProjectResponseDto[]> {
     try {
-      this.logger.logObject('debug', { professorId, status }, 'Fetching professor projects');
+      this.logger.logObject(
+        'debug',
+        { professorId, status },
+        'Fetching professor projects'
+      );
 
       const projects = await this.projectModel
         .find({ professor: professorId, ...(status && { status }) })
@@ -340,15 +391,22 @@ export class ProjectsService {
           projectCount: projects.length,
           status,
         },
-        'Professor projects fetched successfully',
+        'Professor projects fetched successfully'
       );
 
-      return projects.map((project) => this.transformToProjectResponse(project));
+      return projects.map((project) =>
+        this.transformToProjectResponse(project)
+      );
     } catch (error) {
-      throw ErrorHandler.handleServiceError(this.logger, error, 'fetch professor projects', {
-        professorId,
-        status,
-      });
+      throw ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        'fetch professor projects',
+        {
+          professorId,
+          status,
+        }
+      );
     }
   }
 
@@ -400,7 +458,8 @@ export class ProjectsService {
    * Searches project title, description, requirements, and professor names.
    */
   private async buildSearchFilter(search: string): Promise<any[]> {
-    const escapeRegex = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+    const escapeRegex = (text: string) =>
+      text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
     const searchTerms = search
       .trim()
@@ -439,7 +498,7 @@ export class ProjectsService {
         matchedProfessors: professorIds.length,
         query: professorQuery,
       },
-      'Professor search results',
+      'Professor search results'
     );
 
     const searchFilter = [
@@ -457,13 +516,17 @@ export class ProjectsService {
    */
   private buildSortOptions(
     sortBy: string = 'createdAt',
-    sortOrder: 'asc' | 'desc' = 'desc',
+    sortOrder: 'asc' | 'desc' = 'desc'
   ): { [key: string]: mongoose.SortOrder } {
     const sortOptions = {
       [sortBy]: (sortOrder === 'desc' ? -1 : 1) as mongoose.SortOrder,
     };
 
-    this.logger.logObject('debug', { sortBy, sortOrder, sortOptions }, 'Building sort options');
+    this.logger.logObject(
+      'debug',
+      { sortBy, sortOrder, sortOptions },
+      'Building sort options'
+    );
     return sortOptions;
   }
 
@@ -478,7 +541,11 @@ export class ProjectsService {
    */
   async closeProject(professorId: string, projectId: string): Promise<void> {
     try {
-      this.logger.logObject('debug', { projectId, professorId }, 'Attempting to close project');
+      this.logger.logObject(
+        'debug',
+        { projectId, professorId },
+        'Attempting to close project'
+      );
 
       const project = await this.projectModel.findOne({
         _id: projectId,
@@ -489,21 +556,23 @@ export class ProjectsService {
         this.logger.logObject(
           'warn',
           { projectId, professorId },
-          'Project not found or unauthorized',
+          'Project not found or unauthorized'
         );
-        throw new NotFoundException("Project not found or you don't have permission to modify it");
+        throw new NotFoundException(
+          "Project not found or you don't have permission to modify it"
+        );
       }
 
       await this.projectModel.findByIdAndUpdate(projectId, {
         status: ProjectStatus.CLOSED,
-        isVisible: false,
       });
 
-      const applications = await this.applicationsService.findProjectApplications(
-        professorId,
-        projectId,
-        ApplicationStatus.PENDING,
-      );
+      const applications =
+        await this.applicationsService.findProjectApplications(
+          professorId,
+          projectId,
+          ApplicationStatus.PENDING
+        );
 
       this.logger.logObject(
         'debug',
@@ -511,7 +580,7 @@ export class ProjectsService {
           projectId,
           pendingApplications: applications.length,
         },
-        'Processing pending applications',
+        'Processing pending applications'
       );
 
       await Promise.all([
@@ -519,19 +588,23 @@ export class ProjectsService {
         ...applications.map((application) =>
           this.emailService.sendProjectClosedNotification(
             application.studentInfo.email,
-            project.title,
-          ),
+            project.title
+          )
         ),
       ]);
 
-      this.logger.logObject('debug', { projectId, professorId }, 'Project closed successfully');
+      this.logger.logObject(
+        'debug',
+        { projectId, professorId },
+        'Project closed successfully'
+      );
     } catch (error) {
       throw ErrorHandler.handleServiceError(
         this.logger,
         error,
         'close project',
         { projectId, professorId },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -556,7 +629,7 @@ export class ProjectsService {
         {
           expiredProjectsCount: expiredProjects.length,
         },
-        'Found expired projects',
+        'Found expired projects'
       );
 
       // Process each expired project
@@ -568,21 +641,21 @@ export class ProjectsService {
               projectId: project._id,
               professorId: project.professor,
             },
-            'Processing expired project',
+            'Processing expired project'
           );
 
           // Update project status
           await this.projectModel.findByIdAndUpdate(project._id, {
             status: ProjectStatus.CLOSED,
-            isVisible: false,
           });
 
           // Find pending applications
-          const applications = await this.applicationsService.findProjectApplications(
-            project.professor.toString(),
-            project._id.toString(),
-            ApplicationStatus.PENDING,
-          );
+          const applications =
+            await this.applicationsService.findProjectApplications(
+              project.professor.toString(),
+              project._id.toString(),
+              ApplicationStatus.PENDING
+            );
 
           this.logger.logObject(
             'debug',
@@ -590,17 +663,19 @@ export class ProjectsService {
               projectId: project._id,
               pendingApplications: applications.length,
             },
-            'Processing pending applications for expired project',
+            'Processing pending applications for expired project'
           );
 
           // Close applications and send notifications
           await Promise.all([
-            this.applicationsService.closeProjectApplications(project._id.toString()),
+            this.applicationsService.closeProjectApplications(
+              project._id.toString()
+            ),
             ...applications.map((application) =>
               this.emailService.sendProjectClosedNotification(
                 application.studentInfo.email,
-                project.title,
-              ),
+                project.title
+              )
             ),
           ]);
 
@@ -609,9 +684,9 @@ export class ProjectsService {
             {
               projectId: project._id,
             },
-            'Successfully closed expired project',
+            'Successfully closed expired project'
           );
-        }),
+        })
       );
 
       this.logger.logObject(
@@ -619,11 +694,15 @@ export class ProjectsService {
         {
           processedCount: expiredProjects.length,
         },
-        'Completed expired projects cleanup',
+        'Completed expired projects cleanup'
       );
       return expiredProjects.length;
     } catch (error) {
-      throw ErrorHandler.handleServiceError(this.logger, error, 'close expired projects');
+      throw ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        'close expired projects'
+      );
     }
   }
 
@@ -639,7 +718,7 @@ export class ProjectsService {
   async addProjectFile(
     professorId: string,
     projectId: string,
-    file: Express.Multer.File,
+    file: Express.Multer.File
   ): Promise<ProjectFileDto> {
     this.logger.log('File upload functionality is not implemented yet');
     return {
@@ -656,7 +735,11 @@ export class ProjectsService {
    * Only the professor who created the project can remove files.
    * TODO: Implement actual file removal.
    */
-  async removeProjectFile(professorId: string, projectId: string, fileName: string): Promise<void> {
+  async removeProjectFile(
+    professorId: string,
+    projectId: string,
+    fileName: string
+  ): Promise<void> {
     this.logger.log('File removal functionality is not implemented yet');
   }
 

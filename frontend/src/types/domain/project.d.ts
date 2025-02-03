@@ -22,7 +22,6 @@ export interface Project {
   status: ProjectStatus;
   positions: number;
   applicationDeadline: Date;
-  isVisible: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

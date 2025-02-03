@@ -153,10 +153,7 @@ export const fetchProfessorProjects = createAsyncThunk(
 
 export const createProject = createAsyncThunk<
   Project,
-  Omit<
-    Project,
-    "id" | "professor" | "files" | "isVisible" | "createdAt" | "updatedAt"
-  >,
+  Omit<Project, "id" | "professor" | "files" | "createdAt" | "updatedAt">,
   { rejectValue: ApiError }
 >("projects/create", async (projectData, { dispatch, rejectWithValue }) => {
   try {
@@ -214,7 +211,7 @@ export const updateProject = createAsyncThunk<
     id: string;
     project: Omit<
       Project,
-      "id" | "professor" | "files" | "isVisible" | "createdAt" | "updatedAt"
+      "id" | "professor" | "files" | "createdAt" | "updatedAt"
     >;
   },
   { rejectValue: ApiError }

@@ -1,11 +1,17 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 import { Type } from 'class-transformer';
-import { IsArray, IsDate, IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import {
+  IsArray,
+  IsDate,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from 'class-validator';
 
-import { Campus } from '@/common/enums';
-
-import { ProjectStatus } from '@/common/enums';
+import { Campus, ProjectStatus } from '@/common/enums';
 
 export class UpdateProjectDto {
   @ApiPropertyOptional()
@@ -56,8 +62,4 @@ export class UpdateProjectDto {
   @IsDate()
   @IsOptional()
   applicationDeadline?: Date;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  isVisible?: boolean;
 }

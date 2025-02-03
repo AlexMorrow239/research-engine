@@ -1,8 +1,5 @@
-/**
- * Barrel file for exporting all enum and exception types
- * Simplifies imports by providing a single entry point
- */
-
-export * from "./application.enums";
-export * from "./status.enums";
-export * from "./campus.enum";
+export * from './application';
+export * from './academic';
+export * from './demographics';
+export * from './project';
+export * from './user';

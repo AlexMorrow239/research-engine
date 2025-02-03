@@ -1,8 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+
 import { Document, Schema as MongooseSchema } from 'mongoose';
-import { Campus } from '@/common/enums/campus.enum';
-import { Professor } from '../../professors/schemas/professors.schema';
+
 import { ProjectStatus } from '@/common/enums';
+import { Campus } from '@/common/enums/';
+
+import { Professor } from '../../professors/schemas/professors.schema';
 import { ProjectFile } from './project-file.schema';
 
 /**
@@ -67,13 +70,6 @@ export class Project extends Document {
   /** Deadline for students to submit applications */
   @Prop()
   applicationDeadline?: Date;
-
-  /**
-   * Controls whether the project is visible in search results
-   * Projects can be hidden even when in PUBLISHED status
-   */
-  @Prop({ default: false })
-  isVisible: boolean;
 
   /** Array of files attached to this project */
   @Prop({ type: [ProjectFile], default: [] })

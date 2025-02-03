@@ -1,8 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-import { Campus } from '@/common/enums';
+import { Campus, ProjectStatus } from '@/common/enums';
 
-import { ProjectStatus } from '@/common/enums';
 import { NameDto } from '../base/name.dto';
 import { ProjectFileDto } from './project-file.dto';
 
@@ -21,7 +20,8 @@ export class ProjectResponseDto {
 
   @ApiProperty({
     description: 'Detailed project description',
-    example: 'Looking for students interested in ML and computer vision research...',
+    example:
+      'Looking for students interested in ML and computer vision research...',
   })
   description: string;
 
@@ -81,12 +81,6 @@ export class ProjectResponseDto {
     example: '2024-12-31T23:59:59.999Z',
   })
   applicationDeadline?: Date;
-
-  @ApiProperty({
-    description: 'Project visibility status',
-    example: true,
-  })
-  isVisible: boolean;
 
   @ApiProperty({
     description: 'Attached project files',
