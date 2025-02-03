@@ -1,3 +1,5 @@
+import { env } from "@/config/env";
+
 interface FetchOptions extends RequestInit {
   requiresAuth?: boolean;
   isFormData?: boolean;
@@ -45,7 +47,7 @@ export const api = {
       isFormData = false,
       ...fetchOptions
     } = options;
-    const baseUrl = import.meta.env.VITE_API_URL;
+    const baseUrl = env.VITE_API_URL;
 
     // Construct URL, handling trailing slashes
     const url = baseUrl.endsWith("/")
