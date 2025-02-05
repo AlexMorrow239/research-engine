@@ -1,10 +1,9 @@
-import { useState } from "react";
-
 import { useNavigate } from "react-router-dom";
 
 import {
   deleteProject,
   delistProject,
+  setLoadingProjectId,
 } from "@/store/features/projects/projectsSlice";
 
 import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
@@ -31,7 +30,6 @@ export function ProjectSection({
 }: ProjectSectionProps): JSX.Element {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [loadingProjectId, setLoadingProjectId] = useState<string | null>(null);
 
   const handleEdit = (projectId: string): void => {
     navigate(`/faculty/projects/${projectId}/edit`);
@@ -39,7 +37,7 @@ export function ProjectSection({
 
   const handleDelete = async (projectId: string): Promise<void> => {
     try {
-      setLoadingProjectId(projectId);
+      dispatch(setLoadingProjectId(projectId));
 
       if (status === ProjectStatus.PUBLISHED) {
         if (!window.confirm("Are you sure you want to delist this project?")) {
@@ -59,8 +57,8 @@ export function ProjectSection({
 
       // Start the refresh but don't await it
       onProjectUpdate?.();
-    } finally {
-      setLoadingProjectId(null);
+    } catch (error) {
+      dispatch(setLoadingProjectId(null));
     }
   };
 
@@ -82,7 +80,6 @@ export function ProjectSection({
             onClick={() => handleCardClick(project.id)}
             onEdit={() => handleEdit(project.id)}
             onDelete={() => handleDelete(project.id)}
-            isLoading={loadingProjectId === project.id}
           />
         ))}
         {projects.length === 0 && (

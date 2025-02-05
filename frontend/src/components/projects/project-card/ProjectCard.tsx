@@ -1,5 +1,7 @@
 import { memo } from "react";
 
+import { useSelector } from "react-redux";
+
 import {
   Archive,
   Building2,
@@ -12,6 +14,7 @@ import {
 import { UI_CONSTANTS } from "@/common/constants";
 import { type Campus, ProjectStatus } from "@/common/enums";
 
+import { RootState } from "@/types";
 import {
   formatDeadline,
   isDeadlineExpired,
@@ -42,7 +45,6 @@ interface ProjectCardProps {
   layout?: "vertical" | "horizontal";
   onEdit?: () => void;
   onDelete?: () => void;
-  isLoading?: boolean;
 }
 
 export const ProjectCard = memo(function ProjectCard({
@@ -52,8 +54,11 @@ export const ProjectCard = memo(function ProjectCard({
   layout = "vertical",
   onEdit,
   onDelete,
-  isLoading = false,
 }: ProjectCardProps): JSX.Element {
+  const loadingProjectId = useSelector(
+    (state: RootState) => state.projects.loadingProjectId
+  );
+  const isLoading = loadingProjectId === project.id;
   // Helper function to get deadline status
   const getDeadlineInfo = (
     deadline?: Date

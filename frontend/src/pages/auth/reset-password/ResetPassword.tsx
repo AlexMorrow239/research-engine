@@ -14,7 +14,7 @@ import {
 import { FormField } from "@/components/common/form-field/FormField";
 import { PasswordField } from "@/components/common/password-field/PasswordField";
 
-import { useAppDispatch } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
 
 import "./ResetPassword.scss";
 
@@ -47,7 +47,7 @@ export const ResetPassword = (): JSX.Element => {
   const token = searchParams.get("token");
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [isLoading, setIsLoading] = useState(false);
+  const isLoading = useAppSelector((state) => state.auth.isLoading);
   const [requestSent, setRequestSent] = useState(false);
 
   // Form for requesting password reset
@@ -63,13 +63,10 @@ export const ResetPassword = (): JSX.Element => {
   // Handle requesting password reset
   const handleRequestReset = async (data: RequestResetForm): Promise<void> => {
     try {
-      setIsLoading(true);
       await dispatch(requestPasswordReset(data.email)).unwrap();
       setRequestSent(true);
     } catch (error) {
       console.error("Error requesting password reset:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -80,15 +77,12 @@ export const ResetPassword = (): JSX.Element => {
     if (!token) return;
 
     try {
-      setIsLoading(true);
       await dispatch(
         resetPassword({ token, password: data.password })
       ).unwrap();
       navigate("/faculty/login");
     } catch (error) {
       console.error("Error resetting password:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

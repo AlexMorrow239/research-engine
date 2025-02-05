@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
+
+import { useSelector } from "react-redux";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -10,6 +12,11 @@ import {
   createProject,
   deleteProject,
   fetchProject,
+  resetFormState,
+  setFormLoading,
+  setFormRequirements,
+  setFormResearchCategories,
+  setFormSubmitting,
   updateProject,
 } from "@/store/features/projects/projectsSlice";
 
@@ -21,7 +28,7 @@ import { CAMPUS_OPTIONS } from "@/common/constants";
 import { Campus, ProjectStatus } from "@/common/enums";
 
 import { useAppDispatch } from "@/store";
-import type { Project } from "@/types";
+import type { Project, RootState } from "@/types";
 import { ApiError } from "@/utils/api";
 
 import "./ProjectForm.scss";
@@ -96,10 +103,8 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
   const dispatch = useAppDispatch();
   const { projectId } = useParams();
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(mode === "edit");
-  const [researchCategories, setResearchCategories] = useState([""]);
-  const [requirements, setRequirements] = useState([""]);
+  const { isSubmitting, isLoading, researchCategories, requirements } =
+    useSelector((state: RootState) => state.projects.formState);
 
   const form = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
@@ -112,6 +117,9 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
   const currentStatus = watch("status");
 
   useEffect(() => {
+    // Set initial loading state
+    dispatch(setFormLoading(mode === "edit"));
+
     const loadProject = async (): Promise<void> => {
       if (mode === "edit" && projectId) {
         try {
@@ -124,6 +132,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
 
           const project = response as Project;
 
+          // Format the date for the form
           const date = new Date(project.applicationDeadline);
           const formattedDate = date.toISOString().split("T")[0]; // Format: YYYY-MM-DD
 
@@ -136,6 +145,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
             shouldTouch: true,
           });
           setValue("campus", project.campus);
+          setValue("status", project.status);
 
           // Set the formatted string value directly on the input element
           const dateInput = document.getElementById(
@@ -144,23 +154,21 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
           if (dateInput) {
             dateInput.value = formattedDate;
           }
-          setValue("status", project.status);
-          setValue("status", project.status);
 
-          // Set array values with fallbacks
+          // Set array values with fallbacks using Redux actions
           const projectCategories =
             Array.isArray(project.researchCategories) &&
             project.researchCategories.length
               ? project.researchCategories
               : [""];
-          setResearchCategories(projectCategories);
+          dispatch(setFormResearchCategories(projectCategories));
           setValue("researchCategories", projectCategories);
 
           const projectRequirements =
             Array.isArray(project.requirements) && project.requirements.length
               ? project.requirements
               : [""];
-          setRequirements(projectRequirements);
+          dispatch(setFormRequirements(projectRequirements));
           setValue("requirements", projectRequirements);
         } catch (error) {
           console.error("Error loading project:", error);
@@ -169,20 +177,33 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
             navigate("/faculty/dashboard");
           }
         } finally {
-          setIsLoading(false);
+          dispatch(setFormLoading(false));
         }
       }
     };
 
     loadProject();
+
+    // Cleanup function to reset form state when component unmounts
+    return () => {
+      dispatch(resetFormState());
+    };
   }, [mode, projectId, dispatch, setValue, navigate]);
+
+  const handleResearchCategoriesChange = (newCategories: string[]) => {
+    dispatch(setFormResearchCategories(newCategories));
+  };
+
+  const handleRequirementsChange = (newRequirements: string[]) => {
+    dispatch(setFormRequirements(newRequirements));
+  };
 
   const onSubmit = async (
     data: ProjectFormData,
     status: ProjectStatus,
     action?: "delete" | "delist"
   ): Promise<void> => {
-    setIsSubmitting(true);
+    dispatch(setFormSubmitting(true));
     try {
       const formattedData: Omit<
         Project,
@@ -211,7 +232,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
     } catch (error) {
       console.error("Error handling project:", error);
     } finally {
-      setIsSubmitting(false);
+      dispatch(setFormSubmitting(false));
     }
   };
 
@@ -313,7 +334,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
             name="researchCategories"
             label="Research Categories"
             value={researchCategories}
-            setValue={setResearchCategories}
+            setValue={handleResearchCategoriesChange}
             placeholder="e.g., Machine Learning"
             minItems={1}
           />
@@ -324,7 +345,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
             name="requirements"
             label="Requirements"
             value={requirements}
-            setValue={setRequirements}
+            setValue={handleRequirementsChange}
             placeholder="e.g., Programming experience in Python"
             required={false}
             help="Add any specific requirements for applicants"

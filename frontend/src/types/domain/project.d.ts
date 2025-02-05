@@ -46,14 +46,23 @@ export interface ProjectFiltersType {
 
 export type ProjectSortOption = "newest" | "oldest" | string;
 
+export interface ProjectFormState {
+  isSubmitting: boolean;
+  isLoading: boolean;
+  researchCategories: string[];
+  requirements: string[];
+}
+
 export interface ProjectsState extends BaseState {
   allProjects: Project[];
   professorProjects: Project[];
   currentProject: Project | null;
   totalProjects: number;
   isLoading: boolean;
+  loadingProjectId: string | null;
   filters: ProjectFiltersType;
   availableResearchCategories: string[];
   isInitialLoad?: boolean;
   error: string | null;
+  formState: ProjectFormState;
 }

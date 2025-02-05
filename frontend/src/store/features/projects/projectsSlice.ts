@@ -15,6 +15,7 @@ export const initialState: ProjectsState = {
   currentProject: null,
   totalProjects: 0,
   isLoading: false,
+  loadingProjectId: null,
   isInitialLoad: true,
   error: null,
   availableResearchCategories: [],
@@ -26,6 +27,12 @@ export const initialState: ProjectsState = {
     campus: undefined,
     researchCategories: [],
   },
+  formState: {
+    isSubmitting: false,
+    isLoading: false,
+    researchCategories: [""],
+    requirements: [""],
+  },
 };
 
 export const fetchProjects = createAsyncThunk(
@@ -33,10 +40,6 @@ export const fetchProjects = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     try {
       const { filters } = (getState() as RootState).projects;
-
-      if (process.env.NODE_ENV === "development") {
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 second delay
-      }
 
       const queryParams = new URLSearchParams();
 
@@ -122,9 +125,6 @@ export const fetchProfessorProjects = createAsyncThunk(
   "projects/fetchProfessorProjects",
   async ({ status }: { status?: ProjectStatus }, { rejectWithValue }) => {
     try {
-      if (process.env.NODE_ENV === "development") {
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 second delay
-      }
       const queryParams = new URLSearchParams();
       if (status) {
         queryParams.append("status", status);
@@ -186,9 +186,6 @@ export const fetchProject = createAsyncThunk(
   "projects/fetchOne",
   async (projectId: string, { rejectWithValue }) => {
     try {
-      if (process.env.NODE_ENV === "development") {
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 second delay
-      }
       const response = await api.fetch<ApiResponse<Project>>(
         `/api/projects/${projectId}`,
         {
@@ -347,6 +344,24 @@ const projectsSlice = createSlice({
     resetFilters: (state) => {
       state.filters = { ...initialState.filters };
     },
+    setLoadingProjectId: (state, action: PayloadAction<string | null>) => {
+      state.loadingProjectId = action.payload;
+    },
+    setFormSubmitting: (state, action: PayloadAction<boolean>) => {
+      state.formState.isSubmitting = action.payload;
+    },
+    setFormLoading: (state, action: PayloadAction<boolean>) => {
+      state.formState.isLoading = action.payload;
+    },
+    setFormResearchCategories: (state, action: PayloadAction<string[]>) => {
+      state.formState.researchCategories = action.payload;
+    },
+    setFormRequirements: (state, action: PayloadAction<string[]>) => {
+      state.formState.requirements = action.payload;
+    },
+    resetFormState: (state) => {
+      state.formState = initialState.formState;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -460,10 +475,12 @@ const projectsSlice = createSlice({
         }
 
         state.isLoading = false;
+        state.loadingProjectId = null;
         state.error = "";
       })
       .addCase(deleteProject.rejected, (state, action) => {
         state.isLoading = false;
+        state.loadingProjectId = null;
         state.error = action.payload?.message || "An error occurred";
       })
       .addCase(delistProject.pending, (state) => {
@@ -492,11 +509,13 @@ const projectsSlice = createSlice({
         }
 
         state.isLoading = false;
+        state.loadingProjectId = null;
         state.error = null;
       })
       .addCase(delistProject.rejected, (state, action) => {
         console.error("Delisting project - rejected:", action.payload);
         state.isLoading = false;
+        state.loadingProjectId = null;
         state.error = action.payload?.message || "An error occurred";
       });
   },
@@ -507,5 +526,11 @@ export const {
   setCurrentProject,
   clearCurrentProject,
   resetFilters,
+  setLoadingProjectId,
+  setFormSubmitting,
+  setFormLoading,
+  setFormResearchCategories,
+  setFormRequirements,
+  resetFormState,
 } = projectsSlice.actions;
 export default projectsSlice.reducer;
