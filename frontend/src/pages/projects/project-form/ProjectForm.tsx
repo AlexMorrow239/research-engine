@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import {
   createProject,
@@ -25,74 +24,14 @@ import { FormField } from "@/components/common/form-field/FormField";
 import { Loader } from "@/components/common/loader/Loader";
 
 import { CAMPUS_OPTIONS } from "@/common/constants";
-import { Campus, ProjectStatus } from "@/common/enums";
+import { ProjectStatus } from "@/common/enums";
 
 import { useAppDispatch } from "@/store";
 import type { Project, RootState } from "@/types";
 import { ApiError } from "@/utils/api";
 
 import "./ProjectForm.scss";
-
-// Zod schema for project creation/editing
-const projectSchema = z.object({
-  title: z.string().min(1, "Please enter a project title"),
-  description: z.string().min(1, "Please provide a project description"),
-  positions: z.preprocess(
-    (val) => (val === "" || isNaN(Number(val)) ? undefined : Number(val)),
-    z
-      .number({
-        required_error: "Please enter the number of positions",
-        invalid_type_error: "Please enter a valid number of positions",
-      })
-      .min(1, "Please specify at least 1 position")
-  ),
-  applicationDeadline: z.preprocess(
-    (val) => (val ? new Date(val as string) : undefined),
-    z
-      .date({
-        required_error: "Please select an application deadline",
-        invalid_type_error: "Please enter a valid date",
-      })
-      .min(
-        new Date(),
-        "Please select a future date for the application deadline"
-      )
-  ),
-  researchCategories: z
-    .array(z.string())
-    .min(1, "Please add at least one research category")
-    .refine((cats) => cats.every((cat) => cat.trim() !== ""), {
-      message: "Research categories cannot be empty",
-    }),
-  campus: z.nativeEnum(Campus, {
-    errorMap: () => ({ message: "Please select a campus location" }),
-  }),
-
-  // Optional Fields
-  requirements: z
-    .array(z.string())
-    .optional()
-    .default([])
-    .transform((reqs) => reqs.filter((req) => req.trim() !== "")),
-  status: z
-    .nativeEnum(ProjectStatus, {
-      errorMap: () => ({ message: "Please select a valid project status" }),
-    })
-    .default(ProjectStatus.DRAFT),
-});
-
-type ProjectFormData = z.infer<typeof projectSchema>;
-
-const initialFormData: ProjectFormData = {
-  title: "",
-  description: "",
-  researchCategories: [""],
-  requirements: [""],
-  positions: 1,
-  applicationDeadline: new Date(),
-  status: ProjectStatus.DRAFT,
-  campus: "" as Campus,
-};
+import { initialFormData, ProjectFormData, projectSchema } from "./schema";
 
 interface ProjectFormProps {
   mode: "create" | "edit";
