@@ -11,12 +11,15 @@ interface LoaderProps extends HTMLAttributes<HTMLDivElement> {
   className?: string;
   /** Center the loader in its container */
   center?: boolean;
+  /** Optional message to display below the loader */
+  message?: string;
 }
 
 export function Loader({
   size = 24,
   className,
   center = false,
+  message,
   ...props
 }: LoaderProps): JSX.Element {
   return (
@@ -26,14 +29,17 @@ export function Loader({
       })}
       {...props}
     >
-      <div
-        className="loader"
-        style={{
-          width: size,
-          height: size,
-          borderWidth: Math.max(2, size / 8),
-        }}
-      />
+      <div className="loader__content">
+        <div
+          className="loader"
+          style={{
+            width: size,
+            height: size,
+            borderWidth: Math.max(2, size / 8),
+          }}
+        />
+        {message && <h2 className="loader__message">{message}</h2>}
+      </div>
     </div>
   );
 }

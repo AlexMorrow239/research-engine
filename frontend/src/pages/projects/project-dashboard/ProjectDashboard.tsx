@@ -7,6 +7,7 @@ import { LogOut, Plus, UserCog } from "lucide-react";
 import { logout } from "@/store/features/auth/authSlice";
 import { fetchProfessorProjects } from "@/store/features/projects/projectsSlice";
 
+import { Loader } from "@/components/common/loader/Loader";
 import { ProjectSection } from "@/components/projects/project-section/ProjectSection";
 
 import { ProjectStatus } from "@/common/enums";
@@ -65,7 +66,7 @@ export default function ProjectDashboard(): JSX.Element {
   if (isLoading) {
     return (
       <div className="project-dashboard project-dashboard--loading">
-        <div className="loading">Loading projects...</div>
+        <Loader size={48} center />
       </div>
     );
   }

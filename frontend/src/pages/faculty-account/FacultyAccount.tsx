@@ -13,6 +13,7 @@ import {
 
 import { ArrayField } from "@/components/common/array-field/ArrayField";
 import { FormField } from "@/components/common/form-field/FormField";
+import { Loader } from "@/components/common/loader/Loader";
 import { SearchableDropdown } from "@/components/common/searchable-dropdown/SearchableDropdown";
 
 import { Department } from "@/common/enums";
@@ -117,7 +118,7 @@ export const FacultyAccount = (): JSX.Element => {
     return (
       <div className="faculty-account">
         <div className="faculty-account__container">
-          <h1>Loading...</h1>
+          <Loader size={48} center />
         </div>
       </div>
     );

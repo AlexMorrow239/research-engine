@@ -122,6 +122,9 @@ export const fetchProfessorProjects = createAsyncThunk(
   "projects/fetchProfessorProjects",
   async ({ status }: { status?: ProjectStatus }, { rejectWithValue }) => {
     try {
+      if (process.env.NODE_ENV === "development") {
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 second delay
+      }
       const queryParams = new URLSearchParams();
       if (status) {
         queryParams.append("status", status);
@@ -183,6 +186,9 @@ export const fetchProject = createAsyncThunk(
   "projects/fetchOne",
   async (projectId: string, { rejectWithValue }) => {
     try {
+      if (process.env.NODE_ENV === "development") {
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 second delay
+      }
       const response = await api.fetch<ApiResponse<Project>>(
         `/api/projects/${projectId}`,
         {

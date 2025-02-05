@@ -9,11 +9,6 @@
   &--loading {
     @include flex(column, center, center);
     min-height: 50vh;
-
-    .loading {
-      color: var(--color-text-light);
-      font-size: var(--font-size-lg);
-    }
   }
 
   &__header {

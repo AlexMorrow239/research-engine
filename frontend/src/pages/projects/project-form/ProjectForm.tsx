@@ -15,6 +15,7 @@ import {
 
 import { ArrayField } from "@/components/common/array-field/ArrayField";
 import { FormField } from "@/components/common/form-field/FormField";
+import { Loader } from "@/components/common/loader/Loader";
 
 import { CAMPUS_OPTIONS } from "@/common/constants";
 import { Campus, ProjectStatus } from "@/common/enums";
@@ -217,8 +218,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
   if (isLoading) {
     return (
       <div className="project-form project-form--loading">
-        <div className="loading-spinner" />
-        <h2>Loading project details...</h2>
+        <Loader size={48} center message="Loading project details..." />
       </div>
     );
   }
