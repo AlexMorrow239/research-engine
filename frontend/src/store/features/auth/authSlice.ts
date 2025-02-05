@@ -27,6 +27,7 @@ const professorToUser = (professor: Professor): User => ({
   email: professor.email,
   firstName: professor.name.firstName,
   lastName: professor.name.lastName,
+  role: "FACULTY",
 });
 
 export const registerFaculty = createAsyncThunk<
@@ -77,6 +78,10 @@ export const loginUser = createAsyncThunk<
   { rejectValue: ApiError }
 >("auth/login", async (credentials, { dispatch, rejectWithValue }) => {
   try {
+    if (process.env.NODE_ENV === "development") {
+      await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 second delay
+    }
+
     const response = await api.post<AuthResponse>(
       "/api/auth/login",
       credentials,

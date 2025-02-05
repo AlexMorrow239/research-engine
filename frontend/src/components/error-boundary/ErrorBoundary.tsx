@@ -127,7 +127,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
     navigate("/");
   };
 
-  const isDebugMode = import.meta.env.VITE_ENABLE_DEBUG === "true";
+  const isDebugMode = import.meta.env.VITE_ENABLE_DEBUG === true;
   const timestamp = new Date().toLocaleString();
 
   return (

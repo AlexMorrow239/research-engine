@@ -28,6 +28,8 @@ export const KonamiCode: FC = () => {
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent): void => {
+      if (!event.key) return; // Guard clause to prevent undefined key
+
       const key = event.key.toLowerCase();
       const newSequence = [...sequence, key];
 

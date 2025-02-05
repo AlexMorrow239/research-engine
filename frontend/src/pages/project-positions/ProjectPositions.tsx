@@ -9,10 +9,12 @@ import { ChevronLeft } from "lucide-react";
 
 import {
   fetchProjects,
+  initialState,
   setCurrentProject,
   setFilters,
 } from "@/store/features/projects/projectsSlice";
 
+import { Loader } from "@/components/common/loader/Loader";
 import { ProjectCard } from "@/components/projects/project-card/ProjectCard";
 import { ProjectDetails } from "@/components/projects/project-details/ProjectDetails";
 import { ProjectFilters } from "@/components/projects/project-filters/ProjectFilters";
@@ -24,7 +26,7 @@ import type { Project, ProjectsState } from "@/types";
 
 import "./ProjectPositions.scss";
 
-export default function ProjectPositions(): JSX.Element {
+export default function Listings(): JSX.Element {
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
   const navigate = useNavigate();
@@ -161,7 +163,9 @@ export default function ProjectPositions(): JSX.Element {
   if (isInitialLoad || (isLoading && projects.length === 0)) {
     return (
       <div className="listings-page">
-        <div className="loading">Loading projects...</div>
+        <div className="loading">
+          <Loader size={32} />
+        </div>
       </div>
     );
   }
@@ -170,7 +174,36 @@ export default function ProjectPositions(): JSX.Element {
   if (error) {
     return (
       <div className="listings-page">
-        <div className="error-message">{error}</div>
+        <ProjectFilters />
+        <div className="listings-layout">
+          <div className="listings-list">
+            <div className="listings-list__header">
+              <h2>Positions</h2>
+            </div>
+            <div className="listings-list__content">
+              <div className="error-state">
+                <p>
+                  {typeof error === "string"
+                    ? error
+                    : "Unable to load projects. Please try again later."}
+                </p>
+                <button
+                  onClick={() => {
+                    dispatch(setFilters(initialState.filters));
+                    dispatch(fetchProjects());
+                  }}
+                  className="retry-button"
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="listings-detail">
+            <ProjectDetails project={null} />
+          </div>
+        </div>
       </div>
     );
   }

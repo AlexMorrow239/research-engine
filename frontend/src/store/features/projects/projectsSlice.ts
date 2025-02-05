@@ -9,7 +9,7 @@ import { api, ApiError } from "@/utils/api";
 import type { RootState } from "../../index";
 import { addToast } from "../ui/uiSlice";
 
-const initialState: ProjectsState = {
+export const initialState: ProjectsState = {
   allProjects: [],
   professorProjects: [],
   currentProject: null,
@@ -33,6 +33,10 @@ export const fetchProjects = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     try {
       const { filters } = (getState() as RootState).projects;
+
+      if (process.env.NODE_ENV === "development") {
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // 2 second delay
+      }
 
       const queryParams = new URLSearchParams();
 
@@ -84,7 +88,6 @@ export const fetchProjects = createAsyncThunk(
 
       return response;
     } catch (error) {
-      // Enhanced error handling
       console.error("Error fetching projects:", {
         error,
         type: error instanceof Error ? error.constructor.name : typeof error,
@@ -92,23 +95,15 @@ export const fetchProjects = createAsyncThunk(
       });
 
       if (error instanceof ApiError) {
-        return rejectWithValue({
-          message: error.message,
-          status: error.status,
-          data: error.data,
-        });
+        return rejectWithValue(error.message);
       }
 
       if (error instanceof TypeError && error.message === "Failed to fetch") {
         return rejectWithValue("Network error: Unable to connect to server");
       }
 
-      if (error instanceof Error) {
-        return rejectWithValue(error.message);
-      }
-
       return rejectWithValue(
-        "An unknown error occurred while fetching projects"
+        "An unexpected error occurred while fetching projects"
       );
     }
   },
