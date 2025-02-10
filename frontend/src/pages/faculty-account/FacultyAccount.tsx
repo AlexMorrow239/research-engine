@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import {
   fetchProfessor,
@@ -18,33 +17,13 @@ import { SearchableDropdown } from "@/components/common/searchable-dropdown/Sear
 
 import { Department } from "@/common/enums";
 
+import {
+  FacultyAccountForm,
+  facultyAccountSchema,
+} from "@/schemas/auth.schemas";
 import { useAppDispatch, useAppSelector } from "@/store";
 
 import "./FacultyAccount.scss";
-
-const facultyAccountSchema = z.object({
-  email: z
-    .string()
-    .email("Invalid email address")
-    .regex(/.+@.*miami\.edu$/i, "Must be a valid Miami.edu email address"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  department: z.nativeEnum(Department),
-  title: z.string().optional(),
-  office: z.string().min(1, "Office location is required"),
-  researchAreas: z.array(z.string()),
-  publications: z
-    .array(
-      z.object({
-        title: z.string(),
-        link: z.string().url("Must be a valid URL"),
-      })
-    )
-    .optional(),
-  bio: z.string().optional(),
-});
-
-type FacultyAccountForm = z.infer<typeof facultyAccountSchema>;
 
 export const FacultyAccount = (): JSX.Element => {
   const dispatch = useAppDispatch();

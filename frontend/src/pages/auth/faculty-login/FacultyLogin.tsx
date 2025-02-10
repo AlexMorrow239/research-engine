@@ -4,27 +4,16 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import { loginUser } from "@/store/features/auth/authSlice";
 
 import { FormField } from "@/components/common/form-field/FormField";
 import { PasswordField } from "@/components/common/password-field/PasswordField";
 
+import { FacultyLoginForm, facultyLoginSchema } from "@/schemas/auth.schemas";
 import { useAppDispatch, useAppSelector } from "@/store";
 
 import "./FacultyLogin.scss";
-
-// Define the form validation schema
-const facultyLoginSchema = z.object({
-  email: z
-    .string()
-    .email("Invalid email address")
-    .regex(/.+@.*miami\.edu$/i, "Must be a valid Miami.edu email address"),
-  password: z.string().min(1, "Password is required"),
-});
-
-type FacultyLoginForm = z.infer<typeof facultyLoginSchema>;
 
 export default function FacultyLogin(): JSX.Element {
   const navigate = useNavigate();

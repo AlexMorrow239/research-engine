@@ -4,7 +4,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import {
   requestPasswordReset,
@@ -14,33 +13,15 @@ import {
 import { FormField } from "@/components/common/form-field/FormField";
 import { PasswordField } from "@/components/common/password-field/PasswordField";
 
+import {
+  PasswordResetForm,
+  PasswordResetRequestForm,
+  passwordResetRequestSchema,
+  passwordResetSchema,
+} from "@/schemas/auth.schemas";
 import { useAppDispatch, useAppSelector } from "@/store";
 
 import "./ResetPassword.scss";
-
-// Form validation schemas
-const requestResetSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-});
-
-const resetPasswordSchema = z
-  .object({
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
-        "Password must include uppercase, lowercase, number and special character"
-      ),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
-type RequestResetForm = z.infer<typeof requestResetSchema>;
-type ResetPasswordForm = z.infer<typeof resetPasswordSchema>;
 
 export const ResetPassword = (): JSX.Element => {
   const [searchParams] = useSearchParams();
@@ -51,17 +32,19 @@ export const ResetPassword = (): JSX.Element => {
   const [requestSent, setRequestSent] = useState(false);
 
   // Form for requesting password reset
-  const requestForm = useForm<RequestResetForm>({
-    resolver: zodResolver(requestResetSchema),
+  const requestForm = useForm<PasswordResetRequestForm>({
+    resolver: zodResolver(passwordResetRequestSchema),
   });
 
   // Form for setting new password
-  const resetForm = useForm<ResetPasswordForm>({
-    resolver: zodResolver(resetPasswordSchema),
+  const resetForm = useForm<PasswordResetForm>({
+    resolver: zodResolver(passwordResetSchema),
   });
 
   // Handle requesting password reset
-  const handleRequestReset = async (data: RequestResetForm): Promise<void> => {
+  const handleRequestReset = async (
+    data: PasswordResetRequestForm
+  ): Promise<void> => {
     try {
       await dispatch(requestPasswordReset(data.email)).unwrap();
       setRequestSent(true);
@@ -72,7 +55,7 @@ export const ResetPassword = (): JSX.Element => {
 
   // Handle setting new password
   const handleResetPassword = async (
-    data: ResetPasswordForm
+    data: PasswordResetForm
   ): Promise<void> => {
     if (!token) return;
 
