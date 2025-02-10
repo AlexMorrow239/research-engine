@@ -2,8 +2,8 @@ import { useState } from "react";
 
 import { Link, NavLink } from "react-router-dom";
 
-import ugrLogo from "@/assets/images/navbar/miami-ugr.png";
-import poweredBy from "@/assets/images/navbar/powered-by-bonsai.png";
+import ugrLogo from "@/assets/images/miami-ugr.png";
+import poweredBy from "@/assets/images/powered-by-bonsai.png";
 import { navigationItems } from "@/config/navigation";
 
 import "./NavBar.scss";
