@@ -17,11 +17,11 @@ import { SearchableDropdown } from "@/components/common/searchable-dropdown/Sear
 
 import { Department } from "@/common/enums";
 
+import { useAppDispatch, useAppSelector } from "@/store";
 import {
   FacultyAccountForm,
   facultyAccountSchema,
-} from "@/schemas/auth.schemas";
-import { useAppDispatch, useAppSelector } from "@/store";
+} from "@/validation/authValidator";
 
 import "./FacultyAccount.scss";
 

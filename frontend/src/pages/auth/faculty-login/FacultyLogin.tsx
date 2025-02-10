@@ -10,8 +10,11 @@ import { loginUser } from "@/store/features/auth/authSlice";
 import { FormField } from "@/components/common/form-field/FormField";
 import { PasswordField } from "@/components/common/password-field/PasswordField";
 
-import { FacultyLoginForm, facultyLoginSchema } from "@/schemas/auth.schemas";
 import { useAppDispatch, useAppSelector } from "@/store";
+import {
+  FacultyLoginForm,
+  facultyLoginSchema,
+} from "@/validation/authValidator";
 
 import "./FacultyLogin.scss";
 

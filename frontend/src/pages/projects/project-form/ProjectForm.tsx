@@ -26,14 +26,14 @@ import { Loader } from "@/components/common/loader/Loader";
 import { CAMPUS_OPTIONS } from "@/common/constants";
 import { ProjectStatus } from "@/common/enums";
 
+import { useAppDispatch } from "@/store";
+import type { Project, RootState } from "@/types";
+import { ApiError } from "@/utils/api";
 import {
   initialFormData,
   ProjectFormData,
   projectSchema,
-} from "@/schemas/project.schemas";
-import { useAppDispatch } from "@/store";
-import type { Project, RootState } from "@/types";
-import { ApiError } from "@/utils/api";
+} from "@/validation/projectsValidator";
 
 import "./ProjectForm.scss";
 

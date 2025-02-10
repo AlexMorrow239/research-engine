@@ -13,13 +13,13 @@ import {
 import { FormField } from "@/components/common/form-field/FormField";
 import { PasswordField } from "@/components/common/password-field/PasswordField";
 
+import { useAppDispatch, useAppSelector } from "@/store";
 import {
   PasswordResetForm,
   PasswordResetRequestForm,
   passwordResetRequestSchema,
   passwordResetSchema,
-} from "@/schemas/auth.schemas";
-import { useAppDispatch, useAppSelector } from "@/store";
+} from "@/validation/authValidator";
 
 import "./ResetPassword.scss";
 

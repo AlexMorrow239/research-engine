@@ -7,9 +7,9 @@ import { createApplication } from "@/store/features/applications/applicationsSli
 
 import { useAppDispatch } from "@/store";
 import type { ApplicationFormData } from "@/types";
+import { applicationSchema } from "@/validation/applicationsValidator";
 
 import { submitApplication } from "./applicationSubmitService";
-import { applicationSchema } from "./schema";
 
 type NestedPaths =
   | keyof ApplicationFormData

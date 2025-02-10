@@ -14,11 +14,11 @@ import { SearchableDropdown } from "@/components/common/searchable-dropdown/Sear
 
 import { Department } from "@/common/enums";
 
+import { useAppDispatch, useAppSelector } from "@/store";
 import {
   FacultyRegistrationForm,
   facultyRegistrationSchema,
-} from "@/schemas/auth.schemas";
-import { useAppDispatch, useAppSelector } from "@/store";
+} from "@/validation/authValidator";
 
 import "./FacultyRegistration.scss";
 
