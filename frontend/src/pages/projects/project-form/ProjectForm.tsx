@@ -26,12 +26,16 @@ import { Loader } from "@/components/common/loader/Loader";
 import { CAMPUS_OPTIONS } from "@/common/constants";
 import { ProjectStatus } from "@/common/enums";
 
+import {
+  initialFormData,
+  ProjectFormData,
+  projectSchema,
+} from "@/schemas/project.schemas";
 import { useAppDispatch } from "@/store";
 import type { Project, RootState } from "@/types";
 import { ApiError } from "@/utils/api";
 
 import "./ProjectForm.scss";
-import { initialFormData, ProjectFormData, projectSchema } from "./schema";
 
 interface ProjectFormProps {
   mode: "create" | "edit";
@@ -79,7 +83,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
           setValue("title", project.title);
           setValue("description", project.description);
           setValue("positions", project.positions);
-          setValue("applicationDeadline", date, {
+          setValue("applicationDeadline", formattedDate, {
             shouldDirty: true,
             shouldTouch: true,
           });
@@ -260,11 +264,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({ mode }) => {
             name="applicationDeadline"
             label="Application Deadline"
             type="date"
-            defaultValue={
-              mode === "edit"
-                ? watch("applicationDeadline")?.toISOString().split("T")[0]
-                : ""
-            }
+            defaultValue={mode === "edit" ? watch("applicationDeadline") : ""}
           />
 
           <ArrayField
