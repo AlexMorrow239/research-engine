@@ -2,16 +2,21 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
+
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 
 import { LoginResponseDto } from '@/common/dto/auth/login-response.dto';
-import { ProfessorResponseDto, RegisterProfessorDto } from '@/common/dto/professors';
+import {
+  ProfessorResponseDto,
+  RegisterProfessorDto,
+} from '@/common/dto/professors';
+import { CustomLogger } from '@/common/services/logger.service';
 import { ErrorHandler } from '@/common/utils/error-handler.util';
+
 import { EmailService } from '../email/email.service';
 import { ProfessorsService } from '../professors/professors.service';
 import { Professor } from '../professors/schemas/professors.schema';
-import { CustomLogger } from '@/common/services/logger.service';
 import { InvalidAdminPasswordException } from './exceptions/password.exception';
 
 /**
@@ -41,7 +46,7 @@ export class AuthService {
     private readonly professorsService: ProfessorsService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
-    private readonly logger: CustomLogger,
+    private readonly logger: CustomLogger
   ) {}
 
   //#region Account Registration and Login
@@ -59,7 +64,9 @@ export class AuthService {
    * @returns LoginResponseDto containing access token and professor info
    * @throws UnauthorizedException if admin password is invalid
    */
-  async register(registerProfessorDto: RegisterProfessorDto): Promise<LoginResponseDto> {
+  async register(
+    registerProfessorDto: RegisterProfessorDto
+  ): Promise<LoginResponseDto> {
     try {
       // Validate admin password
       const adminPassword = this.configService.get<string>('ADMIN_PASSWORD');
@@ -69,7 +76,8 @@ export class AuthService {
 
       // Remove admin password before creating professor
       const { adminPassword: _, ...createProfessorDto } = registerProfessorDto;
-      const professor = await this.professorsService.createProfessor(createProfessorDto);
+      const professor =
+        await this.professorsService.createProfessor(createProfessorDto);
       return await this.generateLoginResponse(professor);
     } catch (error) {
       ErrorHandler.handleServiceError(
@@ -77,7 +85,7 @@ export class AuthService {
         error,
         'register professor',
         { email: registerProfessorDto.email },
-        [UnauthorizedException],
+        [UnauthorizedException]
       );
     }
   }
@@ -95,9 +103,13 @@ export class AuthService {
       const professor = await this.validateProfessor(email, password);
       return this.generateLoginResponse(professor);
     } catch (error) {
-      ErrorHandler.handleServiceError(this.logger, error, 'login professor', { email }, [
-        UnauthorizedException,
-      ]);
+      ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        'login professor',
+        { email },
+        [UnauthorizedException]
+      );
     }
   }
 
@@ -115,13 +127,18 @@ export class AuthService {
 
       if (!professor) {
         throw new UnauthorizedException(
-          'No account found with this email. Please check your email or register for a new account.',
+          'No account found with this email. Please check your email or register for a new account.'
         );
       }
 
-      const isPasswordValid = await bcrypt.compare(password, professor.password);
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        professor.password
+      );
       if (!isPasswordValid) {
-        throw new UnauthorizedException('Incorrect password. Please try again.');
+        throw new UnauthorizedException(
+          'Incorrect password. Please try again.'
+        );
       }
 
       if (!professor.isActive) {
@@ -130,9 +147,13 @@ export class AuthService {
 
       return professor;
     } catch (error) {
-      ErrorHandler.handleServiceError(this.logger, error, 'validate professor', { email }, [
-        UnauthorizedException,
-      ]);
+      ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        'validate professor',
+        { email },
+        [UnauthorizedException]
+      );
     }
   }
 
@@ -148,14 +169,18 @@ export class AuthService {
    * @returns LoginResponseDto containing access token and professor info
    */
   private generateLoginResponse(
-    professor: Professor | ProfessorResponseDto,
+    professor: Professor | ProfessorResponseDto
   ): Promise<LoginResponseDto> {
     // Helper function to check if the input is a Mongoose Document
-    const isMongooseDocument = (prof: Professor | ProfessorResponseDto): prof is Professor => {
+    const isMongooseDocument = (
+      prof: Professor | ProfessorResponseDto
+    ): prof is Professor => {
       return '_id' in prof;
     };
 
-    const id = isMongooseDocument(professor) ? professor._id.toString() : professor.id;
+    const id = isMongooseDocument(professor)
+      ? professor._id.toString()
+      : professor.id;
 
     const payload = { sub: id, email: professor.email };
     const accessToken = this.jwtService.sign(payload);
@@ -198,7 +223,7 @@ export class AuthService {
 
       const resetToken = this.jwtService.sign(
         { sub: professor._id, email: professor.email },
-        { expiresIn: '1h' },
+        { expiresIn: '1h' }
       );
 
       // Store hashed reset token
@@ -212,10 +237,15 @@ export class AuthService {
       await this.emailService.sendPasswordResetEmail(
         professor.email,
         professor.name.firstName,
-        resetToken,
+        resetToken
       );
     } catch (error) {
-      ErrorHandler.handleServiceError(this.logger, error, 'forgot password request', { email });
+      ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        'forgot password request',
+        { email }
+      );
     }
   }
 
@@ -245,7 +275,10 @@ export class AuthService {
       }
 
       // Verify stored token matches
-      const isValidToken = await bcrypt.compare(token, professor.resetPasswordToken);
+      const isValidToken = await bcrypt.compare(
+        token,
+        professor.resetPasswordToken
+      );
       if (!isValidToken) {
         throw new UnauthorizedException('Invalid reset token');
       }
@@ -258,9 +291,13 @@ export class AuthService {
         resetPasswordExpires: null,
       });
     } catch (error) {
-      ErrorHandler.handleServiceError(this.logger, error, 'reset password', {}, [
-        UnauthorizedException,
-      ]);
+      ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        'reset password',
+        {},
+        [UnauthorizedException]
+      );
     }
   }
 
@@ -276,29 +313,29 @@ export class AuthService {
    * @param adminPassword - Admin password to validate
    * @throws InvalidAdminPasswordException if password is incorrect
    */
-  async validateAdminPassword(email: string, adminPassword: string): Promise<void> {
+  async validateAdminPassword(
+    email: string,
+    adminPassword: string
+  ): Promise<void> {
     try {
-      this.logger.logObject('debug', { email }, 'Validating admin password');
-
-      const correctAdminPassword = this.configService.get<string>('ADMIN_PASSWORD');
+      const correctAdminPassword =
+        this.configService.get<string>('ADMIN_PASSWORD');
       if (adminPassword !== correctAdminPassword) {
         throw ErrorHandler.handleServiceError(
           this.logger,
           new InvalidAdminPasswordException(),
           'validate admin password',
           { email },
-          [InvalidAdminPasswordException],
+          [InvalidAdminPasswordException]
         );
       }
-
-      this.logger.logObject('debug', { email }, 'Admin password validated successfully');
     } catch (error) {
       throw ErrorHandler.handleServiceError(
         this.logger,
         error,
         'validate admin password',
         { email },
-        [InvalidAdminPasswordException],
+        [InvalidAdminPasswordException]
       );
     }
   }

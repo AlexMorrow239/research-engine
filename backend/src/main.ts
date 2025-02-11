@@ -1,9 +1,10 @@
-import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { CreateApplicationDto } from '@common/dto/applications/create-application.dto';
+
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ErrorHandlingInterceptor } from './common/interceptors/error-handling.interceptor';
@@ -48,22 +49,18 @@ async function bootstrap() {
 }
 
 function configureGlobalMiddleware(app: any, logger: CustomLogger) {
-  logger.debug('Configuring global middleware');
-
   app.setGlobalPrefix('api');
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
       transformOptions: { enableImplicitConversion: true },
-    }),
+    })
   );
   app.useGlobalInterceptors(new ErrorHandlingInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
 }
 
 function configureRequestLogging(app: any, logger: CustomLogger) {
-  logger.debug('Configuring request logging middleware');
-
   app.use((req: any, res: any, next: () => void) => {
     logger.debug(
       'Incoming request',
@@ -71,7 +68,7 @@ function configureRequestLogging(app: any, logger: CustomLogger) {
         method: req.method,
         url: req.url,
         headers: req.headers,
-      }),
+      })
     );
 
     // Capture response headers after they're set
@@ -82,7 +79,7 @@ function configureRequestLogging(app: any, logger: CustomLogger) {
         JSON.stringify({
           statusCode: res.statusCode,
           headers: res.getHeaders(),
-        }),
+        })
       );
       return oldEnd.apply(res, args);
     };
@@ -90,12 +87,20 @@ function configureRequestLogging(app: any, logger: CustomLogger) {
   });
 }
 
-function configureCors(app: any, configService: ConfigService, logger: CustomLogger) {
+function configureCors(
+  app: any,
+  configService: ConfigService,
+  logger: CustomLogger
+) {
   const frontendUrl = configService.get('url.frontend');
   logger.log(`Configuring CORS with frontend URL: ${frontendUrl}`);
 
   app.enableCors({
-    origin: [frontendUrl, /^http:\/\/192\.168\.1\.\d{1,3}:\d+$/, 'http://100.65.62.87:5173'],
+    origin: [
+      frontendUrl,
+      /^http:\/\/192\.168\.1\.\d{1,3}:\d+$/,
+      'http://100.65.62.87:5173',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
     exposedHeaders: ['Content-Disposition'],
@@ -106,8 +111,6 @@ function configureCors(app: any, configService: ConfigService, logger: CustomLog
 }
 
 function setupSwagger(app: any, logger: CustomLogger) {
-  logger.debug('Setting up Swagger documentation');
-
   const config = new DocumentBuilder()
     .setTitle('Research Engine API')
     .setDescription('University of Miami Research Engine API')
@@ -121,7 +124,11 @@ function setupSwagger(app: any, logger: CustomLogger) {
   SwaggerModule.setup('api', app, document);
 }
 
-async function logServerInformation(app: any, port: number, logger: CustomLogger) {
+async function logServerInformation(
+  app: any,
+  port: number,
+  logger: CustomLogger
+) {
   const serverUrl = await app.getUrl();
 
   logger.logObject(
@@ -134,7 +141,7 @@ async function logServerInformation(app: any, port: number, logger: CustomLogger
         swagger: `http://localhost:${port}/api`,
       },
     },
-    'Server is running at:',
+    'Server is running at:'
   );
 }
 

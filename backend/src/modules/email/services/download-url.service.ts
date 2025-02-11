@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import { GetObjectCommand, ListObjectsV2Command, S3 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+
 import { CustomLogger } from '@/common/services/logger.service';
 
 @Injectable()
@@ -12,7 +13,7 @@ export class DownloadUrlService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly logger: CustomLogger,
+    private readonly logger: CustomLogger
   ) {
     this.bucketName = this.configService.getOrThrow<string>('AWS_BUCKET_NAME');
 
@@ -20,7 +21,9 @@ export class DownloadUrlService {
       region: this.configService.getOrThrow<string>('AWS_REGION'),
       credentials: {
         accessKeyId: this.configService.getOrThrow<string>('AWS_ACCESS_KEY_ID'),
-        secretAccessKey: this.configService.getOrThrow<string>('AWS_SECRET_ACCESS_KEY'),
+        secretAccessKey: this.configService.getOrThrow<string>(
+          'AWS_SECRET_ACCESS_KEY'
+        ),
       },
     });
   }
@@ -28,13 +31,10 @@ export class DownloadUrlService {
   async generateDownloadUrl(
     projectId: string,
     applicationId: string,
-    professorId: string,
+    professorId: string
   ): Promise<string> {
     try {
       const prefix = `applications/${projectId}/cv/`;
-
-      this.logger.debug(`Searching for files with prefix: ${prefix}`);
-
       const listCommand = new ListObjectsV2Command({
         Bucket: this.bucketName,
         Prefix: prefix,
@@ -57,12 +57,12 @@ export class DownloadUrlService {
             applicationId,
             prefix,
             foundFiles: response.Contents?.map((obj) => obj.Key),
-          }),
+          })
         );
-        throw new Error(`No resume file found for application ${applicationId}`);
+        throw new Error(
+          `No resume file found for application ${applicationId}`
+        );
       }
-
-      this.logger.debug(`Found file: ${mostRecentFile.Key}`);
 
       // Create the GetObject command with the actual file path
       const command = new GetObjectCommand({
@@ -75,7 +75,6 @@ export class DownloadUrlService {
         expiresIn: 7 * 24 * 60 * 60, // 7 days in seconds
       });
 
-      this.logger.debug(`Generated download URL successfully for file: ${mostRecentFile.Key}`);
       return url;
     } catch (error) {
       this.logger.error(
@@ -87,7 +86,7 @@ export class DownloadUrlService {
           professorId,
           bucket: this.bucketName,
           stackTrace: error.stack,
-        }),
+        })
       );
       throw error;
     }

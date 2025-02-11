@@ -6,17 +6,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+
 import { Model } from 'mongoose';
 
 import { ApplicationStatus, ProjectStatus } from '@/common/enums';
 import { ApplicationDeadlinePassedException } from '@/common/exceptions/application.exception';
 import { AwsS3Service } from '@/common/services/aws-s3.service';
+import { CustomLogger } from '@/common/services/logger.service';
 import { ErrorHandler } from '@/common/utils/error-handler.util';
+
 import { CreateApplicationDto } from '../../common/dto/applications/create-application.dto';
 import { EmailService } from '../email/email.service';
 import { ProjectsService } from '../projects/projects.service';
 import { Application } from './schemas/applications.schema';
-import { CustomLogger } from '@/common/services/logger.service';
 
 /**
  * Service handling project application lifecycle management.
@@ -44,7 +46,7 @@ export class ApplicationsService {
     private readonly projectsService: ProjectsService,
     private readonly emailService: EmailService,
     private readonly s3Service: AwsS3Service,
-    private readonly logger: CustomLogger,
+    private readonly logger: CustomLogger
   ) {}
 
   //#region File Management
@@ -59,35 +61,16 @@ export class ApplicationsService {
    */
   private generateResumeKey(projectId: string, originalName: string): string {
     try {
-      this.logger.logObject(
-        'debug',
-        {
-          projectId,
-          originalFileName: originalName,
-        },
-        'Generating resume key',
-      );
-
       const sanitizedName = originalName.replace(/[^a-zA-Z0-9.]/g, '_');
       const timestamp = Date.now();
       const resumeKey = `applications/${projectId}/cv/${timestamp}-${sanitizedName}`;
-
-      this.logger.logObject(
-        'debug',
-        {
-          projectId,
-          sanitizedName,
-          resumeKey,
-        },
-        'Resume key generated successfully',
-      );
 
       return resumeKey;
     } catch (error) {
       this.logger.error(
         `Failed to generate resume key: ${error.message}`,
         error.stack,
-        'generateResumeKey',
+        'generateResumeKey'
       );
       throw error;
     }
@@ -118,17 +101,20 @@ export class ApplicationsService {
           mimeType = 'application/msword';
           break;
         case 'docx':
-          mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+          mimeType =
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
           break;
         default:
           mimeType = 'application/octet-stream';
       }
 
-      this.logger.logObject('debug', { extension, mimeType }, 'Determined file mime type');
-
       return mimeType;
     } catch (error) {
-      this.logger.error('Failed to determine mime type', error.stack, 'getMimeType');
+      this.logger.error(
+        'Failed to determine mime type',
+        error.stack,
+        'getMimeType'
+      );
       return 'application/octet-stream';
     }
   }
@@ -152,40 +138,42 @@ export class ApplicationsService {
    * @throws ApplicationDeadlinePassedException if deadline passed
    * @throws NotFoundException if project not found
    */
-  async create(createApplicationDto: CreateApplicationDto, resume: Express.Multer.File) {
+  async create(
+    createApplicationDto: CreateApplicationDto,
+    resume: Express.Multer.File
+  ) {
     try {
-      this.logger.logObject(
-        'debug',
-        {
-          projectId: createApplicationDto.projectId,
-          studentCNumber: createApplicationDto.studentInfo.cNumber,
-          resumeFileName: resume.originalname,
-        },
-        'Starting application creation process',
-      );
-
       // Validate project exists and is accepting applications
-      const project = await this.projectsService.findOne(createApplicationDto.projectId);
+      const project = await this.projectsService.findOne(
+        createApplicationDto.projectId
+      );
       if (!project) {
-        this.logger.warn(`Project not found: ${createApplicationDto.projectId}`);
+        this.logger.warn(
+          `Project not found: ${createApplicationDto.projectId}`
+        );
         throw new NotFoundException('Project not found');
       }
 
       // Project status validation
       if (project.status !== ProjectStatus.PUBLISHED) {
         this.logger.warn(
-          `Attempted to apply to non-published project: ${project.id}, status: ${project.status}`,
+          `Attempted to apply to non-published project: ${project.id}, status: ${project.status}`
         );
         throw new BadRequestException('Project is not accepting applications');
       }
 
       // Deadline validation
-      if (project.applicationDeadline && new Date() > new Date(project.applicationDeadline)) {
+      if (
+        project.applicationDeadline &&
+        new Date() > new Date(project.applicationDeadline)
+      ) {
         this.logger.warn(
           `Application submitted after deadline for project ${project.id}`,
-          'DeadlineValidation',
+          'DeadlineValidation'
         );
-        throw new ApplicationDeadlinePassedException(new Date(project.applicationDeadline));
+        throw new ApplicationDeadlinePassedException(
+          new Date(project.applicationDeadline)
+        );
       }
 
       // Duplicate check
@@ -196,17 +184,17 @@ export class ApplicationsService {
 
       if (existingApplication) {
         this.logger.warn(
-          `Duplicate application attempt: Student ${createApplicationDto.studentInfo.cNumber} for project ${project.id}`,
+          `Duplicate application attempt: Student ${createApplicationDto.studentInfo.cNumber} for project ${project.id}`
         );
-        throw new BadRequestException('You have already applied to this project');
+        throw new BadRequestException(
+          'You have already applied to this project'
+        );
       }
 
       // Resume handling
-      const resumeKey = this.generateResumeKey(createApplicationDto.projectId, resume.originalname);
-      this.logger.logObject(
-        'debug',
-        { projectId: project.id, resumeKey },
-        'Uploading resume to S3',
+      const resumeKey = this.generateResumeKey(
+        createApplicationDto.projectId,
+        resume.originalname
       );
 
       try {
@@ -217,7 +205,7 @@ export class ApplicationsService {
           error,
           'upload resume to S3',
           { projectId: project.id, resumeKey },
-          [BadRequestException],
+          [BadRequestException]
         );
       }
 
@@ -240,19 +228,9 @@ export class ApplicationsService {
           this.logger,
           new Error('Failed to save application'),
           'save application to database',
-          { projectId: project.id },
+          { projectId: project.id }
         );
       }
-
-      this.logger.logObject(
-        'debug',
-        {
-          applicationId: savedApplication.id,
-          projectId: project.id,
-          studentCNumber: createApplicationDto.studentInfo.cNumber,
-        },
-        'Application saved successfully',
-      );
 
       // Populate project details
       const populatedApplication = await savedApplication.populate({
@@ -265,24 +243,27 @@ export class ApplicationsService {
 
       // Send notifications
       try {
-        await this.emailService.sendApplicationConfirmation(savedApplication, project.title);
+        await this.emailService.sendApplicationConfirmation(
+          savedApplication,
+          project.title
+        );
         await this.emailService.sendProfessorNewApplication(
           project.professor.email,
           savedApplication,
-          project.title,
+          project.title
         );
-
-        this.logger.debug('Application confirmation emails sent successfully', 'EmailNotification');
       } catch (emailError) {
         // Non-critical error - log but don't throw
         this.logger.error(
           'Failed to send confirmation emails',
           emailError.stack,
-          'EmailNotification',
+          'EmailNotification'
         );
       }
 
-      this.logger.log(`Application created successfully for project ${project.id}`);
+      this.logger.log(
+        `Application created successfully for project ${project.id}`
+      );
 
       return populatedApplication;
     } catch (error) {
@@ -294,7 +275,11 @@ export class ApplicationsService {
           projectId: createApplicationDto.projectId,
           studentCNumber: createApplicationDto.studentInfo.cNumber,
         },
-        [NotFoundException, BadRequestException, ApplicationDeadlinePassedException],
+        [
+          NotFoundException,
+          BadRequestException,
+          ApplicationDeadlinePassedException,
+        ]
       );
     }
   }
@@ -312,46 +297,34 @@ export class ApplicationsService {
   async updateStatus(
     professorId: string,
     applicationId: string,
-    status: ApplicationStatus,
+    status: ApplicationStatus
   ): Promise<Application> {
     try {
-      this.logger.logObject(
-        'debug',
-        { applicationId, professorId, newStatus: status },
-        'Starting application status update',
-      );
-
-      const application = await this.applicationModel.findById(applicationId).populate({
-        path: 'project',
-        populate: {
-          path: 'professor',
-          select: 'id email name',
-        },
-      });
+      const application = await this.applicationModel
+        .findById(applicationId)
+        .populate({
+          path: 'project',
+          populate: {
+            path: 'professor',
+            select: 'id email name',
+          },
+        });
 
       if (!application) {
-        this.logger.warn(`Attempted to update non-existent application: ${applicationId}`);
+        this.logger.warn(
+          `Attempted to update non-existent application: ${applicationId}`
+        );
         throw new NotFoundException('Application not found');
       }
 
       if (application.project.professor.toString() !== professorId) {
         this.logger.warn(
-          `Unauthorized status update attempt: Professor ${professorId} for application ${applicationId}`,
+          `Unauthorized status update attempt: Professor ${professorId} for application ${applicationId}`
         );
         throw new NotFoundException('Application not found');
       }
 
       const oldStatus = application.status;
-      this.logger.logObject(
-        'debug',
-        {
-          applicationId,
-          oldStatus,
-          newStatus: status,
-          projectId: application.project.id,
-        },
-        'Updating application status',
-      );
 
       const updatedApplication = await this.applicationModel
         .findByIdAndUpdate(applicationId, { status }, { new: true })
@@ -362,23 +335,20 @@ export class ApplicationsService {
         await this.emailService.sendApplicationStatusUpdate(
           application.studentInfo.email,
           application.project.title,
-          status,
-        );
-
-        this.logger.debug(
-          `Status update email sent for application ${applicationId}`,
-          'EmailNotification',
+          status
         );
       } catch (emailError) {
         // Non-critical error - log but don't throw
         this.logger.error(
           'Failed to send status update email',
           emailError.stack,
-          'EmailNotification',
+          'EmailNotification'
         );
       }
 
-      this.logger.log(`Application ${applicationId} status updated from ${oldStatus} to ${status}`);
+      this.logger.log(
+        `Application ${applicationId} status updated from ${oldStatus} to ${status}`
+      );
 
       return updatedApplication;
     } catch (error) {
@@ -387,7 +357,7 @@ export class ApplicationsService {
         error,
         'update application status',
         { applicationId, professorId, status },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -404,24 +374,14 @@ export class ApplicationsService {
   async findProjectApplications(
     professorId: string,
     projectId: string,
-    status?: ApplicationStatus,
+    status?: ApplicationStatus
   ): Promise<Application[]> {
     try {
-      this.logger.logObject(
-        'debug',
-        {
-          projectId,
-          professorId,
-          filterStatus: status,
-        },
-        'Fetching project applications',
-      );
-
       const project = await this.projectsService.findOne(projectId);
 
       if (project.professor.id.toString() !== professorId) {
         this.logger.warn(
-          `Unauthorized applications access attempt: Professor ${professorId} for project ${projectId}`,
+          `Unauthorized applications access attempt: Professor ${professorId} for project ${projectId}`
         );
         throw new NotFoundException('Project not found');
       }
@@ -431,14 +391,14 @@ export class ApplicationsService {
         filter.status = status;
       }
 
-      this.logger.logObject('debug', { filter }, 'Applying application filters');
-
       const applications = await this.applicationModel
         .find(filter)
         .populate('project')
         .sort({ createdAt: -1 });
 
-      this.logger.log(`Retrieved ${applications.length} applications for project ${projectId}`);
+      this.logger.log(
+        `Retrieved ${applications.length} applications for project ${projectId}`
+      );
 
       return applications;
     } catch (error) {
@@ -447,7 +407,7 @@ export class ApplicationsService {
         error,
         'fetch project applications',
         { projectId, professorId, status },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -463,56 +423,36 @@ export class ApplicationsService {
    */
   async getResume(
     professorId: string,
-    applicationId: string,
+    applicationId: string
   ): Promise<{ url: string; fileName: string; mimeType: string }> {
     try {
-      this.logger.logObject(
-        'debug',
-        { applicationId, professorId },
-        'Starting resume access request',
-      );
+      const application = await this.applicationModel
+        .findById(applicationId)
+        .populate({
+          path: 'project',
+          select: 'professor',
+        });
 
-      const application = await this.applicationModel.findById(applicationId).populate({
-        path: 'project',
-        select: 'professor',
-      });
-
-      if (!application || application.project.professor.toString() !== professorId) {
+      if (
+        !application ||
+        application.project.professor.toString() !== professorId
+      ) {
         this.logger.warn(
-          `Unauthorized resume access attempt: Professor ${professorId} for application ${applicationId}`,
+          `Unauthorized resume access attempt: Professor ${professorId} for application ${applicationId}`
         );
         throw new NotFoundException('Application not found');
       }
 
       if (!application.resumePath) {
-        this.logger.warn(`Resume path not found for application ${applicationId}`, 'ResumeAccess');
+        this.logger.warn(
+          `Resume path not found for application ${applicationId}`,
+          'ResumeAccess'
+        );
         throw new NotFoundException('Resume not found');
       }
-
-      this.logger.logObject(
-        'debug',
-        {
-          applicationId,
-          resumePath: application.resumePath,
-        },
-        'Generating signed URL for resume',
-      );
-
       const fileName = application.resumePath.split('/').pop();
       const mimeType = this.getMimeType(fileName);
       const url = await this.s3Service.getSignedUrl(application.resumePath);
-
-      this.logger.logObject(
-        'debug',
-        {
-          applicationId,
-          fileName,
-          mimeType,
-          // Don't log the full URL as it contains sensitive information
-          urlGenerated: true,
-        },
-        'Resume URL generated successfully',
-      );
 
       return { url, fileName, mimeType };
     } catch (error) {
@@ -521,7 +461,7 @@ export class ApplicationsService {
         error,
         'retrieve resume',
         { applicationId, professorId },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -538,47 +478,35 @@ export class ApplicationsService {
    */
   async closeProjectApplications(projectId: string): Promise<void> {
     try {
-      this.logger.log(`Closing all pending applications for project ${projectId}`);
-
-      this.logger.logObject(
-        'debug',
-        {
-          projectId,
-          fromStatus: ApplicationStatus.PENDING,
-          toStatus: ApplicationStatus.CLOSED,
-        },
-        'Starting batch application closure',
+      this.logger.log(
+        `Closing all pending applications for project ${projectId}`
       );
 
       const result = await this.applicationModel.updateMany(
         { project: projectId, status: ApplicationStatus.PENDING },
-        { status: ApplicationStatus.CLOSED },
+        { status: ApplicationStatus.CLOSED }
       );
 
       if (result.matchedCount === 0) {
-        this.logger.debug(`No pending applications found for project ${projectId}`, 'BatchUpdate');
+        this.logger.debug(
+          `No pending applications found for project ${projectId}`,
+          'BatchUpdate'
+        );
         return;
       }
-
-      this.logger.logObject(
-        'debug',
-        {
-          projectId,
-          matchedCount: result.matchedCount,
-          modifiedCount: result.modifiedCount,
-          unmodifiedCount: result.matchedCount - result.modifiedCount,
-        },
-        'Batch update results',
-      );
-
       this.logger.log(
-        `Successfully closed ${result.modifiedCount} pending applications for project ${projectId}`,
+        `Successfully closed ${result.modifiedCount} pending applications for project ${projectId}`
       );
     } catch (error) {
-      ErrorHandler.handleServiceError(this.logger, error, 'close project applications', {
-        projectId,
-        operation: 'batch_close',
-      });
+      ErrorHandler.handleServiceError(
+        this.logger,
+        error,
+        'close project applications',
+        {
+          projectId,
+          operation: 'batch_close',
+        }
+      );
     }
   }
 
@@ -591,22 +519,24 @@ export class ApplicationsService {
    * @param applicationId - Application to delete
    * @throws NotFoundException if application not found or professor not authorized
    */
-  async deleteApplication(professorId: string, applicationId: string): Promise<void> {
+  async deleteApplication(
+    professorId: string,
+    applicationId: string
+  ): Promise<void> {
     try {
-      this.logger.logObject(
-        'debug',
-        { applicationId, professorId },
-        'Starting application deletion process',
-      );
+      const application = await this.applicationModel
+        .findById(applicationId)
+        .populate({
+          path: 'project',
+          select: 'professor',
+        });
 
-      const application = await this.applicationModel.findById(applicationId).populate({
-        path: 'project',
-        select: 'professor',
-      });
-
-      if (!application || application.project.professor.toString() !== professorId) {
+      if (
+        !application ||
+        application.project.professor.toString() !== professorId
+      ) {
         this.logger.warn(
-          `Unauthorized deletion attempt: Professor ${professorId} for application ${applicationId}`,
+          `Unauthorized deletion attempt: Professor ${professorId} for application ${applicationId}`
         );
         throw new NotFoundException('Application not found');
       }
@@ -619,18 +549,22 @@ export class ApplicationsService {
             applicationId,
             resumePath: application.resumePath,
           },
-          'Deleting associated resume file',
+          'Deleting associated resume file'
         );
 
         try {
           await this.s3Service.deleteFile(application.resumePath);
           this.logger.debug(
             `Resume file deleted successfully for application ${applicationId}`,
-            'S3Cleanup',
+            'S3Cleanup'
           );
         } catch (s3Error) {
           // Log but continue with application deletion
-          this.logger.error('Failed to delete resume file from S3', s3Error.stack, 'S3Cleanup');
+          this.logger.error(
+            'Failed to delete resume file from S3',
+            s3Error.stack,
+            'S3Cleanup'
+          );
         }
       }
 
@@ -644,7 +578,7 @@ export class ApplicationsService {
           projectId: application.project.id,
           hadResume: !!application.resumePath,
         },
-        'Application deleted successfully',
+        'Application deleted successfully'
       );
 
       this.logger.log(`Application ${applicationId} deleted successfully`);
@@ -654,7 +588,7 @@ export class ApplicationsService {
         error,
         'delete application',
         { applicationId, professorId },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }

@@ -6,10 +6,14 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
+
+import { CustomLogger } from '@/common/services/logger.service';
 import { ErrorHandler } from '@/common/utils/error-handler.util';
 import { PasswordValidator } from '@/common/validators/password.validator';
+
 import { CreateProfessorDto } from '../../common/dto/professors/create-professor.dto';
 import { ProfessorResponseDto } from '../../common/dto/professors/professor-response.dto';
 import { ReactivateAccountDto } from '../../common/dto/professors/reactivate-account.dto';
@@ -17,7 +21,6 @@ import { UpdateProfessorDto } from '../../common/dto/professors/update-professor
 import { InvalidEmailDomainException } from './exceptions/invalid-email-domain.exception';
 import { InvalidPasswordFormatException } from './exceptions/invalid-password-format.exception';
 import { Professor } from './schemas/professors.schema';
-import { CustomLogger } from '@/common/services/logger.service';
 
 /**
  * Service responsible for managing professor accounts in the system.
@@ -36,7 +39,7 @@ import { CustomLogger } from '@/common/services/logger.service';
 export class ProfessorsService {
   constructor(
     @InjectModel(Professor.name) private professorModel: Model<Professor>,
-    private readonly logger: CustomLogger,
+    private readonly logger: CustomLogger
   ) {
     this.logger.setContext('ProfessorsService');
   }
@@ -52,14 +55,10 @@ export class ProfessorsService {
    * @throws ConflictException if email already exists
    * @throws InvalidPasswordFormatException if password doesn't meet requirements
    */
-  async createProfessor(createProfessorDto: CreateProfessorDto): Promise<ProfessorResponseDto> {
+  async createProfessor(
+    createProfessorDto: CreateProfessorDto
+  ): Promise<ProfessorResponseDto> {
     try {
-      this.logger.logObject(
-        'debug',
-        { email: createProfessorDto.email },
-        'Creating new professor account',
-      );
-
       const existingProfessor = await this.professorModel.findOne({
         email: createProfessorDto.email,
       });
@@ -70,7 +69,7 @@ export class ProfessorsService {
           new ConflictException('Email already exists'),
           'check email uniqueness',
           { email: createProfessorDto.email },
-          [ConflictException],
+          [ConflictException]
         );
       }
 
@@ -80,11 +79,6 @@ export class ProfessorsService {
       });
 
       const { password: _, ...result } = newProfessor.toObject();
-      this.logger.logObject(
-        'debug',
-        { professorId: result._id },
-        'Professor account created successfully',
-      );
       return result as ProfessorResponseDto;
     } catch (error) {
       throw ErrorHandler.handleServiceError(
@@ -92,7 +86,7 @@ export class ProfessorsService {
         error,
         'create professor account',
         { email: createProfessorDto.email },
-        [InvalidEmailDomainException, ConflictException],
+        [InvalidEmailDomainException, ConflictException]
       );
     }
   }
@@ -107,8 +101,6 @@ export class ProfessorsService {
    */
   async getProfessor(professorId: string): Promise<ProfessorResponseDto> {
     try {
-      this.logger.logObject('debug', { professorId }, 'Fetching professor profile');
-
       const professor = await this.professorModel.findById(professorId);
       if (!professor) {
         throw ErrorHandler.handleServiceError(
@@ -116,12 +108,11 @@ export class ProfessorsService {
           new NotFoundException('Professor not found'),
           'find professor by id',
           { professorId },
-          [NotFoundException],
+          [NotFoundException]
         );
       }
 
       const { password: _, ...result } = professor.toObject();
-      this.logger.logObject('debug', { professorId }, 'Professor profile retrieved successfully');
       return result as ProfessorResponseDto;
     } catch (error) {
       throw ErrorHandler.handleServiceError(
@@ -129,7 +120,7 @@ export class ProfessorsService {
         error,
         'get professor profile',
         { professorId },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -140,13 +131,13 @@ export class ProfessorsService {
    */
   async updateProfessor(
     professorId: string,
-    updateProfileDto: UpdateProfessorDto,
+    updateProfileDto: UpdateProfessorDto
   ): Promise<ProfessorResponseDto> {
     try {
       this.logger.logObject(
         'debug',
         { professorId, updates: updateProfileDto },
-        'Attempting to update professor profile',
+        'Attempting to update professor profile'
       );
 
       const professor = await this.professorModel.findById(professorId);
@@ -156,18 +147,22 @@ export class ProfessorsService {
           new NotFoundException('Professor not found'),
           'find professor by id',
           { professorId },
-          [NotFoundException],
+          [NotFoundException]
         );
       }
 
       const updatedProfessor = await this.professorModel.findByIdAndUpdate(
         professorId,
         { $set: updateProfileDto },
-        { new: true },
+        { new: true }
       );
 
       const { password: _, ...result } = updatedProfessor.toObject();
-      this.logger.logObject('debug', { professorId }, 'Professor profile updated successfully');
+      this.logger.logObject(
+        'debug',
+        { professorId },
+        'Professor profile updated successfully'
+      );
       return result as ProfessorResponseDto;
     } catch (error) {
       throw ErrorHandler.handleServiceError(
@@ -175,7 +170,7 @@ export class ProfessorsService {
         error,
         'update professor profile',
         { professorId },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -191,10 +186,14 @@ export class ProfessorsService {
   async changeProfessorPassword(
     professorId: string,
     currentPassword: string,
-    newPassword: string,
+    newPassword: string
   ): Promise<void> {
     try {
-      this.logger.logObject('debug', { professorId }, 'Attempting to change professor password');
+      this.logger.logObject(
+        'debug',
+        { professorId },
+        'Attempting to change professor password'
+      );
 
       const professor = await this.professorModel.findById(professorId);
       if (!professor) {
@@ -203,39 +202,49 @@ export class ProfessorsService {
           new NotFoundException('Professor not found'),
           'find professor by id',
           { professorId },
-          [NotFoundException],
+          [NotFoundException]
         );
       }
 
-      const isPasswordValid = await bcrypt.compare(currentPassword, professor.password);
+      const isPasswordValid = await bcrypt.compare(
+        currentPassword,
+        professor.password
+      );
       if (!isPasswordValid) {
         throw ErrorHandler.handleServiceError(
           this.logger,
           new UnauthorizedException('Current password is incorrect'),
           'validate current password',
           { professorId },
-          [UnauthorizedException],
+          [UnauthorizedException]
         );
       }
 
-      const isSamePassword = await bcrypt.compare(newPassword, professor.password);
+      const isSamePassword = await bcrypt.compare(
+        newPassword,
+        professor.password
+      );
       if (isSamePassword) {
         throw ErrorHandler.handleServiceError(
           this.logger,
-          new BadRequestException('New password must be different from current password'),
+          new BadRequestException(
+            'New password must be different from current password'
+          ),
           'validate password change',
           { professorId },
-          [BadRequestException],
+          [BadRequestException]
         );
       }
 
       if (!PasswordValidator.validate(newPassword)) {
         throw ErrorHandler.handleServiceError(
           this.logger,
-          new InvalidPasswordFormatException(PasswordValidator.getRequirements()),
+          new InvalidPasswordFormatException(
+            PasswordValidator.getRequirements()
+          ),
           'validate new password format',
           { professorId },
-          [InvalidPasswordFormatException],
+          [InvalidPasswordFormatException]
         );
       }
 
@@ -244,7 +253,11 @@ export class ProfessorsService {
         password: hashedPassword,
       });
 
-      this.logger.logObject('debug', { professorId }, 'Professor password changed successfully');
+      this.logger.logObject(
+        'debug',
+        { professorId },
+        'Professor password changed successfully'
+      );
     } catch (error) {
       throw ErrorHandler.handleServiceError(
         this.logger,
@@ -256,7 +269,7 @@ export class ProfessorsService {
           UnauthorizedException,
           BadRequestException,
           InvalidPasswordFormatException,
-        ],
+        ]
       );
     }
   }
@@ -272,7 +285,11 @@ export class ProfessorsService {
    */
   async deactivateProfessorAccount(professorId: string): Promise<void> {
     try {
-      this.logger.logObject('debug', { professorId }, 'Attempting to deactivate professor account');
+      this.logger.logObject(
+        'debug',
+        { professorId },
+        'Attempting to deactivate professor account'
+      );
 
       const professor = await this.professorModel.findById(professorId);
       if (!professor) {
@@ -281,7 +298,7 @@ export class ProfessorsService {
           new NotFoundException('Professor not found'),
           'find professor by id',
           { professorId },
-          [NotFoundException],
+          [NotFoundException]
         );
       }
 
@@ -289,14 +306,18 @@ export class ProfessorsService {
         isActive: false,
       });
 
-      this.logger.logObject('debug', { professorId }, 'Professor account deactivated successfully');
+      this.logger.logObject(
+        'debug',
+        { professorId },
+        'Professor account deactivated successfully'
+      );
     } catch (error) {
       throw ErrorHandler.handleServiceError(
         this.logger,
         error,
         'deactivate professor account',
         { professorId },
-        [NotFoundException],
+        [NotFoundException]
       );
     }
   }
@@ -315,11 +336,17 @@ export class ProfessorsService {
    * @throws UnauthorizedException if professor not found or invalid password
    * @throws BadRequestException if account is already active
    */
-  async reactivateProfessorAccount(reactivateAccountDto: ReactivateAccountDto): Promise<void> {
+  async reactivateProfessorAccount(
+    reactivateAccountDto: ReactivateAccountDto
+  ): Promise<void> {
     try {
       const { email, password } = reactivateAccountDto;
 
-      this.logger.logObject('debug', { email }, 'Attempting to reactivate professor account');
+      this.logger.logObject(
+        'debug',
+        { email },
+        'Attempting to reactivate professor account'
+      );
 
       const professor = await this.professorModel.findOne({ email });
       if (!professor) {
@@ -328,18 +355,21 @@ export class ProfessorsService {
           new UnauthorizedException('Invalid credentials'),
           'find professor by email',
           { email },
-          [UnauthorizedException],
+          [UnauthorizedException]
         );
       }
 
-      const isPasswordValid = await bcrypt.compare(password, professor.password);
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        professor.password
+      );
       if (!isPasswordValid) {
         throw ErrorHandler.handleServiceError(
           this.logger,
           new UnauthorizedException('Invalid credentials'),
           'validate professor password',
           { email },
-          [UnauthorizedException],
+          [UnauthorizedException]
         );
       }
 
@@ -349,7 +379,7 @@ export class ProfessorsService {
           new BadRequestException('Account is already active'),
           'check account status',
           { email },
-          [BadRequestException],
+          [BadRequestException]
         );
       }
 
@@ -357,14 +387,18 @@ export class ProfessorsService {
         isActive: true,
       });
 
-      this.logger.logObject('debug', { email }, 'Professor account reactivated successfully');
+      this.logger.logObject(
+        'debug',
+        { email },
+        'Professor account reactivated successfully'
+      );
     } catch (error) {
       throw ErrorHandler.handleServiceError(
         this.logger,
         error,
         'reactivate professor account',
         { email: reactivateAccountDto.email },
-        [UnauthorizedException, BadRequestException],
+        [UnauthorizedException, BadRequestException]
       );
     }
   }
