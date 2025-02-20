@@ -8,7 +8,11 @@ import { navigationItems } from "@/config/navigation";
 
 import "./NavBar.scss";
 
-export const NavBar = (): JSX.Element => {
+export const NavBar = ({
+  hideUgrLogo = true,
+}: {
+  hideUgrLogo?: boolean;
+}): JSX.Element => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = (): void => {
@@ -22,15 +26,17 @@ export const NavBar = (): JSX.Element => {
   return (
     <nav className="nav">
       <div className="nav__container">
-        <div className="nav__brand">
-          <Link to="/" className="nav__logo" onClick={handleNavLinkClick}>
-            <img
-              src={ugrLogo}
-              alt="University Logo"
-              className="nav__university-logo"
-            />
-          </Link>
-        </div>
+        {!hideUgrLogo && (
+          <div className="nav__brand">
+            <Link to="/" className="nav__logo" onClick={handleNavLinkClick}>
+              <img
+                src={ugrLogo}
+                alt="University Logo"
+                className="nav__university-logo"
+              />
+            </Link>
+          </div>
+        )}
 
         <div
           className={`nav__menu ${isMobileMenuOpen ? "nav__menu--open" : ""}`}

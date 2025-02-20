@@ -11,6 +11,12 @@
   z-index: var(--z-navbar);
   box-shadow: var(--shadow-sm);
 
+  &:not(:has(.nav__brand)) {
+    .nav__menu {
+      margin-left: 0;
+    }
+  }
+
   &__container {
     @include flex(row, space-between, center);
     height: 100%;
